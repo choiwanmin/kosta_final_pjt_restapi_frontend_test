@@ -1,98 +1,99 @@
-import "./record.css";
+// import "./record.css";
+// import {table_draw,arrow_btn} from "./function/common";
 
-export default function MyRecord(){
-    return(
-        <div class="main_body">
-            <div class="record_top">
-                <div class="record_top_wrapper">
-                    <div class="record_msg">
-                        <p id="record_mention" class="font_b24 m_b2">근무시간입니다.</p>
-                        <p id="record_time" class="font_b24">2024.05.06 오전 09:07</p>
-                        <button id="record_sta" class="btn_border round w_bg record_sta font_b24">출근완료</button>
-                    </div>
-                    <div class="record_btn_wrapper">
-                        <button id="com_start" onclick='workin()' class="btn_square blue_btn font_b24 cursor record_marright">출근하기</button>
-                        <button id="com_end" onclick='workout()' class="btn_square gray_btn font_b24 cursor record_marright">퇴근하기</button>
-                        <button class="btn_square border_btn font_b24 cursor"  data-bs-toggle="modal" data-bs-target="#exampleModal">휴가신청</button>
-                    </div>
-                </div>
-            </div>
-            {/* <!-- 기록 테이블 -->  */}
-            <div class="record_table w_bg">
-                <div class="record_table_title">
-                    <p>근무기록 확인</p>
-                    <div class="record_month font_b24">
-                        <div id="record_left" class="arrow left_arrow cursor" onclick="myrecord(-1)"></div>
-                        <span class="month">2022.07</span>
-                        <div id="record_right" class="arrow right_arrow arrow_off" onclick="myrecord(+1)"></div>
-                    </div>
-                </div>
-                <div class="record_table_wrapper">
-                    <table class="record_rtable">
-                        <thead>
-                            <td>일자</td>
-                            <td>요일</td>
-                            <td>근무시간</td>
-                            <td>상태</td>
-                        </thead>
-                        <tbody class="record_list">
-                            <tr th:each="s:${list}">
-                                <td th:text="${s.day}">24.05.06</td>
-                                <td th:text="${s.dayOfWeek}">목</td>
-                                <td th:text="${s.workHours}">09:00</td>
-                                <td th:text="${s.state}">조기퇴근</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            {/* <!-- Modal --> */}
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">휴가 신청</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                    <form id="offform">
-                        <input type="hidden" name="members" th:value="${session.loginId}" />
-                        <table>
-                            <tr>
-                                <td  class="form_td">휴가 종류</td>
-                                <td class="form_td"> 
-                                    <select name="res" id="res">
-                                        <option value="대체휴무">대체휴무</option>
-                                        <option value="연차">연차휴가</option>
-                                        <option value="월차">월차</option>
-                                        <option value="휴무">휴무</option>
-                                        <option value="휴가">시즌 휴가</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="form_td">휴가 시작일</td>
-                                <td class="form_td"> 
-                                    <input type="date" name="date1" id="date1" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="form_td">휴가 종료일</td>
-                                <td class="form_td"> 
-                                    <input type="date" name="date2" id="date2" />
-                                </td>
-                            </tr>
-                        </table>
-                            <div class="modal-footer">
-                                <button type="button" class="btn blue_btn" onclick="myoff()">제출하기</button>
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
-                    </form>
-                    </div>
+// export default function MyRecord(){
+//     return(
+//         <div class="main_body">
+//             <div class="record_top">
+//                 <div class="record_top_wrapper">
+//                     <div class="record_msg">
+//                         <p id="record_mention" class="font_b24 m_b2">근무시간입니다.</p>
+//                         <p id="record_time" class="font_b24">2024.05.06 오전 09:07</p>
+//                         <button id="record_sta" class="btn_border round w_bg record_sta font_b24">출근완료</button>
+//                     </div>
+//                     <div class="record_btn_wrapper">
+//                         <button id="com_start" onclick='workin()' class="btn_square blue_btn font_b24 cursor record_marright">출근하기</button>
+//                         <button id="com_end" onclick='workout()' class="btn_square gray_btn font_b24 cursor record_marright">퇴근하기</button>
+//                         <button class="btn_square border_btn font_b24 cursor"  data-bs-toggle="modal" data-bs-target="#exampleModal">휴가신청</button>
+//                     </div>
+//                 </div>
+//             </div>
+//             {/* <!-- 기록 테이블 -->  */}
+//             <div class="record_table w_bg">
+//                 <div class="record_table_title">
+//                     <p>근무기록 확인</p>
+//                     <div class="record_month font_b24">
+//                         <div id="record_left" class="arrow left_arrow cursor" onclick="myrecord(-1)"></div>
+//                         <span class="month">2022.07</span>
+//                         <div id="record_right" class="arrow right_arrow arrow_off" onclick="myrecord(+1)"></div>
+//                     </div>
+//                 </div>
+//                 <div class="record_table_wrapper">
+//                     <table class="record_rtable">
+//                         <thead>
+//                             <td>일자</td>
+//                             <td>요일</td>
+//                             <td>근무시간</td>
+//                             <td>상태</td>
+//                         </thead>
+//                         <tbody class="record_list">
+//                             <tr th:each="s:${list}">
+//                                 <td th:text="${s.day}">24.05.06</td>
+//                                 <td th:text="${s.dayOfWeek}">목</td>
+//                                 <td th:text="${s.workHours}">09:00</td>
+//                                 <td th:text="${s.state}">조기퇴근</td>
+//                             </tr>
+//                         </tbody>
+//                     </table>
+//                 </div>
+//             </div>
+//             {/* <!-- Modal --> */}
+//             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+//                 <div class="modal-dialog modal-dialog-centered">
+//                 <div class="modal-content">
+//                     <div class="modal-header">
+//                     <h5 class="modal-title" id="exampleModalLabel">휴가 신청</h5>
+//                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+//                     </div>
+//                     <div class="modal-body">
+//                     <form id="offform">
+//                         <input type="hidden" name="members" th:value="${session.loginId}" />
+//                         <table>
+//                             <tr>
+//                                 <td  class="form_td">휴가 종류</td>
+//                                 <td class="form_td"> 
+//                                     <select name="res" id="res">
+//                                         <option value="대체휴무">대체휴무</option>
+//                                         <option value="연차">연차휴가</option>
+//                                         <option value="월차">월차</option>
+//                                         <option value="휴무">휴무</option>
+//                                         <option value="휴가">시즌 휴가</option>
+//                                     </select>
+//                                 </td>
+//                             </tr>
+//                             <tr>
+//                                 <td class="form_td">휴가 시작일</td>
+//                                 <td class="form_td"> 
+//                                     <input type="date" name="date1" id="date1" />
+//                                 </td>
+//                             </tr>
+//                             <tr>
+//                                 <td class="form_td">휴가 종료일</td>
+//                                 <td class="form_td"> 
+//                                     <input type="date" name="date2" id="date2" />
+//                                 </td>
+//                             </tr>
+//                         </table>
+//                             <div class="modal-footer">
+//                                 <button type="button" class="btn blue_btn" onclick="myoff()">제출하기</button>
+//                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+//                             </div>
+//                     </form>
+//                     </div>
             
-                </div>
-                </div>
-            </div>
-        </div>
-    )
-}
+//                 </div>
+//                 </div>
+//             </div>
+//         </div>
+//     )
+// }
