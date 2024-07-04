@@ -26,9 +26,9 @@ export default function Login() {
                     alert(res)
                     if (res.data.flag) {
                         alert('로그인 성공');
-                        // sessionStorage.setItem("loginid", res.data.id);
-                        // sessionStorage.setItem("type", res.data.type);
-                        // sessionStorage.setItem("token", res.data.token);
+                        sessionStorage.setItem("loginId", res.data.id);
+                        sessionStorage.setItem("type", res.data.type);
+                        sessionStorage.setItem("token", res.data.token);
                         // let url = '/';
                         // if (res.data.type === 'admin') {
                         //     url = '/index_admin';
