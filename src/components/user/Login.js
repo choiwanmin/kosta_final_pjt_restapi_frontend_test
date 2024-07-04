@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./userform.css";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 
 export default function Login() {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const [inputs, setInputs] = useState({ id: '', pwd: '' });
     const { id, pwd } = inputs;
     const onChange = (e) => {
@@ -17,13 +17,9 @@ export default function Login() {
     }
 
     const login = () => {
-        console.log("클릭");
-        console.log(`${process.env.REACT_APP_SERVER}`);
-        axios.post(`${process.env.REACT_APP_SERVER}` + '/login', {}, { params: { id: id, pwd: pwd } })
-            .then(function (res) {
+        axios.post(`${process.env.REACT_APP_SERVER}/login`, {}, { params: { id: id, pwd: pwd } })
+        .then((res)=> {
                 if (res.status === 200) {
-                    console.log(res)
-                    alert(res)
                     if (res.data.flag) {
                         alert('로그인 성공');
                         sessionStorage.setItem("loginId", res.data.id);
@@ -42,7 +38,7 @@ export default function Login() {
                 } else {
                     alert('비정상 응답')
                 }
-            })
+        })
     }
 
     return (
@@ -67,7 +63,7 @@ export default function Login() {
                                 <span>아이디 기억하기</span>
                                 <input className="login_checkbox" type="checkbox" />
                             </div>
-                            <button className="form-control btn btn-primary bi bi-lock-fill w40" onClick={login}> 로그인</button>
+                            <button type="button" className="form-control btn btn-primary bi bi-lock-fill w40" onClick={login}> 로그인</button>
                         </div>
 
                     </form>
