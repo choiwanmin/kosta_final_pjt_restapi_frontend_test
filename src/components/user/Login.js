@@ -5,7 +5,7 @@ import axios from "axios";
 
 
 export default function Login() {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const [inputs, setInputs] = useState({ id: '', pwd: '' });
     const { id, pwd } = inputs;
     const onChange = (e) => {
@@ -62,7 +62,7 @@ export default function Login() {
                                 <span>아이디 기억하기</span>
                                 <input className="login_checkbox" type="checkbox" />
                             </div>
-                            <button className="form-control btn btn-primary bi bi-lock-fill w40" onClick={login}> 로그인</button>
+                            <button type="button" className="form-control btn btn-primary bi bi-lock-fill w40" onClick={login}> 로그인</button>
                         </div>
 
                     </form>
