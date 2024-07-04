@@ -3,15 +3,18 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import Header from './components/common/Header';
+import Router from './Router';
+import { BrowserRouter, Link } from "react-router-dom";
+
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <>
+  <BrowserRouter>
     <Header/>
     {/* <Leftnav/> */}
-    {/* <Router/> */}
- </>
+    <Router/>
+ </BrowserRouter>
 );
 
 // If you want to start measuring performance in your app, pass a function
