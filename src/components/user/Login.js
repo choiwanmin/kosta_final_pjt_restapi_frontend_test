@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./userform.css";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -17,18 +17,13 @@ export default function Login() {
     }
 
     const login = () => {
-        console.log("클릭");
-        console.log(`${process.env.REACT_APP_SERVER}`);
-        axios.post(`${process.env.REACT_APP_SERVER}` + '/login', {}, { params: { id: id, pwd: pwd } })
-            .then(function (res) {
+        axios.post(`${process.env.REACT_APP_SERVER}/login`, {}, { params: { id: id, pwd: pwd } })
+        .then((res)=> {
                 if (res.status === 200) {
-                    console.log(res)
-                    alert(res)
                     if (res.data.flag) {
-                        alert('로그인 성공');
-                        // sessionStorage.setItem("loginid", res.data.id);
-                        // sessionStorage.setItem("type", res.data.type);
-                        // sessionStorage.setItem("token", res.data.token);
+                        sessionStorage.setItem("loginid", res.data.id);
+                        sessionStorage.setItem("type", res.data.type);
+                        sessionStorage.setItem("token", res.data.token);
                         // let url = '/';
                         // if (res.data.type === 'admin') {
                         //     url = '/index_admin';
@@ -42,7 +37,7 @@ export default function Login() {
                 } else {
                     alert('비정상 응답')
                 }
-            })
+        })
     }
 
     return (
