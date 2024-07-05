@@ -3,25 +3,32 @@ import './MainChatReset.css';
 import React from "react";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import SockJS from 'sockjs-client';
-import { Stomp } from '@stomp/stompjs';
+import ConnectChatRoom from './ConnectChat';
 
-export default function LoadChatRoomsView({ datas, userId1 }) {
+
+export default function LoadChatRoomsView() {
     const [list, setList] = useState([]);
+    const [selectedRoom, setSelectedRoom] = useState(null);
     const token = sessionStorage.getItem('token');
     const loginId = sessionStorage.getItem('loginId');
+    
 
     useEffect(() => {
-        axios.post(`${process.env.REACT_APP_SERVER}` + '/auth/chat/chatrooms/loadrooms', {}, { headers: { auth_token: token }, params: { userid: loginId } })
-            .then(function (res) {
-                if (res.status === 200) {
-                    setList(res.data.list);
-
-                } else {
-                    alert('채팅방 불러오기 실패');
-                }
-            })
+       loadChatRooms();
     }, []);
+
+    const loadChatRooms= ()=>{
+        axios.post(`${process.env.REACT_APP_SERVER}` + '/auth/chat/chatrooms/loadrooms', {}, { headers: { auth_token: token }, params: { userid: loginId } })
+        .then(function (res) {
+            if (res.status === 200) {
+                setList(res.data.list);
+
+            } else {
+                alert('채팅방 불러오기 실패');
+            }
+        })
+    };
+    
 
     const searchName = (event) => {
         if (event.key === 'Enter') {
@@ -36,36 +43,21 @@ export default function LoadChatRoomsView({ datas, userId1 }) {
                 if (res.status === 200) {
                     alert('채팅방 검색 완료');
                     setList(res.data.list); //검색된 채팅방 리스트
-                    // LoadChatRoomsView(res.data.list, loginId);
+
                 } else {
                     alert('채팅방 불러오기 실패');
                 }
             })
     }
 
-    const connect = (roomid) => {
-        var socket = new SockJS(`${process.env.REACT_APP_SERVER}/ws`, null, {
-            headers: {
-                'Authorization': `Bearer ${token}` // 적절한 인증 토큰 추가
-            }
-        });
-        var stompClient = Stomp.over(socket);
-        stompClient.connect({}, function () {
-            var subscriptionId = 'sub-' + userId1;
-            console.log(subscriptionId);
-            stompClient.subscribe('/room/' + roomid, function (messageOutput) {
-                var message = JSON.parse(messageOutput.body);
-                var cri = message[0].room.chatroomid;
-                if (cri === roomid) {
-                    // showMessage(message);
-                }
-            }, { id: subscriptionId });
-
-            stompClient.subscribe('/recent/update', function () {
-                // Handle update if needed
-            });
-        });
+    const roomConnect = (chatroomid) => {
+        setSelectedRoom(chatroomid);
     };
+
+    const reloadChatroom = () => {
+        loadChatRooms(); // 메시지 전송 후 채팅방 다시 불러오기
+    };
+
 
     return (
         <div className="main_body">
@@ -102,34 +94,38 @@ export default function LoadChatRoomsView({ datas, userId1 }) {
                                                     <div className="tab-pane fade show active" id="Open" role="tabpanel" aria-labelledby="Open-tab">
                                                         <div className="chat-list" id="openstyle">
                                                             {list.map((chatRoom, index) => (
-                                                                <a key={index} href="#" className="d-flex align-items-center">
+                                                                chatRoom.roomType === 'PERSONAL' || chatRoom.roomType ==='PRIVATE' ? (
+                                                                <a key={index} href="#" className="d-flex align-items-center"  onClick={() => roomConnect(chatRoom.chatroomid)}>
                                                                     <div className="flex-shrink-0">
                                                                         <img className="img-fluid-center" alt="user img" />
                                                                     </div>
                                                                     <div className="flex-grow-1 ms-3">
-                                                                        <h3 onClick={() => connect(chatRoom.chatroomid)}>
+                                                                        <h3>
                                                                             {chatRoom.chatRoomNames[0].editableName.replace(/_/g, ' ').trim()}
                                                                         </h3>
                                                                         <p>{chatRoom.recentMsg}</p>
                                                                     </div>
                                                                 </a>
+                                                                ):null
                                                             ))}
                                                         </div>
                                                     </div>
                                                     <div className="tab-pane fade" id="Closed" role="tabpanel" aria-labelledby="Closed-tab">
                                                         <div className="chat-list" id="closestyle">
                                                             {list.map((chatRoom, index) => (
-                                                                <a key={index} href="#" className="d-flex align-items-center">
+                                                                chatRoom.roomType === 'GROUP' ?(
+                                                                <a key={index} href="#" className="d-flex align-items-center"  onClick={() => roomConnect(chatRoom.chatroomid)}>
                                                                     <div className="flex-shrink-0">
                                                                         <img className="img-fluid-center" src="/member/memberimg?memberimgnm=${imgName}" alt="user img" />
                                                                     </div>
                                                                     <div className="flex-grow-1 ms-3">
-                                                                        <h3 onClick={() => connect(chatRoom.chatroomid)}>
+                                                                        <h3>
                                                                             {chatRoom.chatRoomNames[0].editableName.replace(/_/g, ' ').trim()}
                                                                         </h3>
                                                                         <p>{chatRoom.recentMsg}</p>
                                                                     </div>
                                                                 </a>
+                                                                ):null
                                                             ))}
                                                         </div>
                                                     </div>
@@ -139,6 +135,7 @@ export default function LoadChatRoomsView({ datas, userId1 }) {
                                     </div>
                                 </div>
                             </div>
+                            {selectedRoom && <ConnectChatRoom roomid={selectedRoom} userid={loginId} reloadRoom={reloadChatroom} />}
                         </div>
                     </div>
                 </div>

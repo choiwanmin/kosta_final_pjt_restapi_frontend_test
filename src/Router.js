@@ -5,6 +5,7 @@ import MyRecord from "./components/record/MyRecord";
 import MainChat from "./components/chat/MainChat";
 import LoadChatRoomsView from "./components/chat/LoadChatRoomsView";
 import LoadChatRoomsBySearch from "./components/chat/LoadChatRoomsBySearch";
+import ConnectChatRoom from "./components/chat/ConnectChat";
 
 export default function Router(){
     return(
@@ -17,6 +18,7 @@ export default function Router(){
             <Route path="/mainchat" element={<MainChat/>}/>
             <Route path="/loadchatroom" element={<LoadChatRoomsView />}/>
             <Route path="/searchchatroom" element={<LoadChatRoomsBySearch/>}/>
+            <Route path="/connectchatroom" element={<ConnectChatRoom/>}/>
         </Routes>
     )
 }
