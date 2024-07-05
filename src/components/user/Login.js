@@ -22,22 +22,20 @@ export default function Login() {
                 if (res.status === 200) {
                     if (res.data.flag) {
                         alert('로그인 성공');
-                        sessionStorage.setItem("loginid", res.data.id);
-                        sessionStorage.setItem("type", res.data.type);
                         sessionStorage.setItem("token", res.data.token);
-                        let url = '/';
-                        if (res.data.type === 'admin') {
-                            url = '/index_admin';
-                            // } else if (res.data.type === 'emp') {
-                            //     url = '/index_emp';
-                            // }
-                            navigate(url);
-                        }
+                        sessionStorage.setItem("loginId", res.data.id);
+                        sessionStorage.setItem("type", res.data.type);
+                        sessionStorage.setItem("usernm", res.data.usernm);
+                        navigate('/');
+                    } else {
+                        alert('로그인 실패: 아이디 또는 비밀번호가 일치하지 않습니다.');
                     }
                 }
             })
             .catch((error) => {
-                if (error.response && error.response.status === 403) {
+                if (error.response) {
+                    alert('로그인 중 에러가 발생했습니다.');
+                    console.error('로그인 에러:', error);
                     alert('로그인 실패');
                     navigate('/login');
                 }
