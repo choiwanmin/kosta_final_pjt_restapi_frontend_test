@@ -8,9 +8,9 @@ function Header() {
   
     useEffect(() => {
         if( location.pathname === "/login" || location.pathname === "/join" ){
-            setIsLoginPage(true);
-        }else{
             setIsLoginPage(false);
+        }else{
+            setIsLoginPage(true);
         }
     }, [location.pathname, setIsLoginPage]);
   if (isLoginPage) return null;
