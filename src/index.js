@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import Header from './components/common/Header';
+import Leftnav from './components/common/Leftnav';
 import Router from './Router';
 import { BrowserRouter, Link } from "react-router-dom";
 
@@ -12,7 +13,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
     <Header/>
-    {/* <Leftnav/> */}
+    <Leftnav/>
     <Router/>
  </BrowserRouter>
 );
