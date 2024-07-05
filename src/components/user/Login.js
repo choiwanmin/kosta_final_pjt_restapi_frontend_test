@@ -5,7 +5,7 @@ import axios from "axios";
 
 
 export default function Login() {
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
     const [inputs, setInputs] = useState({ id: '', pwd: '' });
     const { id, pwd } = inputs;
     const onChange = (e) => {
@@ -18,26 +18,30 @@ export default function Login() {
 
     const login = () => {
         axios.post(`${process.env.REACT_APP_SERVER}/login`, {}, { params: { id: id, pwd: pwd } })
-        .then((res)=> {
+            .then((res) => {
                 if (res.status === 200) {
                     if (res.data.flag) {
+                        alert('로그인 성공');
                         sessionStorage.setItem("loginid", res.data.id);
                         sessionStorage.setItem("type", res.data.type);
                         sessionStorage.setItem("token", res.data.token);
-                        // let url = '/';
-                        // if (res.data.type === 'admin') {
-                        //     url = '/index_admin';
-                        // } else if (res.data.type === 'emp') {
-                        //     url = '/index_emp';
-                        // }
-                        // navigate(url);
-                    } else {
-                        alert('로그인 실패');
+                        let url = '/';
+                        if (res.data.type === 'admin') {
+                            url = '/index_admin';
+                            // } else if (res.data.type === 'emp') {
+                            //     url = '/index_emp';
+                            // }
+                            navigate(url);
+                        }
                     }
-                } else {
-                    alert('비정상 응답')
                 }
-        })
+            })
+            .catch((error) => {
+                if (error.response && error.response.status === 403) {
+                    alert('로그인 실패');
+                    navigate('/login');
+                }
+            })
     }
 
     return (
@@ -46,16 +50,16 @@ export default function Login() {
                 <div className="container login_wrapper">
                     <div className="loginBoxTitle">HRD SYSTEM LOGIN</div>
                     <form name="userloginf">
-                        {/* <span th:if="${errorMessage}">
-                        <p id="valid" className="alert alert-danger"></p>
-                    </span> */}
+                        {/* <span>
+                            <p id="valid" className="alert alert-danger">${errorMessage}</p>
+                        </span> */}
                         <div className="form-group">
                             <label>ID</label>
-                            <input type="text" className="form-control" name="id" value={id} onChange={onChange} placeholder="아이디를 입력해주세요" />
+                            <input type="text" className="form-control" id="id" name="id" value={id} onChange={onChange} placeholder="아이디를 입력해주세요" />
                         </div>
                         <div className="form-group">
                             <label>비밀번호</label>
-                            <input type="password" className="form-control" name="pwd" value={pwd} onChange={onChange} placeholder="비밀번호를 입력해주세요" />
+                            <input type="password" className="form-control" id="pwd" name="pwd" value={pwd} onChange={onChange} placeholder="비밀번호를 입력해주세요" />
                         </div>
                         <div className="form-group">
                             <div className="login_check w40">
@@ -69,7 +73,7 @@ export default function Login() {
                 </div>
             </div>
             <div className="join_link">
-                <Link to="/join">회원가입</Link>
+                <Link to="/user/join">회원가입</Link>
             </div>
         </div>
     )

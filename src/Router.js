@@ -7,7 +7,7 @@ export default function Router(){
     return(
         <Routes>
             <Route path="/login" element={<Login/>}></Route>
-            <Route path="/join" element={<Join/>}></Route>
+            <Route path="/user/join" element={<Join/>}></Route>
             <Route path="/myrecord" element={<MyRecord/>}></Route>
             <Route path="/dept-record" element={<MyRecord/>}></Route>
             <Route path="/admin-record" element={<MyRecord/>}></Route>
