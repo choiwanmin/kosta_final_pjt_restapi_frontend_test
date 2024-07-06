@@ -8,13 +8,26 @@ import { Stomp } from '@stomp/stompjs';
 import { useRef } from 'react';
 import sendMessage from './SendMessage';
 
-export default function ConnectChatRoom({ roomid, userid ,reloadRoom }) {
+export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
     const [messages, setMessages] = useState([]);
     const [chatRoom, setChatRoom] = useState(null);
     const [inputs, setInputs] = useState({});
+    const [memberName, setMemberName] = useState([]);
+    const [memberInfos, setMemberInfos] = useState({});
+    const [jobinfos, setJobinfos] = useState({});
+    const [deptinfo, setDeptinfo] = useState({});
     const token = sessionStorage.getItem('token');
+    const usernm = sessionStorage.getItem('usernm'); 
     const stompClientRef = useRef(null);
+    const [isConnected, setIsConnected] = useState(true);
 
+    useEffect(() => {
+        if (chatRoom && chatRoom.participants) {
+            const participants = chatRoom.participants.split('_'); 
+            const chatroomMemberName = participants.filter(participant => participant !== usernm);
+            setMemberName(chatroomMemberName);
+        }
+    }, [chatRoom]);
 
     useEffect(() => {
         if (chatRoom && chatRoom.chatRoomNames && chatRoom.chatRoomNames.length > 0) {
@@ -32,6 +45,7 @@ export default function ConnectChatRoom({ roomid, userid ,reloadRoom }) {
     }, [roomid]);
 
     const connect = (roomid) => {
+        setIsConnected(true);
         if (!roomid) {
             return;
         }
@@ -46,6 +60,7 @@ export default function ConnectChatRoom({ roomid, userid ,reloadRoom }) {
                 var message = JSON.parse(messageOutput.body);
                 var cri = message[0].room.chatroomid;
                 if (cri === roomid) {
+                    loadMessages(roomid);
                 }
             }, { id: subscriptionId });
 
@@ -53,12 +68,14 @@ export default function ConnectChatRoom({ roomid, userid ,reloadRoom }) {
 
             });
             loadMessages(roomid);
+            memberInfo();
+
         });
     };
 
     const sendMessages = () => {
         sendMessage(roomid, userid, stompClientRef, loadMessages);
-        reloadRoom();   
+        reloadRoom();
     };
 
     const loadMessages = () => {
@@ -77,7 +94,6 @@ export default function ConnectChatRoom({ roomid, userid ,reloadRoom }) {
             .then(function (res) {
                 if (res.status === 200) {
                     setChatRoom(res.data.chatroom);
-                    console.log(res.data.chatroom);
                 } else {
                     alert('채팅방 로딩 실패');
                 }
@@ -86,10 +102,12 @@ export default function ConnectChatRoom({ roomid, userid ,reloadRoom }) {
 
     // 채팅방 참여자 정보 불러오기
     const memberInfo = () => {
-        axios.get(`${process.env.REACT_APP_SERVER}` + '/auth/member/memberchatinfo', { headers: { auth_token: token } })
+        axios.get(`${process.env.REACT_APP_SERVER}/auth/member/memberchatinfo`, { headers: { auth_token: token } })
             .then(function (res) {
                 if (res.status === 200) {
-
+                    setMemberInfos(res.data.member);
+                    setJobinfos(res.data.jobL);
+                    setDeptinfo(res.data.deptN);
                 } else {
                     alert('참여자 정보 로딩 실패')
                 }
@@ -100,12 +118,36 @@ export default function ConnectChatRoom({ roomid, userid ,reloadRoom }) {
         axios.post(`${process.env.REACT_APP_SERVER}` + '/auth/chat/chatrooms/edit', {}, { headers: { auth_token: token }, params: { roomid: roomid, newRoomName: inputs.editableName } })
             .then(function (res) {
                 if (res.status === 200) {
-                    alert('변경 성공');
+                    alert('채팅방 이름 변경 성공');
+                    reloadRoom();
                 } else {
                     alert('채팅방 이름 변경 실패');
                 }
             })
     }
+
+    const getOutRoom = () => {
+        axios.post(`${process.env.REACT_APP_SERVER}` + '/auth/chat/chatrooms/out', {}, { headers: { auth_token: token }, params: { roomid: roomid } })
+            .then(function (res) {
+                if (res.status === 200) {
+                    alert('채팅방 나가기 성공');
+                    disconnect();
+                    reloadRoom();
+                } else {
+                    alert('채팅방 나가기 실패');
+                }
+            })
+    }
+
+    const disconnect = () => {
+        if (stompClientRef.current) {
+            stompClientRef.current.disconnect(() => {
+                console.log('연결끊겼음');
+            });
+            stompClientRef.current = null;
+            setIsConnected(false);
+        }
+    };
 
     const onChange = (e) => {
         const { name, value } = e.target;
@@ -113,6 +155,14 @@ export default function ConnectChatRoom({ roomid, userid ,reloadRoom }) {
             ...inputs,
             [name]: value
         })
+    }
+
+    if (!isConnected) {
+        return (
+            <div>
+                <h2>채팅방 나간 화면</h2>
+            </div>
+        );
     }
 
 
@@ -133,8 +183,9 @@ export default function ConnectChatRoom({ roomid, userid ,reloadRoom }) {
                                         <div class="flex-grow-1 ms-3">
                                             <input class="roomNameStyle" type="text" name="editableName" onChange={onChange} value={inputs.editableName} />
                                             <img class="img-chateditImg" src="/img/chat/chatedit.png" onClick={editRoomName} />
-                                            <p></p>
-                                            <div class="memberInfoCss" id="minfo" onmouseleave="exitMemberInfo()"></div>
+                                            {memberName.map((member,index) => (
+                                            <p key={index}>{member}</p>
+                                            ))}
                                         </div>
                                     </a>
                                 </div>
@@ -149,7 +200,7 @@ export default function ConnectChatRoom({ roomid, userid ,reloadRoom }) {
                                                 <hr className="dropdown-divider" />
                                             </li>
                                             <li>
-                                                <a className="dropdown-item" href="#" id="outButton" onclick="checkGetOutRoom(roomId)">채팅방 나가기</a>
+                                                <a className="dropdown-item" href="#" id="outButton" onClick={getOutRoom}>채팅방 나가기</a>
                                             </li>
                                         </ul>
                                     </li>
@@ -159,14 +210,14 @@ export default function ConnectChatRoom({ roomid, userid ,reloadRoom }) {
                     </div>
 
                     {/* 채팅방 메세지 출력 칸 */}
-                    <div className="modal-body cat-content">
+                    <div className="modal-body chat-content">
                         <div className="msg-body">
                             <ul id="chat-content">
                                 {messages.map((message, index) => (
                                     <li key={index} className={message.sender === userid ? 'sender' : 'reply'}>
                                         <div className="chat_img_wrapper">
                                         </div>
-                                        <span className="senderName">{message.partid}</span>
+                                        <span className="senderName">{message.username}</span>
                                         <p>{message.content}</p>
                                         <span className="time">
                                             {new Date(message.sendDate).toLocaleString('en-US', { timeZone: 'Asia/Seoul' })}
