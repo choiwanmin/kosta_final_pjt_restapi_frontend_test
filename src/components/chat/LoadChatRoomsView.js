@@ -101,7 +101,7 @@ export default function LoadChatRoomsView() {
                                                                     </div>
                                                                     <div className="flex-grow-1 ms-3">
                                                                         <h3>
-                                                                            {chatRoom.chatRoomNames[0].editableName.replace(/_/g, ' ').trim()}
+                                                                            {chatRoom?.chatRoomNames[0]?.editableName.replace(/_/g, ' ').trim()}
                                                                         </h3>
                                                                         <p>{chatRoom.recentMsg}</p>
                                                                     </div>
@@ -120,7 +120,7 @@ export default function LoadChatRoomsView() {
                                                                     </div>
                                                                     <div className="flex-grow-1 ms-3">
                                                                         <h3>
-                                                                            {chatRoom.chatRoomNames[0].editableName.replace(/_/g, ' ').trim()}
+                                                                            {chatRoom?.chatRoomNames[0]?.editableName.replace(/_/g, ' ').trim()}
                                                                         </h3>
                                                                         <p>{chatRoom.recentMsg}</p>
                                                                     </div>

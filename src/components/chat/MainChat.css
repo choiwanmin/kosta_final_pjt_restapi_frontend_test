@@ -80,6 +80,12 @@ a {
 	margin-bottom: 0;
 }
 
+.membernameinfocss {
+	display: inline !important;
+	margin-right: 5px !important;
+	cursor: pointer !important;
+}
+
 /* *******************************
 message-area
 ******************************** */
@@ -750,6 +756,4 @@ button:focus {
 		border-top-right-radius: 6px;
 		border-bottom-left-radius: 6px;
 	}
-
-	
 }

@@ -45,8 +45,7 @@ export default function Router() {
             <Route path="/admin-record" element={<MyRecord/>}></Route>
             <Route path="/mainchat" element={<MainChat/>}/>
             <Route path="/loadchatroom" element={<LoadChatRoomsView />}/>
-            <Route path="/searchchatroom" element={<LoadChatRoomsBySearch/>}/>
-            <Route path="/connectchatroom" element={<ConnectChatRoom/>}/>
+    
         </Routes>
     )
 }
