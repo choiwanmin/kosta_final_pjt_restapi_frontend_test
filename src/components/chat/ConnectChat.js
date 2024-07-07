@@ -13,17 +13,15 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
     const [chatRoom, setChatRoom] = useState(null);
     const [inputs, setInputs] = useState({});
     const [memberName, setMemberName] = useState([]);
-    const [memberInfos, setMemberInfos] = useState({});
-    const [jobinfos, setJobinfos] = useState({});
-    const [deptinfo, setDeptinfo] = useState({});
     const token = sessionStorage.getItem('token');
-    const usernm = sessionStorage.getItem('usernm'); 
+    const usernm = sessionStorage.getItem('usernm');
     const stompClientRef = useRef(null);
     const [isConnected, setIsConnected] = useState(true);
+    const [file, setFile] = useState(null);
 
     useEffect(() => {
         if (chatRoom && chatRoom.participants) {
-            const participants = chatRoom.participants.split('_'); 
+            const participants = chatRoom.participants.split('_');
             const chatroomMemberName = participants.filter(participant => participant !== usernm);
             setMemberName(chatroomMemberName);
         }
@@ -68,7 +66,6 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
 
             });
             loadMessages(roomid);
-            memberInfo();
 
         });
     };
@@ -77,6 +74,70 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
         sendMessage(roomid, userid, stompClientRef, loadMessages);
         reloadRoom();
     };
+
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
+    };
+
+    const sendFileMessage = (roomid, userid, file) => {
+        if (!file) {
+            alert('파일을 선택해 주세요.');
+            return;
+        }
+    
+        const date = new Date();
+        const timezoneOffset = date.getTimezoneOffset() * 60000;
+        const seoulOffset = 9 * 3600000;
+        const seoulTime = new Date(date.getTime() + timezoneOffset + seoulOffset);
+    
+        const formData = new FormData();
+        formData.append('file', file);
+    
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/message/upload`, formData, {
+            headers: {'auth_token': token, 'Content-Type': 'multipart/form-data'}})
+            .then(response => {
+                const message = {
+                    'type': 'FILE',
+                    'fileName': response.data.fileName,
+                    'fileRoot': response.data.fileRoot,
+                    'sender': userid,
+                    'partid': userid,
+                    'sendDate': seoulTime.toISOString()
+                };
+                stompClientRef.current.send(`/send/chat/message/` + roomid, {}, JSON.stringify(message));
+                loadMessages(roomid);
+            })
+            .catch(error => {
+                console.error('Error uploading file:', error);
+                alert('파일 업로드에 실패했습니다.');
+            });
+    };
+
+    const showFileMessage = (message) => {
+        if (message.type === "FILE") {
+            const fileType = message.fileName.split('.').pop().toLowerCase();
+            if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'].includes(fileType)) {
+                return (
+                    <img src={message.fileRoot} alt={message.fileName} style={{ width: '200px', height: '200px' }} />
+                );
+            } else {
+                return (
+                    <a href={message.fileRoot} download={message.fileName}>
+                        {message.fileName}
+                    </a>
+                );
+            }
+        } else {
+            return message.content && message.content.split('<br/>').map((line, index) => (
+                <React.Fragment key={index}>
+                    {line}
+                    {index !== message.content.split('<br/>').length - 1 && <br />
+                }
+                </React.Fragment>
+            ));
+        }
+    };
+
 
     const loadMessages = () => {
         axios.get(`${process.env.REACT_APP_SERVER}/auth/chat/message/room/${roomid}`, { headers: { auth_token: token } })
@@ -99,21 +160,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                 }
             })
     }
-
-    // 채팅방 참여자 정보 불러오기
-    const memberInfo = () => {
-        axios.get(`${process.env.REACT_APP_SERVER}/auth/member/memberchatinfo`, { headers: { auth_token: token } })
-            .then(function (res) {
-                if (res.status === 200) {
-                    setMemberInfos(res.data.member);
-                    setJobinfos(res.data.jobL);
-                    setDeptinfo(res.data.deptN);
-                } else {
-                    alert('참여자 정보 로딩 실패')
-                }
-            })
-    }
-
+    
     const editRoomName = () => {
         axios.post(`${process.env.REACT_APP_SERVER}` + '/auth/chat/chatrooms/edit', {}, { headers: { auth_token: token }, params: { roomid: roomid, newRoomName: inputs.editableName } })
             .then(function (res) {
@@ -183,8 +230,8 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                                         <div class="flex-grow-1 ms-3">
                                             <input class="roomNameStyle" type="text" name="editableName" onChange={onChange} value={inputs.editableName} />
                                             <img class="img-chateditImg" src="/img/chat/chatedit.png" onClick={editRoomName} />
-                                            {memberName.map((member,index) => (
-                                            <p key={index}>{member}</p>
+                                            {memberName.map((member, index) => (
+                                               <p key={index} >{member}</p>
                                             ))}
                                         </div>
                                     </a>
@@ -213,12 +260,12 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                     <div className="modal-body chat-content">
                         <div className="msg-body">
                             <ul id="chat-content">
-                                {messages.map((message, index) => (
+                            {messages.map((message, index) => (
                                     <li key={index} className={message.sender === userid ? 'sender' : 'reply'}>
                                         <div className="chat_img_wrapper">
                                         </div>
                                         <span className="senderName">{message.username}</span>
-                                        <p>{message.content}</p>
+                                        <p>{showFileMessage(message)}</p>
                                         <span className="time">
                                             {new Date(message.sendDate).toLocaleString('en-US', { timeZone: 'Asia/Seoul' })}
                                         </span>
@@ -230,7 +277,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
 
                     {/* 메세지전송, 업로드 */}
                     <div className="send-box">
-                        <div>
+                        <div className="send-boxstyle2">
                             <textarea id="message" className="form-control" aria-label="message…" placeholder="Write message…" maxlength="1000"></textarea>
                             <button type="button" id="sendButton" onClick={sendMessages}><i className="fa fa-paper-plane" aria-hidden="true"></i>전송</button>
                         </div>
@@ -240,9 +287,9 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                                     <span className="label">
                                         <img className="img-fluid" src="https://mehedihtml.com/chatbox/assets/img/upload.svg" alt="image title" /> attached file
                                     </span>
-                                    <input type="file" name="upload" id="upload" className="upload-box" placeholder="Upload File" aria-label="Upload File" />
+                                    <input type="file" name="upload" id="upload" className="upload-box" placeholder="Upload File" aria-label="Upload File" onChange={handleFileChange} />
                                 </div>
-                                <button type="button" id="sendButton" onclick="sendFileMessage(roomId)">업로드</button>
+                                <button type="button" id="sendFileButton" onClick={() => sendFileMessage(roomid, userid, file)}>업로드</button>
                             </div>
                         </div>
                     </div>
