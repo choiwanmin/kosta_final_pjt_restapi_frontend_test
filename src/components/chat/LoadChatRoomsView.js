@@ -1,5 +1,6 @@
 import './MainChat.css';
 import './MainChatReset.css';
+import './Chatmodal.css';
 import React from "react";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -11,7 +12,6 @@ export default function LoadChatRoomsView() {
     const [selectedRoom, setSelectedRoom] = useState(null);
     const token = sessionStorage.getItem('token');
     const loginId = sessionStorage.getItem('loginId');
-
 
     useEffect(() => {
         loadChatRooms();
@@ -73,7 +73,7 @@ return (
                                         <div className="msg-search">
                                             <input type="text" className="form-control" id="findGroupMember" placeholder="참여자이름으로 검색" aria-label="search" onKeyDown={searchName} />
                                             <a className="add" href="#">
-                                                <img className="img-fluid" src="https://mehedihtml.com/chatbox/assets/img/add.svg" alt="add" data-bs-toggle="modal" data-bs-target="#exampleModal" />
+                                                <img className="img-fluid" src="https://mehedihtml.com/chatbox/assets/img/add.svg" alt="add"/>
                                             </a>
                                         </div>
 

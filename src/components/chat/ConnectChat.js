@@ -201,7 +201,6 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
 
     const handleMemberClick = (clickedMemberId) => {
         memberchatinfo(clickedMemberId);
-        console.dir(memberchatList);
     }
 
     const memberchatinfo = (clickedMemberId) => {

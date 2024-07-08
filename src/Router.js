@@ -10,6 +10,7 @@ import LoadChatRoomsBySearch from "./components/chat/LoadChatRoomsBySearch";
 import ConnectChatRoom from "./components/chat/ConnectChat";
 import NoticeList from "./components/notice/NoticeList";
 import NoticeAdd from "./components/notice/NoticeAdd";
+import NoticeDetail from "./components/notice/NoticeDetail";
 
 export default function Router() {
     const token = sessionStorage.getItem('token');
@@ -49,6 +50,8 @@ export default function Router() {
             <Route path="/loadchatroom" element={<LoadChatRoomsView />}/>
             <Route path="/noticelist" element={<NoticeList/>}/>
             <Route path="/noticeadd" element={<NoticeAdd/>}/>
+            <Route path="/noticedetail/:notid" element={<NoticeDetail/>}/>
+            
         </Routes>
     )
 }

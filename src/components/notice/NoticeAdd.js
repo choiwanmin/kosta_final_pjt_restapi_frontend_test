@@ -77,7 +77,7 @@ export default function NoticeAdd() {
                         <div className="mb-3">
                         <select id="deptType" name="deptType" onChange={(e) => setDeptType(e.target.value)}>
                             <option value={deptnm}>{deptnm}</option>
-                            <option value="allDept">전체</option>
+                            <option value="전체">전체</option>
                         </select>
                         </div>
                         <button type="button" className="btn btn-primary"  onClick={addnotice}>등록</button>
