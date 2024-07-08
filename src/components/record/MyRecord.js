@@ -1,6 +1,12 @@
 import "./record.css";
+import {table_draw,arrow_btn} from "./function/common";
+import { useState } from "react";
 
 export default function MyRecord(){
+    // const [table,setTable]=useState{}
+
+    
+
     return(
         <div class="main_body">
             <div class="record_top">
@@ -36,11 +42,11 @@ export default function MyRecord(){
                             <td>상태</td>
                         </thead>
                         <tbody class="record_list">
-                            <tr th:each="s:${list}">
-                                <td th:text="${s.day}">24.05.06</td>
-                                <td th:text="${s.dayOfWeek}">목</td>
-                                <td th:text="${s.workHours}">09:00</td>
-                                <td th:text="${s.state}">조기퇴근</td>
+                            <tr>
+                                <td>24.05.06</td>
+                                <td>목</td>
+                                <td>09:00</td>
+                                <td>조기퇴근</td>
                             </tr>
                         </tbody>
                     </table>
@@ -56,7 +62,9 @@ export default function MyRecord(){
                     </div>
                     <div class="modal-body">
                     <form id="offform">
-                        <input type="hidden" name="members" th:value="${session.loginId}" />
+                        <input type="hidden" name="members" 
+                        // th:value="${session.loginId}" 
+                        />
                         <table>
                             <tr>
                                 <td  class="form_td">휴가 종류</td>
