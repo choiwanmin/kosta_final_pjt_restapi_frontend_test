@@ -26,6 +26,7 @@ export default function MemModal(){
                 if (res.status === 200) {
                     setUserarr(res.data.mlist);
                     console.log(res.data);
+            
                 } else {
                     alert('error')
                 }

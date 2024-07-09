@@ -80,17 +80,20 @@ a {
 	margin-bottom: 0;
 }
 
+.nextButtonDesign{
+    color: black;
+    padding: 5px 10px;
+}
+  
 .membernameinfocss {
 	display: inline !important;
 	margin-right: 5px !important;
 	cursor: pointer !important;
 }
 
-.prevButtonDesign {
-  }
-  
-
-.nextButtonDesign{
+.namelistcss{
+	font-size: 13px;
+	font-weight: bold;
 }
 
 .prevButtonDesigndiv{

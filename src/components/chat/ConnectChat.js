@@ -1,5 +1,6 @@
 import './MainChat.css';
 import './MainChatReset.css';
+import '../common/modal.css';
 import React from "react";
 import axios from 'axios';
 import { useEffect, useState } from 'react';
@@ -7,6 +8,8 @@ import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
 import { useRef } from 'react';
 import sendMessage from './SendMessage';
+import MemModal from "../common/MemModal";
+
 
 export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
     const [messages, setMessages] = useState([]);
@@ -33,24 +36,19 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
     }, [page]);
 
     const loadMessages = () => {
-        axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/message/room2`, {}, { headers: { auth_token: token }, params: { roomid: roomid, page: page } })
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/message/room3`, {}, { headers: { auth_token: token }, params: { roomid: roomid, page: page } })
             .then(function (res) {
                 if (res.status === 200) {
-                    setMessages(res.data.list);
+                    setMessages([...res.data.list, ...messages]);
                 } else {
                     alert('메세지 로딩 실패');
                 }
             })
     };
+
+
     const moveNextPage = () => {
         handlePageChange(page + 1);
-    };
-
-    const movePrevPage = () => {
-        if (page === 1) {
-            return;
-        }
-        handlePageChange(page - 1);
     };
 
     useEffect(() => {
@@ -337,7 +335,6 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                         {/* 채팅방 메세지 출력 칸 */}
                         <div className="modal-body chat-content">
                             <div className='prevButtonDesigndiv'>
-                                <button className='prevButtonDesign' onClick={movePrevPage}>전</button>
                                 <button className='nextButtonDesign' onClick={moveNextPage}>후</button>
                             </div>
                             <div className="msg-body">
