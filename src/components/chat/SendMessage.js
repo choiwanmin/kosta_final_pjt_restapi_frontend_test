@@ -1,5 +1,5 @@
 
-const sendMessage = (roomid, userid, stompClientRef, loadMessages) => {
+const sendMessage = (roomid, userid, stompClientRef, loadMessages, page) => {
     var date = new Date();
     var timezoneOffset = date.getTimezoneOffset() * 60000;
     var seoulOffset = (9 * 3600000);
@@ -12,7 +12,7 @@ const sendMessage = (roomid, userid, stompClientRef, loadMessages) => {
         'partid': userid,
         'sendDate': seoulTime.toISOString()
     };
-    stompClientRef.current.send(`/send/chat/message/` + roomid, {}, JSON.stringify(message));
+    stompClientRef.current.send(`/send/chat/message/` + roomid +'/'+ page, {}, JSON.stringify(message));
     loadMessages(roomid);
    
 };

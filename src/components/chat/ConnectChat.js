@@ -20,6 +20,38 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
     const [file, setFile] = useState(null);
     const [memberchatList, setMemberchatList] = useState({});
     const [jobchatList, setJobchatList] = useState({});
+    const [page, setPage] = useState(1);
+
+
+    const handlePageChange = (pageNumber) => {
+        setPage(pageNumber);
+    };
+
+    useEffect(() => {
+        loadMessages();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [page]);
+
+    const loadMessages = () => {
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/message/room2`, {}, { headers: { auth_token: token }, params: { roomid: roomid, page: page } })
+            .then(function (res) {
+                if (res.status === 200) {
+                    setMessages(res.data.list);
+                } else {
+                    alert('메세지 로딩 실패');
+                }
+            })
+    };
+    const moveNextPage = () => {
+        handlePageChange(page + 1);
+    };
+
+    const movePrevPage = () => {
+        if (page === 1) {
+            return;
+        }
+        handlePageChange(page - 1);
+    };
 
     useEffect(() => {
         if (chatRoom && chatRoom.name) {
@@ -43,6 +75,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
             connect(roomid);
             centerChatRoom(roomid, userid);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [roomid]);
 
     const connect = (roomid) => {
@@ -72,7 +105,8 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
     };
 
     const sendMessages = () => {
-        sendMessage(roomid, userid, stompClientRef, loadMessages);
+        sendMessage(roomid, userid, stompClientRef, loadMessages, page);
+        document.getElementById('message').value = '';
         reloadRoom();
     };
 
@@ -106,7 +140,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                     'partid': userid,
                     'sendDate': seoulTime.toISOString()
                 };
-                stompClientRef.current.send(`/send/chat/message/` + roomid, {}, JSON.stringify(message));
+                stompClientRef.current.send(`/send/chat/message/` + roomid + '/' + page, {}, JSON.stringify(message));
                 loadMessages(roomid);
             })
             .catch(error => {
@@ -141,19 +175,8 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
     };
 
 
-    const loadMessages = () => {
-        axios.get(`${process.env.REACT_APP_SERVER}/auth/chat/message/room/${roomid}`, { headers: { auth_token: token } })
-            .then(function (res) {
-                if (res.status === 200) {
-                    setMessages(res.data.list);
-                } else {
-                    alert('메세지 로딩 실패');
-                }
-            })
-    };
-
     const centerChatRoom = () => {
-        axios.post(`${process.env.REACT_APP_SERVER}` + '/auth/chat/chatrooms/loadrooms/connect', {}, { headers: { auth_token: token }, params: { roomid: roomid, userid: userid } })
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/chatrooms/loadrooms/connect`, {}, { headers: { auth_token: token }, params: { roomid: roomid, userid: userid } })
             .then(function (res) {
                 if (res.status === 200) {
                     setChatRoom(res.data.chatroom);
@@ -165,7 +188,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
     }
 
     const editRoomName = () => {
-        axios.post(`${process.env.REACT_APP_SERVER}` + '/auth/chat/chatrooms/edit', {}, { headers: { auth_token: token }, params: { roomid: roomid, newRoomName: inputs.editableName } })
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/chatrooms/edit`, {}, { headers: { auth_token: token }, params: { roomid: roomid, newRoomName: inputs.editableName } })
             .then(function (res) {
                 if (res.status === 200) {
                     alert('채팅방 이름 변경 성공');
@@ -177,7 +200,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
     }
 
     const getOutRoom = () => {
-        axios.post(`${process.env.REACT_APP_SERVER}` + '/auth/chat/chatrooms/out', {}, { headers: { auth_token: token }, params: { roomid: roomid } })
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/chatrooms/out`, {}, { headers: { auth_token: token }, params: { roomid: roomid } })
             .then(function (res) {
                 if (res.status === 200) {
                     alert('채팅방 나가기 성공');
@@ -242,15 +265,15 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                         <div className="msg-head">
                             <div className="row">
                                 <div className="col-8">
-                                    <div className="d-flex align-items-center" id="centerstyle">
-                                        <a href="#" class="d-flex align-items-center">
+                                    <div className="d-flex align-items-center">
+                                        <a class="d-flex align-items-center">
                                             <div class="flex-shrink-0">
-                                                <img class="img-fluid-center" src="/member/memberimg?memberimgnm=${imgName}" alt="user img" />
+                                                <img class="img-fluid-center" src="" alt="user img" />
                                                 <span class="active"></span>
                                             </div>
                                             <div class="flex-grow-1 ms-3">
                                                 <input class="roomNameStyle" type="text" name="editableName" onChange={onChange} value={inputs.editableName} />
-                                                <img class="img-chateditImg" src="/img/chat/chatedit.png" onClick={editRoomName} />
+                                                <img class="img-chateditImg" src="" onClick={editRoomName} />
                                                 <div>
                                                     {membername.map((name, index) => (
                                                         <span key={index}>
@@ -295,14 +318,14 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                                 <div className="col-4">
                                     <ul className="moreoption">
                                         <li className="navbar nav-item dropdown">
-                                            <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i className="fa fa-ellipsis-v" aria-hidden="true"></i></a>
+                                            <a className="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i className="fa fa-ellipsis-v" aria-hidden="true"></i></a>
                                             <ul className="dropdown-menu">
-                                                <li><a className="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal2">초대</a></li>
+                                                <li><a className="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal2">초대</a></li>
                                                 <li>
                                                     <hr className="dropdown-divider" />
                                                 </li>
                                                 <li>
-                                                    <a className="dropdown-item" href="#" id="outButton" onClick={getOutRoom}>채팅방 나가기</a>
+                                                    <a className="dropdown-item" id="outButton" onClick={getOutRoom}>채팅방 나가기</a>
                                                 </li>
                                             </ul>
                                         </li>
@@ -313,6 +336,10 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
 
                         {/* 채팅방 메세지 출력 칸 */}
                         <div className="modal-body chat-content">
+                            <div className='prevButtonDesigndiv'>
+                                <button className='prevButtonDesign' onClick={movePrevPage}>전</button>
+                                <button className='nextButtonDesign' onClick={moveNextPage}>후</button>
+                            </div>
                             <div className="msg-body">
                                 <ul id="chat-content">
                                     {messages?.map((message, index) => (

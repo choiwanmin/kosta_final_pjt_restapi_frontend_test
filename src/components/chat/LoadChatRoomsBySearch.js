@@ -6,11 +6,10 @@ import axios from 'axios';
 export default function LoadChatRoomsBySearch() {
     const [list, setList] = useState([]);
     const token = sessionStorage.getItem('token');
-    const loginId = sessionStorage.getItem('loginId');
 
     const searchName = (event) => {
         if (event.key === 'Enter') {
-            const searchData = event.target.value.trim(); // 입력값 가져오기
+            const searchData = event.target.value.trim();
             loadChatRoomsBySearch(searchData);
         }
     };
@@ -20,7 +19,7 @@ export default function LoadChatRoomsBySearch() {
             .then(function (res) {
                 if (res.status === 200) {
                     alert('채팅방 검색 완료');
-                    setList(res.data.list); //검색된 채팅방 리스트
+                    setList(res.data.list); 
                 } else {
                     alert('채팅방 불러오기 실패');
                 }
