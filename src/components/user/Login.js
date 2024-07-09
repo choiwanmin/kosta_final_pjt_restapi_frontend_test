@@ -29,6 +29,9 @@ export default function Login() {
                         sessionStorage.setItem("loginId", res.data.id);
                         sessionStorage.setItem("type", res.data.type);
                         sessionStorage.setItem("usernm", res.data.usernm);
+                        sessionStorage.setItem("deptnm", res.data.deptnm);
+                        sessionStorage.setItem("mgr_deptid", res.data.mgr_deptid);
+                        sessionStorage.setItem("memberimgnm", res.data.memberimgnm);
                         dispatch(setUserInfo(res.data.id));
                         window.location.reload();
                         sessionStorage.setItem("deptnm", res.data.deptnm);
