@@ -66,12 +66,40 @@ let dayoff = createSlice({
 })
 export let {getMem,changeRes,changeDay1,changeDay2} = dayoff.actions;
 
+// let modalFlag = createSlice({
+//   name:"modal",
+//   initialState:false,
+//   reducers:{
+//     changeModal(state,action){
+//       return action.payload;
+//     }
+//   }
+// })
+// export let { changeModal } = modalFlag.actions;
+
+let modalArr = createSlice({
+  name:"useList",
+  initialState:[],
+  reducers:{
+    addUser(state,action){
+      state.push(action.payload)
+    },
+    removeUser(state, action) {
+      return state.filter(item => item.userid.id !== action.payload);
+    },
+  }
+})
+export let { addUser,removeUser } = modalArr.actions;
+
+
 export default configureStore({
   reducer: {
     userInfo:userInfo.reducer,
     recordNum:recordNum.reducer,
     recordFlag:recordFlag.reducer,
     recordOut:recordOut.reducer,
-    dayoff:dayoff.reducer
+    dayoff:dayoff.reducer,
+    // modalFlag:modalFlag.reducer
+    modalArr:modalArr.reducer
    }
 }) 
