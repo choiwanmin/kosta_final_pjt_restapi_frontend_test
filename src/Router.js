@@ -1,4 +1,6 @@
 import { Routes, Route } from "react-router-dom";
+import Header from './components/common/Header';
+import Leftnav from './components/common/Leftnav';
 import Login from "./components/user/Login";
 import Join from "./components/user/Join";
 import Userinfo from "./components/user/Userinfo";
@@ -8,15 +10,25 @@ import MainChat from "./components/chat/MainChat";
 import LoadChatRoomsView from "./components/chat/LoadChatRoomsView";
 import LoadChatRoomsBySearch from "./components/chat/LoadChatRoomsBySearch";
 import ConnectChatRoom from "./components/chat/ConnectChat";
+import { useSelector } from "react-redux";
 import NoticeList from "./components/notice/NoticeList";
 import NoticeAdd from "./components/notice/NoticeAdd";
 import Chartmain from "./components/charts/ChartMain";
 
 export default function Router() {
+    let loginId = useSelector(state=>state.userInfo);    
     const token = sessionStorage.getItem('token');
     const type = sessionStorage.getItem('type');
-
+    
     return (
+        <>
+        {loginId === null? null:
+        <>
+           <Header/>
+            <Leftnav/>
+        </>
+        }
+
         <Routes>
             {/* Conditional Routes */}
             {!token ? (
@@ -52,5 +64,6 @@ export default function Router() {
             <Route path="/noticelist" element={<NoticeList/>}/>
             <Route path="/noticeadd" element={<NoticeAdd/>}/>
         </Routes>
+        </>
     )
 }
