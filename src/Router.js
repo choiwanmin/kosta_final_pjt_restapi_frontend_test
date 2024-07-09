@@ -4,6 +4,7 @@ import Join from "./components/user/Join";
 import Userinfo from "./components/user/Userinfo";
 import Userlist from "./components/user/Userlist";
 import MyRecord from "./components/record/MyRecord";
+import Memberinfo from "./components/user/Memberinfo";
 
 export default function Router() {
     const token = sessionStorage.getItem('token');
@@ -33,9 +34,10 @@ export default function Router() {
             {/* Add other routes as needed */}
             <Route path="/login" element={<Login />}></Route>
             <Route path="/user/join" element={<Join />}></Route>
-            <Route path="/user/info" element={<Userinfo />}></Route>
+            <Route path="/user/info/:userid" element={<Userinfo />}></Route>
+            {/* <Route path="/user/edit/:userid" element={<Useredit />}></Route> */}
             <Route path="/user/list" element={<Userlist />}></Route>
-
+            <Route path="/member/info/:userid" element={<Memberinfo />}></Route>
             <Route path="/myrecord" element={<MyRecord/>}></Route>
             <Route path="/dept-record" element={<MyRecord/>}></Route>
             <Route path="/admin-record" element={<MyRecord/>}></Route>
