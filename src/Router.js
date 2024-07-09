@@ -11,6 +11,8 @@ import LoadChatRoomsView from "./components/chat/LoadChatRoomsView";
 import LoadChatRoomsBySearch from "./components/chat/LoadChatRoomsBySearch";
 import ConnectChatRoom from "./components/chat/ConnectChat";
 import { useSelector } from "react-redux";
+import NoticeList from "./components/notice/NoticeList";
+import NoticeAdd from "./components/notice/NoticeAdd";
 
 export default function Router() {
     let loginId = useSelector(state=>state.userInfo);    
@@ -57,8 +59,8 @@ export default function Router() {
             <Route path="/admin-record" element={<MyRecord/>}></Route>
             <Route path="/mainchat" element={<MainChat/>}/>
             <Route path="/loadchatroom" element={<LoadChatRoomsView />}/>
-            <Route path="/searchchatroom" element={<LoadChatRoomsBySearch/>}/>
-            <Route path="/connectchatroom" element={<ConnectChatRoom/>}/>
+            <Route path="/noticelist" element={<NoticeList/>}/>
+            <Route path="/noticeadd" element={<NoticeAdd/>}/>
         </Routes>
         </>
     )

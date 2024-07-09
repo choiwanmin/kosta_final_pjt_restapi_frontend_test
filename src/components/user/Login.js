@@ -31,6 +31,7 @@ export default function Login() {
                         sessionStorage.setItem("usernm", res.data.usernm);
                         dispatch(setUserInfo(res.data.id));
                         window.location.reload();
+                        sessionStorage.setItem("deptnm", res.data.deptnm);
                         navigate('/');
                     } else {
                         alert('로그인 실패: 아이디 또는 비밀번호가 일치하지 않습니다.');

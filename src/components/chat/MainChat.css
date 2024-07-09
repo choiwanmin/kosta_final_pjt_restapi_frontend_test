@@ -80,6 +80,12 @@ a {
 	margin-bottom: 0;
 }
 
+.membernameinfocss {
+	display: inline !important;
+	margin-right: 5px !important;
+	cursor: pointer !important;
+}
+
 /* *******************************
 message-area
 ******************************** */
@@ -530,6 +536,13 @@ li.repaly .time {
 	border-top: 1px solid #ccc;
 }
 
+.send-boxstyle2 {
+	display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
 .send-box form {
 	display: flex;
 	align-items: center;
@@ -743,6 +756,4 @@ button:focus {
 		border-top-right-radius: 6px;
 		border-bottom-left-radius: 6px;
 	}
-
-	
 }
