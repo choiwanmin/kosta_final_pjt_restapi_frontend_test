@@ -1,5 +1,18 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit'
 
+const loginId = sessionStorage.getItem("loginId");
+let userInfo = createSlice({
+  name:"loginId",
+  initialState:loginId ? loginId : null,
+  reducers:{
+    setUserInfo(state,action){
+      state = action.payload
+    }
+  }
+})
+export let {setUserInfo} = userInfo.actions;
+
+
 let recordNum = createSlice({
   name:"num",
   initialState:{num:0},
@@ -55,6 +68,7 @@ export let {getMem,changeRes,changeDay1,changeDay2} = dayoff.actions;
 
 export default configureStore({
   reducer: {
+    userInfo:userInfo.reducer,
     recordNum:recordNum.reducer,
     recordFlag:recordFlag.reducer,
     recordOut:recordOut.reducer,

@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useState , useEffect} from "react";
 import "./userform.css";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import {setUserInfo} from "../../store";
 
 
 export default function Login() {
     const navigate = useNavigate();
+    let dispatch = useDispatch();
     const [inputs, setInputs] = useState({ id: '', pwd: '' });
     const { id, pwd } = inputs;
     const onChange = (e) => {
@@ -21,11 +24,13 @@ export default function Login() {
             .then((res) => {
                 if (res.status === 200) {
                     if (res.data.flag) {
-                        alert('로그인 성공');
+                        //alert('로그인 성공');
                         sessionStorage.setItem("token", res.data.token);
                         sessionStorage.setItem("loginId", res.data.id);
                         sessionStorage.setItem("type", res.data.type);
                         sessionStorage.setItem("usernm", res.data.usernm);
+                        dispatch(setUserInfo(res.data.id));
+                        window.location.reload();
                         navigate('/');
                     } else {
                         alert('로그인 실패: 아이디 또는 비밀번호가 일치하지 않습니다.');
@@ -41,7 +46,6 @@ export default function Login() {
                 }
             })
     }
-
     return (
         <div className="form_wrapper">
             <div id="posts_list">
