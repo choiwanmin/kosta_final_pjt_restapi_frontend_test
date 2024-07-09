@@ -1,19 +1,6 @@
 import './header.css';
-import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 
 function Header() {
-    const location = useLocation();
-    const [isLoginPage, setIsLoginPage] = useState(true);
-  
-    useEffect(() => {
-        if( location.pathname === "/login" || location.pathname === "/join" ){
-            setIsLoginPage(false);
-        }else{
-            setIsLoginPage(true);
-        }
-    }, [location.pathname, setIsLoginPage]);
-  if (isLoginPage) return null;
   return (
       <nav className="w_bg nav_top fix_top">
         <div className="header_wrapper">
