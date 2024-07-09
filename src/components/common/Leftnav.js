@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from "react";
 import "./Leftnav.css";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import {setUserInfo} from "../../store";
 
 export default function Leftnav(){
-  const [type,setType] = useState("");
+  let dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [type,setType] = useState(sessionStorage.getItem("type"));
+
   const logout=()=>{
         sessionStorage.clear();
     }
+
     return(
         <nav class="w_bg nav_vertical left_wrapper">
             <div class="menu_wrapper">
                 <ul class="nav_ul">
                     <li class="nav_li">
-                      <Admin/>
-                      {/* { type === 1 ? <Emp/> : <Admin/> } */}
+                      { type === "emp" ? <Emp/> : <Admin/> }
                     </li>
                 </ul>
             </div>
