@@ -3,12 +3,14 @@ import './MainChatReset.css';
 import '../common/modal.css';
 import React from "react";
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
 import { useRef } from 'react';
 import sendMessage from './SendMessage';
-import MemModal from "../common/MemModal";
+import ChatModal from './ChatModal';
+
 
 
 export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
@@ -24,10 +26,32 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
     const [memberchatList, setMemberchatList] = useState({});
     const [jobchatList, setJobchatList] = useState({});
     const [page, setPage] = useState(1);
+    const userList = useSelector(state => state.modalArr);
 
 
     const handlePageChange = (pageNumber) => {
         setPage(pageNumber);
+    };
+
+    const inviteChatroom = () => {
+        const params = new URLSearchParams();
+        userList.forEach(id => params.append('userid[]', id));
+        params.append('chatroomid', roomid);
+        params.append('page', 1);
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/chatrooms/invite`, {}, { headers: { auth_token: token }, params: params})
+            .then(function (res) {
+                if (res.status === 200) {
+                    alert('사용자 초대 성공');
+                } else {
+                    alert('사용자 초대 실패');
+                }
+            })
+    }
+
+    const handleSelect = (mode) => {
+        if (mode === 'invite') {
+            inviteChatroom();
+        }
     };
 
     useEffect(() => {
@@ -321,7 +345,8 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                                         <li className="navbar nav-item dropdown">
                                             <a className="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i className="fa fa-ellipsis-v" aria-hidden="true"></i></a>
                                             <ul className="dropdown-menu">
-                                                <li><a className="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal2">초대</a></li>
+                                                <li><a className="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal">초대</a></li>
+                                                <ChatModal onSelect={handleSelect} mode="invite"></ChatModal>
                                                 <li>
                                                     <hr className="dropdown-divider" />
                                                 </li>

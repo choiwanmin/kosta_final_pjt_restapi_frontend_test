@@ -5,7 +5,7 @@ import React from "react";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import ConnectChatRoom from './ConnectChat';
-import MemModal from "../common/MemModal";
+import ChatModal from './ChatModal';
 import { useSelector } from 'react-redux';
 
 
@@ -31,6 +31,12 @@ export default function LoadChatRoomsView() {
                 }
             })
     }
+
+    const handleSelect = (mode) => {
+        if (mode === 'create') {
+            createChatroom();
+        }
+    };
 
     useEffect(() => {
         if (userList.length > 0) {
@@ -113,10 +119,8 @@ export default function LoadChatRoomsView() {
                                                     <img className="img-fluid" src="https://mehedihtml.com/chatbox/assets/img/add.svg" alt="add" data-bs-toggle="modal" data-bs-target="#exampleModal" />
                                                 </a>
                                             </div>
-                                            <p className='namelistcss'>{namelist}<button onClick={createChatroom}>생성</button></p>
-
-                                            <MemModal ></MemModal>
-
+                                            {/* <p className='namelistcss'>{namelist}<button onClick={createChatroom}>생성</button></p> */}
+                                            <ChatModal onSelect={handleSelect} mode="create"></ChatModal>
                                             {/* 1:1 단체방 탭 */}
                                             <ul className="nav nav-tabs" id="myTab" role="tablist">
                                                 <li className="nav-item" role="presentation">
