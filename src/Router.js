@@ -13,13 +13,12 @@ import RecordAdmin from "./components/record/RecordAdmin";
 import Dept from "./components/record/Dept"
 import MainChat from "./components/chat/MainChat";
 import LoadChatRoomsView from "./components/chat/LoadChatRoomsView";
-import LoadChatRoomsBySearch from "./components/chat/LoadChatRoomsBySearch";
-import ConnectChatRoom from "./components/chat/ConnectChat";
 import { useSelector } from "react-redux";
 import NoticeList from "./components/notice/NoticeList";
 import NoticeAdd from "./components/notice/NoticeAdd";
 import Memberinfo from "./components/user/Memberinfo";
 import Chartmain from "./components/charts/ChartMain";
+import NoticeDetail from "./components/notice/NoticeDetail";
 import Deptlist from "./components/corp/Deptlist";
 import Joblvlist from "./components/corp/Joblvlist";
 
@@ -80,6 +79,8 @@ export default function Router() {
             <Route path="/addreport" element={<DocxAdd/>}></Route>
             <Route path="/noticelist" element={<NoticeList/>}/>
             <Route path="/noticeadd" element={<NoticeAdd/>}/>
+            <Route path="/noticedetail/:notid" element={<NoticeDetail/>}/>
+            
         </Routes>
         </>
     )

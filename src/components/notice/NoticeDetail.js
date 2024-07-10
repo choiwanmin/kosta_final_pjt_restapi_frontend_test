@@ -1,22 +1,35 @@
 import { useState } from "react"
 import axios from "axios";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 
 export default function NoticeDetail(){
     const[noticedetail, setNoticedetail] = useState({});
-    const[noticeid, setNoticeid] = useState('');
     const token = sessionStorage.getItem('token');
+    const { notid } = useParams();
 
-    const ndetail = ()=>{
-        axios.get(`${process.env.REACT_APP_SERVER}/auth/notice/detail{noticeid}`,{headers:{auth_token:token}})
-        .then(function(res){
-            if(res.status === 200){
+    useEffect(() => {
+        if (notid) {
+            ndetail(notid);
+        }
+    }, [notid]);
+
+    const ndetail = (notid) => {
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/notice/detail`,{}, {headers: { auth_token: token}, params:{id:notid}})
+        .then(function(res) {
+            if (res.status === 200) {
                 setNoticedetail(res.data.notice);
-            }else{
+            } else {
                 alert('공지 상세정보 로딩 실패');
             }
         })
-    }
+        .catch(function(error) {
+            console.error('Error loading notice detail:', error);
+            alert('공지 상세정보 로딩 실패');
+        });
+    };
 
     return (
         <div class="main_body">
@@ -24,28 +37,32 @@ export default function NoticeDetail(){
             <div class="container mt-5">
                 <div class="row">
                     <div class="col-12 text-center">
-                        <h3 class="font_b24 m_b2">보고서 상세 페이지</h3>
+                        <h3 class="font_b24 m_b2">공지 상세 페이지</h3>
                     </div>
                 </div>
                 <div class="record_table w_bg p-3">
                     <form>
                         <div class="mb-3">
-                            <label for="title" class="form-label"><strong>문서 제목:</strong></label>
-                            <input type="text" id="title" class="form-control" th:value="${d.title}" readonly/>
+                            <label for="title" class="form-label"><strong>제목:</strong></label>
+                            <input type="text" id="title" class="form-control" value={noticedetail.title} readonly/>
                         </div>
                         <div class="mb-3">
                             <label for="writer" class="form-label"><strong>작성자:</strong></label>
-                            <input type="text" id="writer" class="form-control" th:value="${d.writer.id}" readonly/>
+                            <input type="text" id="writer" class="form-control" value={noticedetail.writername} readonly/>
                         </div>
                         <div class="mb-3">
                             <label for="enddt" class="form-label"><strong>기한:</strong></label>
-                            <input type="text" id="enddt" class="form-control" th:value="${d.enddt}" readonly/>
+                            <input type="text" id="enddt" class="form-control" value={noticedetail.enddt} readonly/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="enddt" class="form-label"><strong>내용:</strong></label>
+                            <input type="text" id="enddt" class="form-control" value={noticedetail.content} readonly/>
                         </div>
                     </form>
                 </div>
                 <div class="row mt-3">
                     <div class="col-12 text-center">
-                        <a href="/auth/docx/list" class="btn btn-secondary">문서 리스트로 돌아가기</a>
+                        <Link to="/noticelist" class="btn btn-secondary">공지 리스트로 돌아가기</Link>
                     </div>
                 </div>
             </div>

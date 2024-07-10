@@ -80,12 +80,49 @@ a {
 	margin-bottom: 0;
 }
 
+.nextButtonDesign{
+    color: black;
+    padding: 5px 10px;
+}
+  
 .membernameinfocss {
 	display: inline !important;
 	margin-right: 5px !important;
 	cursor: pointer !important;
 }
 
+.namelistcss{
+	font-size: 13px;
+	font-weight: bold;
+}
+
+.prevButtonDesigndiv{
+	gap: 1rem;
+	display: flex;
+    justify-content: center;
+}
+.selectfilecss{
+	 width: 500px; 
+    white-space: nowrap;
+}
+
+.filename{
+	font-size: 12px;
+	display: inline-block;
+    width: 30%; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+    
+}
+
+.chat-content3{
+	position: relative;
+    flex: 1 1 auto;
+    padding: 1rem;
+	overflow-y: auto;
+	flex-direction: column-reverse;
+	display: flex;
+}
 /* *******************************
 message-area
 ******************************** */
@@ -102,12 +139,19 @@ message-area
 	transform: scale(1.7);
 }
 
+
 .chat-content {
 	overflow-y: auto;
 	flex-direction: column-reverse;
 	overflow-y: scroll;
 	display: flex;
 }
+
+.chat-area .modal-dialog-scrollable {
+	height: 100% !important;
+}
+
+
 .chat_img_wrapper{
 	width: 100%;
 	display: flex;
@@ -160,11 +204,6 @@ message-area
 	outline: 0;
 	height: 100%;
 }
-
-.chat-area .modal-dialog-scrollable {
-	height: 100% !important;
-}
-
 .chatbox {
 	width: auto;
 	overflow: hidden;
@@ -173,10 +212,11 @@ message-area
 	box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.chatbox .modal-dialog, .chatlist .modal-dialog {
+/* 모달창 가운데 정렬 안되는 이유 */
+/* .chatbox .modal-dialog, .chatlist .modal-dialog {
 	max-width: 100%;
 	margin: 0;
-}
+} */
 
 .msg-search {
 	display: flex;
