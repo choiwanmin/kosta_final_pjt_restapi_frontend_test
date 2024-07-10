@@ -9,7 +9,6 @@ import sendMessage from './SendMessage';
 
 
 export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,setIsInvite }) {
-    console.log(isInvite)
     const [messages, setMessages] = useState([]);
     const [chatRoom, setChatRoom] = useState(null);
     const [inputs, setInputs] = useState({});
@@ -22,6 +21,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
     const [memberchatList, setMemberchatList] = useState({});
     const [jobchatList, setJobchatList] = useState({});
     const [page, setPage] = useState(1);
+    const [checkMessage, setCheckMessage] = useState(true);
     const userList = useSelector(state => state.modalArr);
     const chatContentRef = useRef(null);
     
@@ -29,13 +29,21 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
     const handleScroll = () => {
         const chatContent = chatContentRef.current;
         const scrollTop = Math.round(chatContent.scrollTop);
-        const scrollHeight = chatContent.scrollHeight;
-        const clientHeight = chatContent.clientHeight;
-        if (scrollTop - 1 <= clientHeight - scrollHeight) {
-            chatContent.scrollTop = scrollTop + 1;
-            setPage((prevPage) => prevPage + 2);
+        console.log(scrollTop);
+        if (scrollTop === 0) {
+            const previousScrollHeight = chatContent.scrollHeight;
+            setPage((prevPage) => prevPage + 1);
+            setTimeout(() => {
+                const newScrollHeight = chatContent.scrollHeight;
+                chatContent.scrollTop = newScrollHeight - previousScrollHeight;
+            }, 150); 
         }
     };
+
+    useEffect(() => {
+        const chatContent = chatContentRef.current;
+        chatContent.scrollTop = chatContent.scrollHeight;
+    }, [messages]);
 
     useEffect(() => {
         const chatContent = chatContentRef.current;
@@ -43,7 +51,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
         return () => {
             chatContent.removeEventListener('scroll', handleScroll);
         };
-    }, []);
+    }, [checkMessage]);
 
     const onChange = (e) => {
         const { name, value } = e.target;
@@ -64,10 +72,14 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
         axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/message/room3`, {}, { headers: { auth_token: token }, params: { roomid: roomid, page: page } })
             .then(function (res) {
                 if (res.status === 200) {
-                    if (overwrite) {
-                        setMessages(res.data.list);
+                    if (res.data.list.length === 0) {
+                        setCheckMessage(false);
                     } else {
-                        setMessages(prevMessages => [...res.data.list, ...prevMessages]);
+                        if (overwrite) {
+                            setMessages(res.data.list);
+                        } else {
+                            setMessages(prevMessages => [...res.data.list, ...prevMessages]);
+                        }
                     }
                 } else {
                     alert('메세지 로딩 실패');
@@ -364,7 +376,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
                         {/* 채팅방 메세지 출력 칸 */}
                         <div className="chat-content3" ref={chatContentRef}>
                             <div className="msg-body">
-                                <ul id="chat-content" >
+                                <ul >
                                     {messages?.map((message, index) => (
                                         <li key={index} className={message.sender === userid ? 'sender' : 'reply'}>
                                             <div className="chat_img_wrapper">

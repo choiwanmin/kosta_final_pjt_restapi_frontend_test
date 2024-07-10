@@ -11,6 +11,7 @@ export default function NoticeList() {
     const [title, setTitle] = useState('');
     const [writer, setWriter] = useState('');
     const [searchType, setSearchType] = useState('title');
+    const [totalItemsCount, setTotalItemsCount] = useState(0);
     const token = sessionStorage.getItem('token');
 
 
@@ -42,10 +43,11 @@ export default function NoticeList() {
     }, [page, title, writer, searchType]);
 
     const getNoticelist = () => {
-        axios.get(`${process.env.REACT_APP_SERVER}/auth/notice/pagelist`, { headers: { auth_token: token }, params: { page: page, size: 5 } })
+        axios.get(`${process.env.REACT_APP_SERVER}/auth/notice/pagelist`, { headers: { auth_token: token }, params: { page: page, size: 10 } })
             .then(function (res) {
                 if (res.status === 200) {
                     setNlist(res.data.list);
+                    setTotalItemsCount(res.data.list.length);
                 } else {
                     alert('공지 리스트 로딩 실패');
                 }
@@ -58,6 +60,7 @@ export default function NoticeList() {
                 if (res.status === 200) {
                     alert('공지 삭제 완료');
                     getNoticelist();
+                    setTotalItemsCount(res.data.list.length);
                 } else {
                     alert('공지 삭제 실패');
                 }
@@ -65,10 +68,11 @@ export default function NoticeList() {
     }
 
     const getNoticelistByTitle = () => {
-        axios.post(`${process.env.REACT_APP_SERVER}/auth/notice/titlelist`, {}, { headers: { auth_token: token }, params: { title: title, page: page, size: 5 } })
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/notice/titlelist`, {}, { headers: { auth_token: token }, params: { title: title, page: page, size: 10 } })
             .then(function (res) {
                 if (res.status === 200) {
                     setNlist(res.data.tlist);
+                    setTotalItemsCount(res.data.tlist.length);
                 } else {
                     alert('제목으로 검색 실패');
                 }
@@ -76,10 +80,11 @@ export default function NoticeList() {
     }
 
     const getNoticelistByWriter = () => {
-        axios.post(`${process.env.REACT_APP_SERVER}/auth/notice/writerlist`, {}, { headers: { auth_token: token }, params: { writer: writer, page: page, size: 5 } })
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/notice/writerlist`, {}, { headers: { auth_token: token }, params: { writer: writer, page: page, size: 10 } })
             .then(function (res) {
                 if (res.status === 200) {
                     setNlist(res.data.wlist);
+                    setTotalItemsCount(res.data.wlist.length);
                 } else {
                     alert('이름으로 검색 실패');
                 }
@@ -137,8 +142,8 @@ export default function NoticeList() {
                         <Pagination
                             containerClassName={"pagination"}
                             activePage={page}
-                            itemsCountPerPage={10}
-                            totalItemsCount={200}
+                            totalItemsCount={totalItemsCount}
+                            itemsCountPerPage={5}
                             pageRangeDisplayed={5}
                             prevPageText={"‹"}
                             nextPageText={"›"}
