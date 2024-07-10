@@ -35,17 +35,26 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page]);
 
-    const loadMessages = () => {
+    const loadMessages = (overwrite = false) => {
         axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/message/room3`, {}, { headers: { auth_token: token }, params: { roomid: roomid, page: page } })
             .then(function (res) {
                 if (res.status === 200) {
-                    setMessages([...res.data.list, ...messages]);
+                    if (overwrite) {
+                        setMessages(res.data.list);
+                    } else {
+                        setMessages(prevMessages => [...res.data.list, ...prevMessages]);
+                    }
                 } else {
                     alert('메세지 로딩 실패');
                 }
-            })
+            });
     };
 
+    const sendMessages = () => {
+        sendMessage(roomid, userid, stompClientRef, () => loadMessages(true));
+        document.getElementById('message').value = '';
+        reloadRoom();
+    };
 
     const moveNextPage = () => {
         handlePageChange(page + 1);
@@ -100,12 +109,6 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
             });
             loadMessages(roomid);
         });
-    };
-
-    const sendMessages = () => {
-        sendMessage(roomid, userid, stompClientRef, loadMessages, page);
-        document.getElementById('message').value = '';
-        reloadRoom();
     };
 
     const handleFileChange = (e) => {

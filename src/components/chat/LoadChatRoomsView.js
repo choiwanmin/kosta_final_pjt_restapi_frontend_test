@@ -75,7 +75,6 @@ export default function LoadChatRoomsView() {
     }
 
     const roomConnect = (chatroomid) => {
-        console.log(userList);
         setSelectedRoom(chatroomid);
     };
 
