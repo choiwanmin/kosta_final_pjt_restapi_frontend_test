@@ -20,6 +20,8 @@ import NoticeList from "./components/notice/NoticeList";
 import NoticeAdd from "./components/notice/NoticeAdd";
 import Memberinfo from "./components/user/Memberinfo";
 import Chartmain from "./components/charts/ChartMain";
+import Deptlist from "./components/corp/Deptlist";
+import Joblvlist from "./components/corp/Joblvlist";
 
 export default function Router() {
     let loginId = useSelector(state=>state.userInfo);    
@@ -61,6 +63,8 @@ export default function Router() {
             <Route path="/user/info/:userid" element={<Userinfo />}></Route>
             {/* <Route path="/user/edit/:userid" element={<Useredit />}></Route> */}
             <Route path="/user/list" element={<Userlist />}></Route>
+            <Route path="/dept/list" element={<Deptlist />}></Route>
+            <Route path="/joblv/list" element={<Joblvlist />}></Route>
             <Route path="/member/info/:userid" element={<Memberinfo />}></Route>
             <Route path="/index" element={<Chartmain />}></Route>
             <Route path="/myrecord" element={<MyRecord/>}></Route>
