@@ -1,6 +1,3 @@
-import './MainChat.css';
-import './MainChatReset.css';
-import '../common/modal.css';
 import React from "react";
 import axios from 'axios';
 import { useSelector } from 'react-redux';
@@ -22,7 +19,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
     const token = sessionStorage.getItem('token');
     const stompClientRef = useRef(null);
     const [isConnected, setIsConnected] = useState(true);
-    const [file, setFile] = useState(null);
+    const [file, setFile] = useState('');
     const [memberchatList, setMemberchatList] = useState({});
     const [jobchatList, setJobchatList] = useState({});
     const [page, setPage] = useState(1);
@@ -38,7 +35,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
         userList.forEach(id => params.append('userid[]', id));
         params.append('chatroomid', roomid);
         params.append('page', 1);
-        axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/chatrooms/invite`, {}, { headers: { auth_token: token }, params: params})
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/chatrooms/invite`, {}, { headers: { auth_token: token }, params: params })
             .then(function (res) {
                 if (res.status === 200) {
                     alert('사용자 초대 성공');
@@ -396,14 +393,17 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                                         </span>
                                         <input type="file" name="upload" id="upload" className="upload-box" placeholder="Upload File" aria-label="Upload File" onChange={handleFileChange} />
                                     </div>
-                                    <button type="button" id="sendFileButton" onClick={() => sendFileMessage(roomid, userid, file)}>업로드</button>
+                                    <div className="selectfilecss">
+                                        <span className="filename"> 선택된 파일:{file.name}</span>
+                                        <button type="button" id="sendFileButton" onClick={() => sendFileMessage(roomid, userid, file)}>업로드</button>
+                                    </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </>
+            </>
 
-    );
+            );
 }

@@ -1,5 +1,3 @@
-import './MainChat.css';
-import './MainChatReset.css';
 import React, { useState} from 'react';
 import axios from 'axios';
 
@@ -15,7 +13,7 @@ export default function LoadChatRoomsBySearch() {
     };
 
     const loadChatRoomsBySearch = (searchData) => {
-        axios.post(`${process.env.REACT_APP_SERVER}` + '/auth/chat/chatrooms/loadrooms/search', {}, { headers: { auth_token: token }, params: { userName: searchData} })
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/chatrooms/loadrooms/search`, {}, { headers: { auth_token: token }, params: { userName: searchData} })
             .then(function (res) {
                 if (res.status === 200) {
                     alert('채팅방 검색 완료');

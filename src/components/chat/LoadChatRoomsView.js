@@ -1,6 +1,3 @@
-import './MainChat.css';
-import './MainChatReset.css';
-import '../common/modal.css';
 import React from "react";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -68,7 +65,7 @@ export default function LoadChatRoomsView() {
     };
 
     const loadChatRoomsBySearch = (searchData) => {
-        axios.post(`${process.env.REACT_APP_SERVER}` + '/auth/chat/chatrooms/loadrooms/search', {}, { params: { userName: searchData } })
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/chatrooms/loadrooms/search`, {}, {headers: { auth_token: token }, params: { userName: searchData } })
             .then(function (res) {
                 if (res.status === 200) {
                     alert('채팅방 검색 완료');
@@ -119,7 +116,6 @@ export default function LoadChatRoomsView() {
                                                     <img className="img-fluid" src="https://mehedihtml.com/chatbox/assets/img/add.svg" alt="add" data-bs-toggle="modal" data-bs-target="#exampleModal" />
                                                 </a>
                                             </div>
-                                            {/* <p className='namelistcss'>{namelist}<button onClick={createChatroom}>생성</button></p> */}
                                             <ChatModal onSelect={handleSelect} mode="create"></ChatModal>
                                             {/* 1:1 단체방 탭 */}
                                             <ul className="nav nav-tabs" id="myTab" role="tablist">

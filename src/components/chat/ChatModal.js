@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "../common/Leftnav.css";
 import axios from "axios";
-import "../common/modal.css";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser, removeUser } from "../../store";
 

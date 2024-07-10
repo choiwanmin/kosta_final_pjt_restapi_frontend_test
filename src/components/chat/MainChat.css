@@ -101,6 +101,19 @@ a {
 	display: flex;
     justify-content: center;
 }
+.selectfilecss{
+	 width: 500px; 
+    white-space: nowrap;
+}
+
+.filename{
+	font-size: 12px;
+	display: inline-block;
+    width: 30%; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+    
+}
 /* *******************************
 message-area
 ******************************** */
@@ -123,6 +136,12 @@ message-area
 	overflow-y: scroll;
 	display: flex;
 }
+
+.chat-area .modal-dialog-scrollable {
+	height: 100% !important;
+}
+
+
 .chat_img_wrapper{
 	width: 100%;
 	display: flex;
@@ -175,11 +194,6 @@ message-area
 	outline: 0;
 	height: 100%;
 }
-
-.chat-area .modal-dialog-scrollable {
-	height: 100% !important;
-}
-
 .chatbox {
 	width: auto;
 	overflow: hidden;
@@ -188,10 +202,11 @@ message-area
 	box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.chatbox .modal-dialog, .chatlist .modal-dialog {
+/* 모달창 가운데 정렬 안되는 이유 */
+/* .chatbox .modal-dialog, .chatlist .modal-dialog {
 	max-width: 100%;
 	margin: 0;
-}
+} */
 
 .msg-search {
 	display: flex;
