@@ -1,10 +1,14 @@
+
 import { Routes, Route } from "react-router-dom";
 import Header from './components/common/Header';
 import Leftnav from './components/common/Leftnav';
 import Login from "./components/user/Login";
 import Join from "./components/user/Join";
+import Login from "./components/user/Login";
 import Userinfo from "./components/user/Userinfo";
 import Userlist from "./components/user/Userlist";
+import DocxAdd from "./components/docx/AddReport";
+import DocxList from "./components/docx/ReactList";
 import MyRecord from "./components/record/MyRecord";
 import MainChat from "./components/chat/MainChat";
 import LoadChatRoomsView from "./components/chat/LoadChatRoomsView";
@@ -63,6 +67,12 @@ export default function Router() {
             <Route path="/admin-record" element={<MyRecord/>}></Route>
             <Route path="/mainchat" element={<MainChat/>}/>
             <Route path="/loadchatroom" element={<LoadChatRoomsView />}/>
+            <Route path="/searchchatroom" element={<LoadChatRoomsBySearch/>}/>
+            <Route path="/connectchatroom" element={<ConnectChatRoom/>}/>
+            <Route path="/login" element={<Login/>}></Route>
+            <Route path="/join" element={<Join/>}></Route>
+            <Route path="/docx/docxlist" element={<DocxList/>}></Route>
+            <Route path="/docx/addreport" element={<DocxAdd/>}></Route>
             <Route path="/noticelist" element={<NoticeList/>}/>
             <Route path="/noticeadd" element={<NoticeAdd/>}/>
         </Routes>
