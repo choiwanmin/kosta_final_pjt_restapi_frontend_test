@@ -11,6 +11,7 @@ export default function MemModal(){
     const [ type, setType ] = useState(1);
     const [ userArr, setUserarr] = useState([]);
     const userList = useSelector(state=>state.modalArr);
+
     const typeSelect = (e)=>{
         setType(e.target.value);
     }

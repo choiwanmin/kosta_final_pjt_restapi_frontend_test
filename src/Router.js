@@ -10,6 +10,8 @@ import Userlist from "./components/user/Userlist";
 import DocxAdd from "./components/docx/AddReport";
 import DocxList from "./components/docx/ReactList";
 import MyRecord from "./components/record/MyRecord";
+import RecordAdmin from "./components/record/RecordAdmin";
+import Dept from "./components/record/Dept"
 import MainChat from "./components/chat/MainChat";
 import LoadChatRoomsView from "./components/chat/LoadChatRoomsView";
 import LoadChatRoomsBySearch from "./components/chat/LoadChatRoomsBySearch";
@@ -63,8 +65,8 @@ export default function Router() {
             <Route path="/member/info/:userid" element={<Memberinfo />}></Route>
             <Route path="/index" element={<Chartmain />}></Route>
             <Route path="/myrecord" element={<MyRecord/>}></Route>
-            <Route path="/dept-record" element={<MyRecord/>}></Route>
-            <Route path="/admin-record" element={<MyRecord/>}></Route>
+            <Route path="/dept/record" element={<Dept/>}></Route>
+            <Route path="/admin/record" element={<RecordAdmin/>}></Route>
             <Route path="/mainchat" element={<MainChat/>}/>
             <Route path="/loadchatroom" element={<LoadChatRoomsView />}/>
             <Route path="/searchchatroom" element={<LoadChatRoomsBySearch/>}/>

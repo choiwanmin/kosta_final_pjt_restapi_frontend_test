@@ -15,7 +15,7 @@ export default function MyRecord(){
     const [currentTime, setCurrentTime] = useState("");
     const [state, setState] = useState("근무시간입니다.");
     const [month,setMonth] = useState(time.getMonth());
-    const member = sessionStorage.getItem("loginid");
+    const member = sessionStorage.getItem("loginId");
     const token = sessionStorage.getItem("token");
     // 기록 조회용
     let flag =  useSelector((state)=>state.recordFlag);
@@ -42,12 +42,13 @@ export default function MyRecord(){
      setCurrentMonth(year + "." + month);
      
      const timer = setInterval(()=>{
+        time = new Date();
         const hours = ('0' + time.getHours()).slice(-2);
         const minutes = ('0' + time.getMinutes()).slice(-2);
         const timeString = hours + ':' + minutes;
         stateUpdate(hours);
         setCurrentTime(timeString);
-     },1000)
+     },10000)
 
      //유저 확인용
      dispatch(getMem(member));
