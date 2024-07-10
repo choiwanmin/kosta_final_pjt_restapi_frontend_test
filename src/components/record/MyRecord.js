@@ -15,7 +15,7 @@ export default function MyRecord(){
     const [currentTime, setCurrentTime] = useState("");
     const [state, setState] = useState("근무시간입니다.");
     const [month,setMonth] = useState(time.getMonth());
-    const member = sessionStorage.getItem("loginid");
+    const member = sessionStorage.getItem("loginId");
     const token = sessionStorage.getItem("token");
     // 기록 조회용
     let flag =  useSelector((state)=>state.recordFlag);
