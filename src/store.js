@@ -78,18 +78,19 @@ export let {getMem,changeRes,changeDay1,changeDay2} = dayoff.actions;
 // export let { changeModal } = modalFlag.actions;
 
 let modalArr = createSlice({
-  name:"useList",
-  initialState:[],
-  reducers:{
-    addUser(state,action){
-      state.push(action.payload)
+  name: "useList",
+  initialState: [],
+  reducers: {
+    addUser(state, action) {
+      state.push(action.payload);
     },
     removeUser(state, action) {
-      return state.filter(item => item.userid.id !== action.payload);
+      return state.filter(userId => userId !== action.payload);
     },
   }
-})
-export let { addUser,removeUser } = modalArr.actions;
+});
+
+export let { addUser, removeUser } = modalArr.actions;
 
 
 export default configureStore({

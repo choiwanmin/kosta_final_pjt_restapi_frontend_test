@@ -30,6 +30,7 @@ export default function Login() {
                         sessionStorage.setItem("type", res.data.type);
                         sessionStorage.setItem("usernm", res.data.usernm);
                         sessionStorage.setItem("deptnm", res.data.deptnm);
+                        navigate('/index');
                         sessionStorage.setItem("mgr_deptid", res.data.mgr_deptid);
                         sessionStorage.setItem("memberimgnm", res.data.memberimgnm);
                         dispatch(setUserInfo(res.data.id));
