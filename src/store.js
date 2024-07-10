@@ -85,7 +85,7 @@ let modalArr = createSlice({
       state.push(action.payload);
     },
     removeUser(state, action) {
-      return state.filter(item => item.id !== action.payload.id);
+      return state.filter(userId => userId !== action.payload);
     },
   }
 });
