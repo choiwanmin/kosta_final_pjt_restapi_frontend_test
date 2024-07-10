@@ -1,66 +1,71 @@
-import React , { useState , useEffect} from 'react';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-// import './ReportList.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
-const ReportList = () =>{
-    const [reports, setReports] = useState([]);
-    const [searchType , setSearchType] = useState('title');
+
+
+const ReportList = () => {
+    const [lists, setList] = useState([]);
+    const [searchType, setSearchType] = useState('title');
     const [searchValue, setSearchValue] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, SetTotalPages] = useState(1);
     const pageSize = 10;
 
-    const token = localStorage.getItem('auth_token');
-    const userInfo = token ? jwtDecode(token) : null;
+    const token = sessionStorage.getItem('token');
+    const loginId = sessionStorage.getItem('loginId');
 
     useEffect(() => {
-        fetchReports();
-    } , [currentPage]);
+        if (token) {
+            fetchLists();
+        }
+    }, [currentPage, token]);
 
-    const fetchReports = async () => {
+
+    const fetchLists = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/auth/docx/list?page=${currentPage}&size=${pageSize}`,{
-                headers:{
-                    'Authorization':`Bearer ${token}`
+            const response = await axios.get(`${process.env.REACT_APP_SERVER}/auth/docx/list?page=${currentPage}&size=${pageSize}`, {
+                headers: {
+                    auth_token: token
                 }
             });
-            setReports(response.data.list);
+            setList(response.data.list);
             SetTotalPages(response.data.totalPages);
         } catch (error) {
-            console.error('Error feching reports' , error);
+            console.error('Error feching reports', error);
         }
     };
 
     const handleSearch = async (event) => {
         event.preventDefault();
         try {
-            const response = await axios.post('http://localhost:8080/auth/docx/list',{
+            const response = await axios.post('http://localhost:8081/auth/docx/list', {
                 searchType,
                 searchValue
-            },{
-                headers:{
-                    'Authorization': `Bearer ${token}`
+            }, {
+                headers: {
+                    auth_token: token
                 }
             });
-            setReports(response.data.list);
+            setList(response.data.list);
             SetTotalPages(response.data.totalPages);
         } catch (error) {
-            console.error('Error searching reports: ' , error);
+            console.error('Error searching reports: ', error);
         }
     };
 
-    const handleDelete = async (docxKey) =>{
+    const handleDelete = async (docxKey) => {
         try {
-            await axios.delete(`http://localhost:8080/auth/docx/deldocx?docxkey=${docxKey}`, {
+            await axios.delete(`http://localhost:8081/auth/docx/deldocx?docxkey=${docxKey}`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    auth_token: token
                 }
             });
-            fetchReports(); // 삭제하고 목록 갱신
+            fetchLists(); // 삭제하고 목록 갱신
         } catch (error) {
             console.error('Error deleting report:', error);
         }
@@ -70,7 +75,7 @@ const ReportList = () =>{
         <div className="main_body">
             <button
                 onClick={() => {
-                    const type = userInfo?.type;
+                    const type = token.userInfo?.type;
                     if (type === 'admin') {
                         window.location.href = '/index_admin';
                     } else if (type === 'emp') {
@@ -113,35 +118,35 @@ const ReportList = () =>{
                                 <th>문서삭제</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {reports.map((report) => (
-                                <tr key={report.formnum}>
-                                    <input type="hidden" value={report.formnum} />
+                        <tbody className='record_list'>
+                            {lists.map((list) => (
+                                <tr key={list.formnum}>
+                                    <input type="hidden" value={list.formnum} />
                                     <td className="title-cell">
-                                        {report.formtype === '보고서' && (
-                                            <Link to={`/auth/docx/getdocx?formnum=${report.formnum}&docxkey=${report.docxkey}&formtype=${report.formtype}`}>
-                                                {report.title}
+                                        {list.formtype === '보고서' && (
+                                            <Link to={`/auth/docx/getdocx?formnum=${list.formnum}&docxkey=${list.docxkey}&formtype=${list.formtype}`}>
+                                                {list.title}
                                             </Link>
                                         )}
-                                        {report.formtype === '휴가 신청서' && (
-                                            <Link to={`/auth/docx/getvacation?formnum=${report.formnum}&docxkey=${report.docxkey}&formtype=${report.formtype}`}>
-                                                {report.title}
+                                        {list.formtype === '휴가 신청서' && (
+                                            <Link to={`/auth/docx/getvacation?formnum=${list.formnum}&docxkey=${list.docxkey}&formtype=${list.formtype}`}>
+                                                {list.title}
                                             </Link>
                                         )}
                                     </td>
-                                    <td>{report.writer.id}</td>
-                                    <td>{report.formtype}</td>
-                                    <td>{report.startdt}</td>
+                                    <td>{list.writer.id}</td>
+                                    <td>{list.formtype}</td>
+                                    <td>{list.startdt}</td>
                                     <td>
-                                        {report.status === 1 && <span className="fa-sharp fa-solid fa-badge-check">미승인</span>}
-                                        {report.status === 2 && <span className="fa-sharp fa-solid fa-badge-check">승인</span>}
-                                        {report.status === 3 && <span>보류</span>}
-                                        {report.status === null && <span>&nbsp;</span>}
+                                        {list.status === 1 && <span>미승인</span>}
+                                        {list.status === 2 && <span>승인</span>}
+                                        {list.status === 3 && <span>보류</span>}
+                                        {list.status === null && <span>&nbsp;</span>}
                                     </td>
                                     <td>
-                                        {report.writer.id === userInfo?.sub && report.status === 1 && (
-                                            <button onClick={() => handleDelete(report.docxkey)} className="btn btn-danger">
-                                                <i className="bi bi-trash"></i>
+                                        {list.writer.id === loginId && list.status === 1 && (
+                                            <button onClick={() => handleDelete(list.docxkey)} className="btn btn-danger" style={{ border: '1px solid red', borderRadius: '7px', padding: '4px' }}>
+                                                <FontAwesomeIcon icon={faTrash} style={{ fontSize: '1rem' }} />
                                             </button>
                                         )}
                                     </td>
@@ -174,13 +179,13 @@ const ReportList = () =>{
                     <Link to="/auth/docx/addreport" className="nav_link">
                         <span className="nav_link_text">서류 작성</span>
                     </Link>
-                    <Link to={`/auth/docx/mylist?writer=${userInfo?.sub}`} className="nav_link">
+                    <Link to={`/auth/docx/mylist?writer=${loginId}`} className="nav_link">
                         <span className="nav_link_text">내 문서 보관함</span>
                     </Link>
                 </div>
             </div>
         </div>
-    );  
+    );
 };
 
 export default ReportList;

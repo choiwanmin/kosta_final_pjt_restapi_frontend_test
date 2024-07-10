@@ -1,14 +1,15 @@
-import { Routes, Route } from "react-router-dom";
-import Login from "./components/user/Login";
+import { Route, Routes } from "react-router-dom";
+import ConnectChatRoom from "./components/chat/ConnectChat";
+import LoadChatRoomsBySearch from "./components/chat/LoadChatRoomsBySearch";
+import LoadChatRoomsView from "./components/chat/LoadChatRoomsView";
+import MainChat from "./components/chat/MainChat";
+import DocxList from "./components/docx/ReactList";
+import MyRecord from "./components/record/MyRecord";
 import Join from "./components/user/Join";
+import Login from "./components/user/Login";
 import Userinfo from "./components/user/Userinfo";
 import Userlist from "./components/user/Userlist";
-import MyRecord from "./components/record/MyRecord";
-import MainChat from "./components/chat/MainChat";
-import LoadChatRoomsView from "./components/chat/LoadChatRoomsView";
-import LoadChatRoomsBySearch from "./components/chat/LoadChatRoomsBySearch";
-import ConnectChatRoom from "./components/chat/ConnectChat";
-import DocxList from "./components/docx/ReactList";
+import DocxAdd from "./components/docx/AddReport";
 
 export default function Router() {
     const token = sessionStorage.getItem('token');
@@ -50,7 +51,8 @@ export default function Router() {
             <Route path="/connectchatroom" element={<ConnectChatRoom/>}/>
             <Route path="/login" element={<Login/>}></Route>
             <Route path="/join" element={<Join/>}></Route>
-            <Route path="/docxlist" element={<DocxList/>}></Route>
+            <Route path="/docx/docxlist" element={<DocxList/>}></Route>
+            <Route path="/docx/addreport" element={<DocxAdd/>}></Route>
         </Routes>
     )
 }
