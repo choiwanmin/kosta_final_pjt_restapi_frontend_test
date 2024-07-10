@@ -52,13 +52,6 @@ export default function Login() {
     }
     return (
         <>
-                {/* <button type="button" class="btn_square blue_btn cursor font_b24" onClick={()=>{dispatch(changeModal(true))}}>
-            멤버추가
-        </button> */}
-        <button type="button" class="btn_square blue_btn cursor font_b24" data-bs-toggle="modal" data-bs-target="#exampleModal">
-        멤버추가
-        </button>
-        <MemModal></MemModal>
         <div className="form_wrapper">       
             <div id="posts_list">
                 <div className="container login_wrapper">

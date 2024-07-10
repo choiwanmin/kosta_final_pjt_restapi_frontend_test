@@ -6,6 +6,8 @@ import Join from "./components/user/Join";
 import Userinfo from "./components/user/Userinfo";
 import Userlist from "./components/user/Userlist";
 import MyRecord from "./components/record/MyRecord";
+import RecordAdmin from "./components/record/RecordAdmin";
+import Dept from "./components/record/Dept"
 import MainChat from "./components/chat/MainChat";
 import LoadChatRoomsView from "./components/chat/LoadChatRoomsView";
 import LoadChatRoomsBySearch from "./components/chat/LoadChatRoomsBySearch";
@@ -55,8 +57,8 @@ export default function Router() {
             <Route path="/user/list" element={<Userlist />}></Route>
 
             <Route path="/myrecord" element={<MyRecord/>}></Route>
-            <Route path="/dept-record" element={<MyRecord/>}></Route>
-            <Route path="/admin-record" element={<MyRecord/>}></Route>
+            <Route path="/dept/record" element={<Dept/>}></Route>
+            <Route path="/admin/record" element={<RecordAdmin/>}></Route>
             <Route path="/mainchat" element={<MainChat/>}/>
             <Route path="/loadchatroom" element={<LoadChatRoomsView />}/>
             <Route path="/noticelist" element={<NoticeList/>}/>

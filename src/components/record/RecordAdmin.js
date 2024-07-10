@@ -1,4 +1,10 @@
+import { useEffect, useState } from "react";
+import React from "react";
 import "./record.css";
+import RecordTable from "./RecordTable";
+import { Chart } from "react-google-charts";
+import axios from "axios";
+
 
 export default function RecordAdmin(){
     let token = sessionStorage.getItem("token");
@@ -14,25 +20,9 @@ export default function RecordAdmin(){
     }
 
     // overwork bar data
-    const [overWork, setoverWork] = useState([
-        [
-          "Element",
-          "Time",
-          { role: "style" },
-          {
-            sourceColumn: 0,
-            role: "annotation",
-            type: "string",
-            calc: "stringify",
-          },
-        ],
-        ["Copper", 8.94, "#b87333", null],
-        ["Silver", 10.49, "silver", null],
-        ["Gold", 19.3, "gold", null],
-        ["Platinum", 21.45, "color: #e5e4e2", null],
-      ]);
+    const [overWork, setoverWork] = useState([]);
 
-      const data = [
+    const data = [
         [
           "Element",
           "Time",
@@ -44,11 +34,11 @@ export default function RecordAdmin(){
             calc: "stringify",
           },
         ],
-        ["Copper", 8.94, "#b87333", null],
-        ["Silver", 10.49, "silver", null],
-        ["Gold", 19.3, "gold", null],
-        ["Platinum", 21.45, "color: #e5e4e2", null],
-      ];
+        ["30분 미만", 5, "#6a98dc", null],
+        ["1시간 미만", 10.49, "#98dedb", null],
+        ["2시간 미만", 19.3, "#d16b6b", null],
+        ["2시간 초과", 21.45, "#c80000", null],
+    ];
     const options = {
         title: "전 달 초과근무 통계",
         width: 700,
@@ -101,7 +91,11 @@ export default function RecordAdmin(){
          axios.get(`${process.env.REACT_APP_SERVER}/over`,{})
          .then((res)=>{
             if(res.status === 200){
-                console.log(res.data)
+                data[1][1]=res.data.overAvgTime[0].less30
+                data[2][1]=res.data.overAvgTime[0].less1hour
+                data[3][1]=res.data.overAvgTime[0].less2hours
+                data[4][1]=res.data.overAvgTime[0].over2hours
+                setoverWork(data);
             }
          })
     },[])
@@ -220,45 +214,31 @@ export default function RecordAdmin(){
             {/* <!-- 차트 테이블 --> */}
             <div class="chart_wrapper">
             <div class="chart">
-                <p class="chart_title">부서 근무 시간 평균 통계</p>
-                <div class="chart_can" id="chart_div"></div>
+            <p class="chart_title">부서 근무 시간 평균 통계</p>
+                <Chart 
+                    chartType="Line"
+                    width="700px"
+                    height="400px"
+                    data={deptWorkdata}
+                    options={daptOptions}
+                />
             </div>
             <div class="chart">
                 <p class="chart_title">이전 달 초과근무 통계</p>
-                <div class="chart_can" id="over_chart_div"></div>
+                <Chart
+                chartType="BarChart"
+                data={overWork}
+                options={options}
+                />
             </div>
             </div>
-        
             <div class="dept_select_wrapper">
             <div class="dept_text">부서 선택하기</div>
             <select id="dept_list" name="dept" onchange="dept_admin(0)"> </select>
             </div>
             {/* <!-- 부서별 조회 테이블 --> */}
-            <div class="record_table w_bg">
-            <div class="record_table_title dept_table">
-                <div class="record_month font_b24">
-                    <div id="record_left" class="arrow left_arrow cursor" onclick="dept_admin(-1)"></div>
-                    <span class="month">2022.07</span>
-                    <div id="record_right" class="arrow right_arrow arrow_off" onclick="dept_admin(+1)"></div>
-                </div>
-            </div>
-            <div class="record_table_wrapper">
-                <table class="record_rtable">
-                    <thead>
-                        <td>이름</td>
-                        <td>부서</td>
-                        <td>직급</td>
-                        <td>근무일</td>
-                        <td>지각 횟수</td>
-                        <td>총 근무시간</td>
-                        <td>잔업 시간</td>
-                    </thead>
-                    <tbody class="record_list dept_record_list">
-                        <tr></tr>  
-                    </tbody>
-                </table>
-            </div>
-         </div>
+            {/* <RecordTable  dept={deptNum} list={memberRecord}></RecordTable>      */}
+
         </div>
     )
 }
