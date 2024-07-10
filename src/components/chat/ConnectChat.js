@@ -8,8 +8,6 @@ import { useRef } from 'react';
 import sendMessage from './SendMessage';
 import ChatModal from './ChatModal';
 
-
-
 export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
     const [messages, setMessages] = useState([]);
     const [chatRoom, setChatRoom] = useState(null);
@@ -24,10 +22,48 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
     const [jobchatList, setJobchatList] = useState({});
     const [page, setPage] = useState(1);
     const userList = useSelector(state => state.modalArr);
+    const chatContentRef = useRef(null);
 
+    const handleScroll = () => {
+        const chatContent = chatContentRef.current;
+        const scrollTop = chatContent.scrollTop;
+        const scrollHeight = chatContent.scrollHeight;
+        const clientHeight = chatContent.clientHeight;
+        if (scrollTop === clientHeight - scrollHeight) {
+            chatContent.scrollTop = scrollTop + 1;
+            setPage((prevPage) => prevPage + 1);
+        }
+    };
+
+    useEffect(() => {
+        const chatContent = chatContentRef.current;
+        chatContent.addEventListener('scroll', handleScroll);
+        return () => {
+            chatContent.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
+    const onChange = (e) => {
+        const { name, value } = e.target;
+        setInputs({
+            ...inputs,
+            [name]: value
+        })
+    }
 
     const handlePageChange = (pageNumber) => {
         setPage(pageNumber);
+    };
+    const handleSelect = (mode) => {
+        if (mode === 'invite') {
+            inviteChatroom();
+        }
+    };
+    const handleMemberClick = (clickedMemberId) => {
+        memberchatinfo(clickedMemberId);
+    }
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
     };
 
     const inviteChatroom = () => {
@@ -44,18 +80,6 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                 }
             })
     }
-
-    const handleSelect = (mode) => {
-        if (mode === 'invite') {
-            inviteChatroom();
-        }
-    };
-
-    useEffect(() => {
-        loadMessages();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [page]);
-
     const loadMessages = (overwrite = false) => {
         axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/message/room3`, {}, { headers: { auth_token: token }, params: { roomid: roomid, page: page } })
             .then(function (res) {
@@ -81,6 +105,20 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
         handlePageChange(page + 1);
     };
 
+    const sendMessagesEnter = (event) => {
+        const messagearea = document.getElementById('message');
+        const messageValue = messagearea.value.trim();
+        if (!messageValue) {
+            return;
+        }
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            sendMessage(roomid, userid, stompClientRef, () => loadMessages(true));
+            document.getElementById('message').value = '';
+            reloadRoom();
+        }
+    }
+
     useEffect(() => {
         if (chatRoom && chatRoom.name) {
             const name = chatRoom.name.split('_');
@@ -88,6 +126,11 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
             setMemberId(memId);
         }
     }, [chatRoom]);
+
+    useEffect(() => {
+        loadMessages();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [page]);
 
 
     useEffect(() => {
@@ -130,10 +173,6 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
             });
             loadMessages(roomid);
         });
-    };
-
-    const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
     };
 
     const sendFileMessage = (roomid, userid, file) => {
@@ -244,10 +283,6 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
         }
     };
 
-    const handleMemberClick = (clickedMemberId) => {
-        memberchatinfo(clickedMemberId);
-    }
-
     const memberchatinfo = (clickedMemberId) => {
         axios.post(`${process.env.REACT_APP_SERVER}/member/memberchatinfo`, {}, { params: { userid: clickedMemberId } })
             .then(function (res) {
@@ -261,13 +296,6 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
             })
     }
 
-    const onChange = (e) => {
-        const { name, value } = e.target;
-        setInputs({
-            ...inputs,
-            [name]: value
-        })
-    }
 
     if (!isConnected) {
         return (
@@ -358,7 +386,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                         </div>
 
                         {/* 채팅방 메세지 출력 칸 */}
-                        <div className="modal-body chat-content">
+                        <div className="chat-content3" ref={chatContentRef}>
                             <div className='prevButtonDesigndiv'>
                                 <button className='nextButtonDesign' onClick={moveNextPage}>후</button>
                             </div>
@@ -382,7 +410,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                         {/* 메세지전송, 업로드 */}
                         <div className="send-box">
                             <div className="send-boxstyle2">
-                                <textarea id="message" className="form-control" aria-label="message…" placeholder="Write message…" maxlength="1000"></textarea>
+                                <textarea id="message" className="form-control" aria-label="message…" placeholder="Write message…" maxlength="1000" onKeyDown={sendMessagesEnter}></textarea>
                                 <button type="button" id="sendButton" onClick={sendMessages}><i className="fa fa-paper-plane" aria-hidden="true"></i>전송</button>
                             </div>
                             <div className="send-btns">
@@ -397,13 +425,13 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                                         <span className="filename"> 선택된 파일:{file.name}</span>
                                         <button type="button" id="sendFileButton" onClick={() => sendFileMessage(roomid, userid, file)}>업로드</button>
                                     </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </>
+            </div>
+        </>
 
-            );
+    );
 }

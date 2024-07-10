@@ -114,6 +114,15 @@ a {
     text-overflow: ellipsis; 
     
 }
+
+.chat-content3{
+	position: relative;
+    flex: 1 1 auto;
+    padding: 1rem;
+	overflow-y: auto;
+	flex-direction: column-reverse;
+	display: flex;
+}
 /* *******************************
 message-area
 ******************************** */
@@ -129,6 +138,7 @@ message-area
 .img-fluid-center:hover {
 	transform: scale(1.7);
 }
+
 
 .chat-content {
 	overflow-y: auto;
