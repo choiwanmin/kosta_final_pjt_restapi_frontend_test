@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import "./charts.css";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import ChartModal from "./ChartModal";
 
 export default function Chartmain() {
   const [tasks, setTasks] = useState([]);
+  const [selectedTaskId, setSelectedTaskId] = useState(null);
   const token = sessionStorage.getItem('token');
   const username = sessionStorage.getItem('loginId');
 
@@ -14,7 +16,7 @@ export default function Chartmain() {
         const response = await axios.get(`${process.env.REACT_APP_SERVER}/chart/list`, {
           params: { userid: username },
           headers: {
-            'auth_token': token,
+            'auth_token': token
           }
         });
         setTasks(response.data);
@@ -66,7 +68,7 @@ export default function Chartmain() {
             <div className="chart_menu">
               <button type="button" onClick={() => window.location.href = '/auth/chart/gantt'}>간트차트</button>
               <button type="button" onClick={() => window.location.href = '/auth/chart/calendar'}>달력</button>
-              <button type="button" data-bs-toggle="modal" data-bs-target="#chartModal" onClick={taskidinit}>
+              <button type="button" data-bs-toggle="modal" data-bs-target="#chartModal" onClick={()=> setSelectedTaskId(null)}>
                 일정추가
               </button>
             </div>
@@ -106,8 +108,9 @@ export default function Chartmain() {
                           className="chart_edit_btn"
                         />
                       )}</td>
+                      {/* 공유 버튼 */}
                       <td>{task.taskid !== 0 && (
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#memberModal" className="taskidshare">
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" className="taskidshare" onClick={()=> setSelectedTaskId(task.taskid)}>
                           <i className="fa-solid fa-share-nodes"></i>
                         </button>
                       )}</td>
@@ -124,6 +127,7 @@ export default function Chartmain() {
                 )}
               </tbody>
             </table>
+            <ChartModal taskid={selectedTaskId}></ChartModal>
           </div>
         </div>
       </div>
