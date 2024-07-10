@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from "react";
 import "./Leftnav.css";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 
 export default function Leftnav(){
-  const [type,setType] = useState("");
+  const type = sessionStorage.getItem("type");
+  const dept = sessionStorage.getItem("mgr_deptid");
+
   const logout=()=>{
         sessionStorage.clear();
+        window.location.reload();
     }
+
     return(
-        <nav className="w_bg nav_vertical left_wrapper">
-            <div className="menu_wrapper">
-                <ul className="nav_ul">
-                    <li className="nav_li">
-                    <Admin/>
-                      {/* { type === 1 ? <Emp/> : <Admin/> } */}
+        <nav class="w_bg nav_vertical left_wrapper">
+            <div class="menu_wrapper">
+                <ul class="nav_ul">
+                    <li class="nav_li">
+                      { type === "emp" ? <Emp dept = {dept}/> : <Admin/> }
                     </li>
                 </ul>
             </div>
@@ -36,7 +39,7 @@ export default function Leftnav(){
 
 }
 
-function Emp(){
+function Emp(props){
     return(
         <>
         <p className="nav_main_title">HRM system</p>
@@ -65,19 +68,19 @@ function Emp(){
                     <span className="nav_link_text">출퇴근 관리</span>
                 </Link>
             </li>
-            {/* {
-              leader==leader?
+            {
+              props.dept > 0 ?
               <li class="li_link">
-              <Link to="/dept-record" class="nav_link">
-                  <div class="icon_wrapper">
-                      <svg  class="nav_link_icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M192 0c-41.8 0-77.4 26.7-90.5 64H64C28.7 64 0 92.7 0 128V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H282.5C269.4 26.7 233.8 0 192 0zm0 64a32 32 0 1 1 0 64 32 32 0 1 1 0-64zM112 192H272c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16s7.2-16 16-16z"/></svg>
-                  </div>
-                  <span class="nav_link_text">부서 근태관리</span>
-              </Link>
+                <Link to="/dept-record" class="nav_link">
+                    <div class="icon_wrapper">
+                        <svg  class="nav_link_icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M192 0c-41.8 0-77.4 26.7-90.5 64H64C28.7 64 0 92.7 0 128V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H282.5C269.4 26.7 233.8 0 192 0zm0 64a32 32 0 1 1 0 64 32 32 0 1 1 0-64zM112 192H272c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16s7.2-16 16-16z"/></svg>
+                    </div>
+                    <span class="nav_link_text">부서 근태관리</span>
+                </Link>
               </li>
               :null
-            } */}
-            <li className="nav_li" style={{paddingTop:"10px"}}>
+            }
+            <li class="nav_li" style={{paddingTop:"10px"}}>
                 <div>
                  <p className="nav_main_title">connect system</p>
                 <ul>
