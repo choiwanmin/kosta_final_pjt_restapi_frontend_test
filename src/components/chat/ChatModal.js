@@ -4,20 +4,14 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser, removeUser } from "../../store";
 
-export default function ChatModal({ onSelect, mode }) {
-
-    const handleSelect = () => {
-        onSelect(mode);
-    };
-
-
+export default function ChatModal({ onSelect }) {
     let dispatch = useDispatch();
     const [name, setName] = useState("");
     const [type, setType] = useState(1);
-    const [userArr, setUserarr] = useState([]);
+    const [userArr, setUserArr] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const userList = useSelector(state => state.modalArr);
-    
+
     const typeSelect = (e) => {
         setType(e.target.value);
     }
@@ -32,11 +26,11 @@ export default function ChatModal({ onSelect, mode }) {
         })
             .then(function (res) {
                 if (res.status === 200) {
-                    setUserarr(res.data.mlist);
+                    setUserArr(res.data.mlist);
                     console.log(res.data);
 
                 } else {
-                    alert('error')
+                    alert('error');
                 }
             })
     }
@@ -55,7 +49,7 @@ export default function ChatModal({ onSelect, mode }) {
     };
 
     return (
-        <div className="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div className="modal-dialog modal-dialog-centered mem_modal">
                 <div className="modal-content">
                     <div className="modal-header">
@@ -114,7 +108,8 @@ export default function ChatModal({ onSelect, mode }) {
                                 </table>
                             </div>
                             <div className="modal-footer">
-                                <input type="button" value="선택" className="btn blue_btn" data-bs-dismiss="modal" onClick={handleSelect}/>
+                                <button type="button" className="btn blue_btn" data-bs-dismiss="modal" onClick={() => onSelect('create')}>생성</button>
+                                <button type="button" className="btn blue_btn" data-bs-dismiss="modal" onClick={() => onSelect('invite')}>초대</button>
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             </div>
                         </form>
@@ -123,5 +118,4 @@ export default function ChatModal({ onSelect, mode }) {
             </div>
         </div>
     )
-
 }

@@ -9,12 +9,35 @@ import { useSelector } from 'react-redux';
 export default function LoadChatRoomsView() {
     const [list, setList] = useState([]);
     const [selectedRoom, setSelectedRoom] = useState(null);
+    const [roomid, setRoomid] = useState('');
     const userList = useSelector(state => state.modalArr);
     const token = sessionStorage.getItem('token');
     const loginId = sessionStorage.getItem('loginId');
     const [namelist, setNamelist] = useState([]);
-
-
+    
+    
+    const inviteChatroom = () => {
+        const params = new URLSearchParams();
+        userList.forEach(id => params.append('userid[]', id));
+        params.append('chatroomid', roomid);
+        params.append('page', 1);
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/chatrooms/invite`, {}, { headers: { auth_token: token }, params: params })
+            .then(function (res) {
+                if (res.status === 200) {
+                    alert('사용자 초대 성공');
+                } else {
+                    alert('사용자 초대 실패');
+                }
+            })
+    }
+    const handleSelect = (mode) => {
+        if(mode === 'invite'){
+            inviteChatroom();
+        }
+        if (mode === 'create') {
+            createChatroom();
+        }
+    };
     const createChatroom = () => {
         const params = new URLSearchParams();
         userList.forEach(id => params.append('userid[]', id));
@@ -28,12 +51,6 @@ export default function LoadChatRoomsView() {
                 }
             })
     }
-
-    const handleSelect = (mode) => {
-        if (mode === 'create') {
-            createChatroom();
-        }
-    };
 
     useEffect(() => {
         if (userList.length > 0) {
@@ -68,7 +85,6 @@ export default function LoadChatRoomsView() {
         axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/chatrooms/loadrooms/search`, {}, {headers: { auth_token: token }, params: { userName: searchData } })
             .then(function (res) {
                 if (res.status === 200) {
-                    alert('채팅방 검색 완료');
                     setList(res.data.list);
 
                 } else {
@@ -78,6 +94,7 @@ export default function LoadChatRoomsView() {
     }
 
     const roomConnect = (chatroomid) => {
+        setRoomid(chatroomid);
         setSelectedRoom(chatroomid);
     };
 
@@ -116,7 +133,7 @@ export default function LoadChatRoomsView() {
                                                     <img className="img-fluid" src="https://mehedihtml.com/chatbox/assets/img/add.svg" alt="add" data-bs-toggle="modal" data-bs-target="#exampleModal" />
                                                 </a>
                                             </div>
-                                            <ChatModal onSelect={handleSelect} mode="create"></ChatModal>
+                                            <ChatModal onSelect={handleSelect} />
                                             {/* 1:1 단체방 탭 */}
                                             <ul className="nav nav-tabs" id="myTab" role="tablist">
                                                 <li className="nav-item" role="presentation">

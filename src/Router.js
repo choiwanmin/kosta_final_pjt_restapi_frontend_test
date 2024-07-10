@@ -8,8 +8,6 @@ import Userlist from "./components/user/Userlist";
 import MyRecord from "./components/record/MyRecord";
 import MainChat from "./components/chat/MainChat";
 import LoadChatRoomsView from "./components/chat/LoadChatRoomsView";
-import LoadChatRoomsBySearch from "./components/chat/LoadChatRoomsBySearch";
-import ConnectChatRoom from "./components/chat/ConnectChat";
 import { useSelector } from "react-redux";
 import NoticeList from "./components/notice/NoticeList";
 import NoticeAdd from "./components/notice/NoticeAdd";

@@ -6,7 +6,9 @@ import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
 import { useRef } from 'react';
 import sendMessage from './SendMessage';
-import ChatModal from './ChatModal';
+import { Link } from "react-router-dom";
+import ChatModal from "./ChatModal";
+
 
 export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
     const [messages, setMessages] = useState([]);
@@ -23,6 +25,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
     const [page, setPage] = useState(1);
     const userList = useSelector(state => state.modalArr);
     const chatContentRef = useRef(null);
+
 
     const handleScroll = () => {
         const chatContent = chatContentRef.current;
@@ -51,14 +54,6 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
         })
     }
 
-    const handlePageChange = (pageNumber) => {
-        setPage(pageNumber);
-    };
-    const handleSelect = (mode) => {
-        if (mode === 'invite') {
-            inviteChatroom();
-        }
-    };
     const handleMemberClick = (clickedMemberId) => {
         memberchatinfo(clickedMemberId);
     }
@@ -66,20 +61,6 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
         setFile(e.target.files[0]);
     };
 
-    const inviteChatroom = () => {
-        const params = new URLSearchParams();
-        userList.forEach(id => params.append('userid[]', id));
-        params.append('chatroomid', roomid);
-        params.append('page', 1);
-        axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/chatrooms/invite`, {}, { headers: { auth_token: token }, params: params })
-            .then(function (res) {
-                if (res.status === 200) {
-                    alert('사용자 초대 성공');
-                } else {
-                    alert('사용자 초대 실패');
-                }
-            })
-    }
     const loadMessages = (overwrite = false) => {
         axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/message/room3`, {}, { headers: { auth_token: token }, params: { roomid: roomid, page: page } })
             .then(function (res) {
@@ -99,10 +80,6 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
         sendMessage(roomid, userid, stompClientRef, () => loadMessages(true));
         document.getElementById('message').value = '';
         reloadRoom();
-    };
-
-    const moveNextPage = () => {
-        handlePageChange(page + 1);
     };
 
     const sendMessagesEnter = (event) => {
@@ -261,12 +238,12 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
     }
 
     const getOutRoom = () => {
-        axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/chatrooms/out`, {}, { headers: { auth_token: token }, params: { roomid: roomid } })
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/chatrooms/out`, {}, { headers: { auth_token: token }, params: { roomid: roomid, page: 1 } })
             .then(function (res) {
                 if (res.status === 200) {
                     alert('채팅방 나가기 성공');
-                    disconnect();
                     reloadRoom();
+                    disconnect();
                 } else {
                     alert('채팅방 나가기 실패');
                 }
@@ -277,9 +254,9 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
         if (stompClientRef.current) {
             stompClientRef.current.disconnect(() => {
                 console.log('연결끊겼음');
+                setIsConnected(false);
             });
             stompClientRef.current = null;
-            setIsConnected(false);
         }
     };
 
@@ -299,9 +276,8 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
 
     if (!isConnected) {
         return (
-            <div>
-                <h2>채팅방 나간 화면</h2>
-            </div>
+            <Link to="/loadchatroom">채팅방 목록 접속</Link>
+
         );
     }
 
@@ -370,8 +346,10 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                                         <li className="navbar nav-item dropdown">
                                             <a className="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i className="fa fa-ellipsis-v" aria-hidden="true"></i></a>
                                             <ul className="dropdown-menu">
-                                                <li><a className="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal">초대</a></li>
-                                                <ChatModal onSelect={handleSelect} mode="invite"></ChatModal>
+                                                <li>
+                                                    <a className="dropdown-item" alt="add" data-bs-toggle="modal" data-bs-target="#exampleModal">초대</a>
+                                                </li>
+
                                                 <li>
                                                     <hr className="dropdown-divider" />
                                                 </li>
@@ -387,9 +365,6 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
 
                         {/* 채팅방 메세지 출력 칸 */}
                         <div className="chat-content3" ref={chatContentRef}>
-                            <div className='prevButtonDesigndiv'>
-                                <button className='nextButtonDesign' onClick={moveNextPage}>후</button>
-                            </div>
                             <div className="msg-body">
                                 <ul id="chat-content">
                                     {messages?.map((message, index) => (
