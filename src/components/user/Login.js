@@ -1,10 +1,10 @@
-import { useState , useEffect} from "react";
+import { useState } from "react";
 import "./userform.css";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch} from "react-redux";
 import {setUserInfo} from "../../store";
-
+import MemModal from "../common/MemModal";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -30,6 +30,7 @@ export default function Login() {
                         sessionStorage.setItem("type", res.data.type);
                         sessionStorage.setItem("usernm", res.data.usernm);
                         sessionStorage.setItem("deptnm", res.data.deptnm);
+                        navigate('/index');
                         sessionStorage.setItem("mgr_deptid", res.data.mgr_deptid);
                         sessionStorage.setItem("memberimgnm", res.data.memberimgnm);
                         dispatch(setUserInfo(res.data.id));
@@ -51,7 +52,15 @@ export default function Login() {
             })
     }
     return (
-        <div className="form_wrapper">
+        <>
+                {/* <button type="button" class="btn_square blue_btn cursor font_b24" onClick={()=>{dispatch(changeModal(true))}}>
+            멤버추가
+        </button> */}
+        <button type="button" class="btn_square blue_btn cursor font_b24" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        멤버추가
+        </button>
+        <MemModal></MemModal>
+        <div className="form_wrapper">       
             <div id="posts_list">
                 <div className="container login_wrapper">
                     <div className="loginBoxTitle">HRD SYSTEM LOGIN</div>
@@ -82,5 +91,6 @@ export default function Login() {
                 <Link to="/user/join">회원가입</Link>
             </div>
         </div>
+        </>
     )
 }

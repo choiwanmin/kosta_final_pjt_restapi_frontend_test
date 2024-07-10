@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 import NoticeList from "./components/notice/NoticeList";
 import NoticeAdd from "./components/notice/NoticeAdd";
 import Memberinfo from "./components/user/Memberinfo";
+import Chartmain from "./components/charts/ChartMain";
 import Deptlist from "./components/corp/Deptlist";
 import Joblvlist from "./components/corp/Joblvlist";
 
@@ -37,9 +38,9 @@ export default function Router() {
                 <Route path="/" element={<Login />} />
             ) : type === 'admin' ? (
                 // <Route path="/index_admin" element={<Ahome />} />
-                <Route path="/" />
+                <Route path="/" element={<Chartmain />}/>
             ) : (
-                <Route path="/" />
+                <Route path="/" element={<Chartmain />}/>
             )}
 
             {/* Login route */}
@@ -60,6 +61,7 @@ export default function Router() {
             <Route path="/dept/list" element={<Deptlist />}></Route>
             <Route path="/joblv/list" element={<Joblvlist />}></Route>
             <Route path="/member/info/:userid" element={<Memberinfo />}></Route>
+            <Route path="/index" element={<Chartmain />}></Route>
             <Route path="/myrecord" element={<MyRecord/>}></Route>
             <Route path="/dept-record" element={<MyRecord/>}></Route>
             <Route path="/admin-record" element={<MyRecord/>}></Route>
