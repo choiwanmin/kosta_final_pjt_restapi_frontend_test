@@ -119,7 +119,7 @@ a {
     flex: 1 1 auto;
     padding: 1rem;
 	overflow-y: auto;
-	display: flex;
+	/* display: flex; */
 }
 /* *******************************
 message-area
