@@ -4,7 +4,6 @@ import Header from './components/common/Header';
 import Leftnav from './components/common/Leftnav';
 import Login from "./components/user/Login";
 import Join from "./components/user/Join";
-import Login from "./components/user/Login";
 import Userinfo from "./components/user/Userinfo";
 import Userlist from "./components/user/Userlist";
 import DocxAdd from "./components/docx/AddReport";
@@ -73,8 +72,8 @@ export default function Router() {
             <Route path="/connectchatroom" element={<ConnectChatRoom/>}/>
             <Route path="/login" element={<Login/>}></Route>
             <Route path="/join" element={<Join/>}></Route>
-            <Route path="/docx/docxlist" element={<DocxList/>}></Route>
-            <Route path="/docx/addreport" element={<DocxAdd/>}></Route>
+            <Route path="/docxlist" element={<DocxList/>}></Route>
+            <Route path="/addreport" element={<DocxAdd/>}></Route>
             <Route path="/noticelist" element={<NoticeList/>}/>
             <Route path="/noticeadd" element={<NoticeAdd/>}/>
         </Routes>
