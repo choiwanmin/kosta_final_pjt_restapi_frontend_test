@@ -125,6 +125,45 @@ export default function Deptlist() {
         //     // Optionally handle specific errors or add more detailed error messages
         // }
     }
+
+    const [deptsearchfdata, setDeptsearchfdata] = useState({
+        type: '1', // Default value for type, assuming '1' corresponds to '부서이름'
+        val: ''     // Default value for input field
+    });
+
+    const DeptSearchChange = (e) => {
+        const { name, value } = e.target;
+        setDeptsearchfdata({
+            ...deptsearchfdata,
+            [name]: value
+        });
+    };
+
+    const DeptSearchSubmit = (e) => {
+        e.preventDefault();
+        console.log(deptsearchfdata);
+        const { val, type } = deptsearchfdata;
+
+        // console.log(deptsearchfdata.get('val'));
+        // console.log(deptsearchfdata.get('type'));
+        // Handle form submission logic here, e.g., send search query to server
+        axios.post(`${process.env.REACT_APP_SERVER}/corp/getdeptby?val=${val}&type=${type}`, { headers: { auth_token: token },
+            // params: { val, type }
+        })
+            .then(function (res) {
+                // console.log(res.data.flag);
+                // console.log(res.data.dlist);
+                console.log(res.data.flag);
+                if (res.status === 200 && res.data.flag) {
+                    setDlist(res.data.dlist);
+                } else if (!res.data.flag) {
+                    alert('잘못된 접근입니다.');
+                    // alert('error')
+                }
+            })
+        console.log(deptsearchfdata); // Example: Output form data to console
+    };
+
     return (
         <div class="main_body">
             <div class="deptsearch-body">
@@ -144,6 +183,39 @@ export default function Deptlist() {
 					</tr>
 				</table>
 			</form> */}
+                <form onSubmit={DeptSearchSubmit} className="deptlist_line">
+                    <table className="m20 table_w100">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <select
+                                        className="select_box"
+                                        name="type"
+                                        value={deptsearchfdata.type}
+                                        onChange={DeptSearchChange}
+                                    >
+                                        <option value="1">부서이름</option>
+                                        <option value="2">부서장</option>
+                                    </select>
+                                </td>
+                                <td className="deptlist_search_wrapper">
+                                    <input
+                                        className="deptlist_input"
+                                        type="text"
+                                        name="val"
+                                        value={deptsearchfdata.val}
+                                        onChange={DeptSearchChange}
+                                    />&nbsp;
+                                    <input
+                                        type="submit"
+                                        className="btn blue_btn list_search"
+                                        value="검색"
+                                    />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
             </div>
 
             <div class="deptlist_table w_bg">
