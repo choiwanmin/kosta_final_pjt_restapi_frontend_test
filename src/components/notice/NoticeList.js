@@ -12,7 +12,7 @@ export default function NoticeList() {
     const [writer, setWriter] = useState('');
     const [searchType, setSearchType] = useState('title');
     const token = sessionStorage.getItem('token');
-    const deptname = sessionStorage.getItem('deptnm');
+
 
     const showdetails = (notid) => {
         window.location.href = `/noticedetail/${notid}`;
@@ -86,47 +86,11 @@ export default function NoticeList() {
             })
     }
 
-    const generalNotices = nlist.filter(notice => notice.formtype === '전체');
-    const deptNotices = nlist.filter(notice => notice.formtype === deptname);
-
     return (
         <div className="main_body">
             <div className="record_table w_bg">
-                <h2 className="noticetitle">전체 공지</h2>
-                <div className="record_table_wrapper">
-                    <div className="left_table">
-                        <table className="record_rtable">
-                            <thead>
-                                <tr>
-                                    <th>분류</th>
-                                    <th>글제목</th>
-                                    <th>내용</th>
-                                    <th>작성자</th>
-                                    <th>작성일</th>
-                                    <th>문서삭제</th>
-                                </tr>
-                            </thead>
-                            <tbody className="record_list">
-                                {generalNotices.map(notice => (
-                                    <tr key={notice.id}>
-                                        <td>{notice.formtype}</td>
-                                        <td onClick={() => showdetails(notice.id)}>{notice.title}</td>
-                                        <td>{notice.content}</td>
-                                        <td>{notice.writername}</td>
-                                        <td>{notice.startdt}</td>
-                                        <td>
-                                            {notice.writer.id === sessionStorage.getItem('loginId') && (
-                                                <button className="btn btn-danger btn-sm" onClick={() => deleteDocument(notice.id)}>삭제</button>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <h2 className="noticetitle">공지 사항</h2>
                 <div className="record_table w_bg">
-                    <h2 className="noticetitle2">{deptname}부서 공지</h2>
                     <div className="record_table_wrapper">
                         <div className="left_table">
                             <table className="record_rtable">
@@ -141,7 +105,7 @@ export default function NoticeList() {
                                     </tr>
                                 </thead>
                                 <tbody className="record_list">
-                                    {deptNotices.map(notice => (
+                                    {nlist.map(notice => (
                                         <tr key={notice.id}>
                                             <td>{notice.formtype}</td>
                                             <td onClick={() => showdetails(notice.id)}>{notice.title}</td>

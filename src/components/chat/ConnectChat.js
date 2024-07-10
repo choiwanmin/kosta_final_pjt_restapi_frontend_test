@@ -6,11 +6,10 @@ import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
 import { useRef } from 'react';
 import sendMessage from './SendMessage';
-import { Link } from "react-router-dom";
-import ChatModal from "./ChatModal";
 
 
-export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
+export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,setIsInvite }) {
+    console.log(isInvite)
     const [messages, setMessages] = useState([]);
     const [chatRoom, setChatRoom] = useState(null);
     const [inputs, setInputs] = useState({});
@@ -25,16 +24,16 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
     const [page, setPage] = useState(1);
     const userList = useSelector(state => state.modalArr);
     const chatContentRef = useRef(null);
-
+    
 
     const handleScroll = () => {
         const chatContent = chatContentRef.current;
-        const scrollTop = chatContent.scrollTop;
+        const scrollTop = Math.round(chatContent.scrollTop);
         const scrollHeight = chatContent.scrollHeight;
         const clientHeight = chatContent.clientHeight;
-        if (scrollTop === clientHeight - scrollHeight) {
+        if (scrollTop - 1 <= clientHeight - scrollHeight) {
             chatContent.scrollTop = scrollTop + 1;
-            setPage((prevPage) => prevPage + 1);
+            setPage((prevPage) => prevPage + 2);
         }
     };
 
@@ -276,8 +275,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
 
     if (!isConnected) {
         return (
-            <Link to="/loadchatroom">채팅방 목록 접속</Link>
-
+        <div>나간방</div>
         );
     }
 
@@ -347,7 +345,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                                             <a className="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i className="fa fa-ellipsis-v" aria-hidden="true"></i></a>
                                             <ul className="dropdown-menu">
                                                 <li>
-                                                    <a className="dropdown-item" alt="add" data-bs-toggle="modal" data-bs-target="#exampleModal">초대</a>
+                                                    <a className="dropdown-item" alt="add" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => setIsInvite(false)}>초대</a>
                                                 </li>
 
                                                 <li>
@@ -366,7 +364,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                         {/* 채팅방 메세지 출력 칸 */}
                         <div className="chat-content3" ref={chatContentRef}>
                             <div className="msg-body">
-                                <ul id="chat-content">
+                                <ul id="chat-content" >
                                     {messages?.map((message, index) => (
                                         <li key={index} className={message.sender === userid ? 'sender' : 'reply'}>
                                             <div className="chat_img_wrapper">
@@ -374,7 +372,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                                             <span className="senderName">{message.username}</span>
                                             <p>{showFileMessage(message)}</p>
                                             <span className="time">
-                                                {new Date(message.sendDate).toLocaleString('en-US', { timeZone: 'Asia/Seoul' })}
+                                                {new Date(message.sendDate).toLocaleString('en-US', { timeZone: 'Asia/Seoul' }).substring(10,16) + new Date(message.sendDate).toLocaleString('en-US', { timeZone: 'Asia/Seoul' }).substring(19,22)}
                                             </span>
                                         </li>
                                     ))}

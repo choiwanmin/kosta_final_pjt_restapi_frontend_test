@@ -4,7 +4,8 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser, removeUser } from "../../store";
 
-export default function ChatModal({ onSelect }) {
+export default function ChatModal({ onSelect, isInvite }) {
+    console.log(isInvite);
     let dispatch = useDispatch();
     const [name, setName] = useState("");
     const [type, setType] = useState(1);
@@ -108,8 +109,12 @@ export default function ChatModal({ onSelect }) {
                                 </table>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn blue_btn" data-bs-dismiss="modal" onClick={() => onSelect('create')}>생성</button>
-                                <button type="button" className="btn blue_btn" data-bs-dismiss="modal" onClick={() => onSelect('invite')}>초대</button>
+                                {isInvite && (
+                                    <button type="button" className="btn blue_btn" data-bs-dismiss="modal" onClick={() => onSelect('create')}>생성</button>
+                                )}
+                                {!isInvite && (
+                                    <button type="button" className="btn blue_btn" data-bs-dismiss="modal" onClick={() => onSelect('invite')}>초대</button>
+                                )}
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             </div>
                         </form>
