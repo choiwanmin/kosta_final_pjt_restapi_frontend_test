@@ -8,6 +8,7 @@ import axios from "axios";
 
 export default function RecordAdmin(){
     let token = sessionStorage.getItem("token");
+    const [depts, setDepts] = useState([]);
 
     // chart var
     const [deptWorkdata, setDeptwork] = useState(["부서"],[]);
@@ -21,7 +22,6 @@ export default function RecordAdmin(){
 
     // overwork bar data
     const [overWork, setoverWork] = useState([]);
-
     const data = [
         [
           "Element",
@@ -96,6 +96,13 @@ export default function RecordAdmin(){
                 data[3][1]=res.data.overAvgTime[0].less2hours
                 data[4][1]=res.data.overAvgTime[0].over2hours
                 setoverWork(data);
+            }
+         })
+         axios.get(`${process.env.REACT_APP_SERVER}/deptlist`,{})
+         .then((res)=>{
+            if(res.status === 200){
+               setDepts(res.data.deptlist);
+               console.log(res.data  )
             }
          })
     },[])
