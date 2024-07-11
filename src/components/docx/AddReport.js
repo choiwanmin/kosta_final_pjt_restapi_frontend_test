@@ -1,15 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { addUser, removeUser } from "../../store";
 // import "./modal.css"; // modal.css 파일 import
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export default function AddReport() {
     const dispatch = useDispatch();
     const [title, setTitle] = useState(""); //제목 입력
     const [writer, setWriter] = useState("");
     const [enddt, setEndDt] = useState("");
+    const [note, setNote] = useState(""); // 휴가 신청서에서 taskplan을 note로 변경
     const [taskplan, setTaskPlan] = useState("");
     const [taskprocs, setTaskProcs] = useState("");
     const [selectedMembers, setSelectedMembers] = useState([]);
@@ -17,6 +19,15 @@ export default function AddReport() {
     const userList = useSelector((state) => state.modalArr);
     const [searchName, setSearchName] = useState("");
     const [searchType, setSearchType] = useState(1);
+    const [currentUser, setCurrentUser] = useState(""); // 현재 사용자 ID
+    const [formType, setFormType] = useState("보고서");
+    const navigate = useNavigate();
+
+    // useEffect를 사용하여 컴포넌트가 마운트될 때 현재 사용자 정보를 가져오도록 설정
+    useEffect(() => {
+        const loginId = sessionStorage.getItem("loginId");
+        setCurrentUser(loginId);
+    }, []);
 
     const handleCheckboxChange = (userId) => {
         const isChecked = selectedMembers.includes(userId); //이미 선택된 유저 체크
@@ -30,16 +41,81 @@ export default function AddReport() {
     const handleSubmit = (e) => {
         e.preventDefault();
         //폼 데이터 백단 전송
-        const formData = {
-            title: title,
-            writer: writer,
-            enddt: enddt,
-            taskplan: taskplan,
-            taskprocs: taskprocs,
-            selectedMembers: selectedMembers,
-        };
-        console.log(formData); //폼데이터 콘솔 출력
+        const formData = new FormData();
         //axios 요청
+        const token = sessionStorage.getItem('token');
+        const loginId = sessionStorage.getItem('loginId');
+        formData.append('title', title);
+        formData.append('writer', loginId);
+        formData.append('enddt', enddt);
+        formData.append('taskplan', taskplan);
+        formData.append('taskprocs', taskprocs);
+        formData.append('senior', selectedMembers); // Ensure 'senior' is correctly appended
+        formData.append('status', 1);
+        formData.append('formtype', formType);
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/docx/addreport` , formData, {
+            headers: {
+                auth_token: token
+            },
+        })
+        .then(response =>{
+            console.log(response)
+            if(response.status === 200){
+                if(response.data) {
+                    console.log("통과")
+                    navigate('/docxlist')
+                }
+            }
+            // if(response.data.readirect){
+            //     window.location.href = response.data.readirect; // 등록후 리다이랙트
+
+            // }else{
+            //     navigate('/docxlist');
+            //     alert("작성 한 글을 성공적으로 등록 했습니다.");
+            // }
+        })
+        .catch(error => {
+            console.error("Error submit form : " , error);
+            alert("해당 글을 등록하는데 실패 했습니다.");
+        });
+    };
+
+    const handleVacationSubmit = (e) => {
+        e.preventDefault();
+        //폼 데이터 백단 전송
+        //axios 요청
+        const formData = new FormData(e.target);
+        // formData.append('formtype', '휴가 신청서');
+        const token = sessionStorage.getItem('token');
+        const loginId = sessionStorage.getItem('loginId');
+        formData.append('title', title);
+        formData.append('writer', loginId);
+        formData.append('enddt', enddt);
+        formData.append('note', note);
+        formData.append('senior', selectedMembers); // Ensure 'senior' is correctly appended
+        formData.append('status', 1);
+        // formData.append('formtype', formType);
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/docx/addvacation`, formData, {
+            headers: {
+                auth_token: token
+            },
+        })
+            .then(response => {
+                console.log(response)
+                if(response.status === 200){
+                    if(response.data) return navigate('/docxlist')
+                }
+                // if (response.data.redirect) {
+                //     window.location.href = response.data.redirect;
+                // } else {
+                //     navigate('/docxlist');
+                //     alert('휴가 신청서를 성공적으로 등록했습니다.');
+                // }
+            })
+            .catch(error => {
+                console.error('Error submit vacation form : ', error);
+                alert('휴가 신청서를 등록하는데 실패했습니다.');
+            });
     };
 
     const searchMembers = () => {
@@ -70,142 +146,217 @@ export default function AddReport() {
                         <h3 className="font_b24 m_b2">문서 작성폼</h3>
                         {/* Tab 링크들 */}
                         <div className="tab">
-                            <button
-                                className="tablinks btn btn-outline-primary"
-                                onClick={() => { }}
-                                id="report"
+                        <button
+                                className={`tablinks btn btn-outline-primary ${formType === '보고서' ? 'active' : ''}`}
+                                onClick={() => setFormType('보고서')}
                             >
                                 보고서
                             </button>
                             <button
-                                className="tablinks btn btn-outline-primary"
-                                onClick={() => { }}
-                                id="vacation"
+                                className={`tablinks btn btn-outline-primary ${formType === '휴가 신청서' ? 'active' : ''}`}
+                                onClick={() => setFormType('휴가 신청서')}
                             >
                                 휴가 신청서
-                            </button>
-                            <button
-                                className="tablinks btn btn-outline-primary"
-                                onClick={() => { }}
-                                id="meeting"
-                            >
-                                회의록
                             </button>
                         </div>
                     </div>
                 </div>
 
                 {/* 보고서 작성 양식 */}
-                <div id="report" className="tabcontent">
+                <div className="tabcontent">
+                {formType === '보고서' && (
                     <form onSubmit={handleSubmit}>
-                        <div className="mb-3">
-                            <label htmlFor="title" className="form-label">
-                                작성글 제목
-                            </label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                id="title"
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="writer" className="form-label">
-                                작성자
-                            </label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                id="writer"
-                                value={writer}
-                                onChange={(e) => setWriter(e.target.value)}
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="enddt" className="form-label">
-                                기한
-                            </label>
-                            <input
-                                type="date"
-                                className="form-control"
-                                id="enddt"
-                                value={enddt}
-                                onChange={(e) => setEndDt(e.target.value)}
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="taskplan" className="form-label">
-                                업무 계획
-                            </label>
-                            <textarea
-                                className="form-control"
-                                id="taskplan"
-                                rows="4"
-                                value={taskplan}
-                                onChange={(e) => setTaskPlan(e.target.value)}
-                            ></textarea>
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="taskprocs" className="form-label">
-                                업무 진행 과정
-                            </label>
-                            <textarea
-                                className="form-control"
-                                id="taskprocs"
-                                rows="4"
-                                value={taskprocs}
-                                onChange={(e) => setTaskProcs(e.target.value)}
-                            ></textarea>
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="senior" className="form-label">
-                                결제 권한
-                            </label>
-                            <select className="form-select" multiple>
-                                {selectedMembers.map((userId) => (
-                                    <option key={userId} value={userId}>
-                                        {userId}
-                                    </option>
-                                ))}
-                            </select>
-                            <button
-                                type="button"
-                                className="taskidshare"
-                                data-bs-toggle="modal"
-                                data-bs-target="#exampleModal"
-                            >
-                                <i className="fa-solid fa-user-plus"></i>
-                            </button>
-                        </div>
-                        <select
-                            style={{ display: "none" }}
-                            name="status"
-                            onFocus={(e) => (e.target.initialSelect = e.target.selectedIndex)}
-                            onChange={(e) => (e.target.selectedIndex = e.target.initialSelect)}
+                    <div className="mb-3">
+                        <label htmlFor="title" className="form-label">
+                            작성글 제목
+                        </label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="title"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="writer" className="form-label">
+                            작성자
+                        </label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="writer"
+                            value={currentUser} //현재 로그인 유저 
                             readOnly
-                        >
-                            <option value="1" selected>
-                                미승인
-                            </option>
-                            <option value="2">승인</option>
-                            <option value="3">보류</option>
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="enddt" className="form-label">
+                            기한
+                        </label>
+                        <input
+                            type="date"
+                            className="form-control"
+                            id="enddt"
+                            value={enddt}
+                            onChange={(e) => setEndDt(e.target.value)}
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="taskplan" className="form-label">
+                            업무 계획
+                        </label>
+                        <textarea
+                            className="form-control"
+                            id="taskplan"
+                            rows="4"
+                            value={taskplan}
+                            onChange={(e) => setTaskPlan(e.target.value)}
+                        ></textarea>
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="taskprocs" className="form-label">
+                            업무 진행 과정
+                        </label>
+                        <textarea
+                            className="form-control"
+                            id="taskprocs"
+                            rows="4"
+                            value={taskprocs}
+                            onChange={(e) => setTaskProcs(e.target.value)}
+                        ></textarea>
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="senior" className="form-label">
+                            결제 권한
+                        </label>
+                        <select className="form-select" multiple>
+                            {selectedMembers.map((userId) => (
+                                <option key={userId} value={userId}>
+                                    {userId}
+                                </option>
+                            ))}
                         </select>
-                        <input type="hidden" name="formtype" value="보고서" />
-                        <button type="submit" className="btn btn-primary">
-                            등록
+                        <button
+                            type="button"
+                            className="taskidshare"
+                            data-bs-toggle="modal"
+                            data-bs-target="#exampleModal"
+                        >
+                            <i className="fa-solid fa-user-plus"></i>
                         </button>
-                    </form>
-                </div>
+                    </div>
+                    <select
+                        style={{ display: "none" }}
+                        name="status"
+                        onFocus={(e) => (e.target.initialSelect = e.target.selectedIndex)}
+                        onChange={(e) => (e.target.selectedIndex = e.target.initialSelect)}
+                        readOnly
+                    >
+                        <option value="1" selected>
+                            미승인
+                        </option>
+                        <option value="2">승인</option>
+                        <option value="3">보류</option>
+                    </select>
+                    <input type="hidden" name="formtype" value="보고서" />
+                    <button type="submit" className="btn btn-primary">
+                        등록
+                    </button>
+                </form>
+                )}
 
-                {/* 휴가 신청서 작성 양식 */}
-                <div id="vacation" className="tabcontent">
-                    {/* 휴가 신청서 작성 폼 */}
-                </div>
-
-                {/* 회의록 작성 양식 */}
-                <div id="meeting" className="tabcontent">
-                    {/* 회의록 작성 폼 */}
+                {formType === '휴가 신청서' && (
+                        <form onSubmit={handleVacationSubmit}>
+                            {/* 휴가 신청서 폼 */}
+                            <div className="mb-3">
+                                <label htmlFor="title" className="form-label">
+                                    작성글 제목
+                                </label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    id="title"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                />
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor="writer" className="form-label">
+                                    작성자
+                                </label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    id="writer"
+                                    name="writer"
+                                    readOnly // 현재 로그인한 사용자의 ID로 설정되어야 함
+                                    value={currentUser} // 필요하면 state로 관리
+                                />
+                            </div>
+                            <div className="mb-3">
+                        <label htmlFor="enddt" className="form-label">
+                            기한
+                        </label>
+                        <input
+                            type="date"
+                            className="form-control"
+                            id="enddt"
+                            value={enddt}
+                            onChange={(e) => setEndDt(e.target.value)}
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="note" className="form-label">
+                            휴가 사유
+                        </label>
+                        <textarea
+                            className="form-control"
+                            id="note"
+                            rows="4"
+                            value={note}
+                            onChange={(e) => setNote(e.target.value)}
+                        ></textarea>
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="senior" className="form-label">
+                            결제 권한
+                        </label>
+                        <select className="form-select" multiple>
+                            {selectedMembers.map((userId) => (
+                                <option key={userId} value={userId}>
+                                    {userId}
+                                </option>
+                            ))}
+                        </select>
+                        <button
+                            type="button"
+                            className="taskidshare"
+                            data-bs-toggle="modal"
+                            data-bs-target="#exampleModal"
+                        >
+                            <i className="fa-solid fa-user-plus"></i>
+                        </button>
+                    </div>
+                    <select
+                        style={{ display: "none" }}
+                        name="status"
+                        onFocus={(e) => (e.target.initialSelect = e.target.selectedIndex)}
+                        onChange={(e) => (e.target.selectedIndex = e.target.initialSelect)}
+                        readOnly
+                    >
+                        <option value="1" selected>
+                            미승인
+                        </option>
+                        <option value="2">승인</option>
+                        <option value="3">보류</option>
+                    </select>
+                    <input type="hidden" name="formtype" value="휴가 신청서" />
+                    <button type="submit" className="btn btn-primary">
+                        등록
+                    </button>
+                        </form>
+                    )}    
                 </div>
 
                 <div className="mt-4">

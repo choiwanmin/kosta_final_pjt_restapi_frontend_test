@@ -117,7 +117,6 @@ const ReportList = () => {
                             </tr>
                         </thead>
                         <tbody className='record_list'>
-                            test
                             {lists.map((list) => (
                                 <tr key={list.formnum}>
                                     <input type="hidden" value={list.formnum} />
