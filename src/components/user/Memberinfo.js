@@ -114,6 +114,13 @@ export default function MemberInfo() {
 
     const editbtn = () => {
         let memberfdata = new FormData(document.getElementById('memberf'));
+        // console.log(memberfdata.get(''));
+        if (memberfdata.get('memberid') === '') {
+            memberfdata.set('memberid', 0);
+        }
+        for (let key of memberfdata.keys()) {
+            console.log(key, ":", memberfdata.get(key));
+        }
         axios.post(`${process.env.REACT_APP_SERVER}/member/memberadd`, memberfdata,
             { headers: { auth_token: token, "Content-Type": "multipart/form-data" } })
             .then(function (res) {//res.status:상태값, res.data:백에서 보낸 데이터
@@ -121,7 +128,8 @@ export default function MemberInfo() {
                     console.log(res.data.flag);
                     if (res.data.flag) {
                         alert('수정 완료');
-                        setIsEditing(false);
+                        // setIsEditing(false);
+                        window.location.reload();
                     } else {
                         alert('수정 실패');
                         setIsEditing(!isEditing);
@@ -212,7 +220,7 @@ export default function MemberInfo() {
                                             </select>
                                         </td>
                                     )}
-                                    {/* <input type="hidden" id="mgr" value={selectedDept ? selectedDept.mgrid.userid.usernm : ''} /> */}
+                                    <input type="hidden" name="mgrid" id="mgrid" value={selectedDept ? selectedDept.mgrid.userid.usernm : ''} />
                                     {/* <input type="hidden" id="mgr" value={selectedDept} /> */}
                                     <th>직급</th>
                                     {!isEditing ? (
@@ -453,8 +461,8 @@ export default function MemberInfo() {
                         {isEditing && (
                             <button className="btn blue_btn" onClick={handleAddField}>추가하기</button>
                         )}
-                        <input type="hidden" name="userid" value={userid} />
-                        <input type="hidden" name="memberid" value={mdto.memberid} />
+                        <input type='hidden' name="userid" value={userid} />
+                        <input type='hidden' name="memberid" value={mdto?.memberid} />
                     </form>
 
                     <div className="memberinfo_admin_menu">

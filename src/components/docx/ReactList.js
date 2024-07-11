@@ -1,5 +1,3 @@
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -146,7 +144,7 @@ const ReportList = () => {
                                     <td>
                                         {list.writer.id === loginId && list.status === 1 && (
                                             <button onClick={() => handleDelete(list.docxkey)} className="btn btn-danger" style={{ border: '1px solid red', borderRadius: '7px', padding: '4px' }}>
-                                                <FontAwesomeIcon icon={faTrash} style={{ fontSize: '1rem' }} />
+                                                <i className="fa-solid fa-eraser"></i>
                                             </button>
                                         )}
                                     </td>
@@ -176,7 +174,7 @@ const ReportList = () => {
                             </li>
                         </ul>
                     </nav>
-                    <Link to="/auth/docx/addreport" className="nav_link">
+                    <Link to="/addreport" className="nav_link">
                         <span className="nav_link_text">서류 작성</span>
                     </Link>
                     <Link to={`/auth/docx/mylist?writer=${loginId}`} className="nav_link">

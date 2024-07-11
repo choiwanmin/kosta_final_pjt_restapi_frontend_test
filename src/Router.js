@@ -4,7 +4,6 @@ import Header from './components/common/Header';
 import Leftnav from './components/common/Leftnav';
 import Login from "./components/user/Login";
 import Join from "./components/user/Join";
-import Login from "./components/user/Login";
 import Userinfo from "./components/user/Userinfo";
 import Userlist from "./components/user/Userlist";
 import DocxAdd from "./components/docx/AddReport";
@@ -14,13 +13,14 @@ import RecordAdmin from "./components/record/RecordAdmin";
 import Dept from "./components/record/Dept"
 import MainChat from "./components/chat/MainChat";
 import LoadChatRoomsView from "./components/chat/LoadChatRoomsView";
-import LoadChatRoomsBySearch from "./components/chat/LoadChatRoomsBySearch";
-import ConnectChatRoom from "./components/chat/ConnectChat";
 import { useSelector } from "react-redux";
 import NoticeList from "./components/notice/NoticeList";
 import NoticeAdd from "./components/notice/NoticeAdd";
 import Memberinfo from "./components/user/Memberinfo";
 import Chartmain from "./components/charts/ChartMain";
+import NoticeDetail from "./components/notice/NoticeDetail";
+import Deptlist from "./components/corp/Deptlist";
+import Joblvlist from "./components/corp/Joblvlist";
 
 export default function Router() {
     let loginId = useSelector(state=>state.userInfo);    
@@ -62,6 +62,8 @@ export default function Router() {
             <Route path="/user/info/:userid" element={<Userinfo />}></Route>
             {/* <Route path="/user/edit/:userid" element={<Useredit />}></Route> */}
             <Route path="/user/list" element={<Userlist />}></Route>
+            <Route path="/dept/list" element={<Deptlist />}></Route>
+            <Route path="/joblv/list" element={<Joblvlist />}></Route>
             <Route path="/member/info/:userid" element={<Memberinfo />}></Route>
             <Route path="/index" element={<Chartmain />}></Route>
             <Route path="/myrecord" element={<MyRecord/>}></Route>
@@ -69,14 +71,14 @@ export default function Router() {
             <Route path="/admin/record" element={<RecordAdmin/>}></Route>
             <Route path="/mainchat" element={<MainChat/>}/>
             <Route path="/loadchatroom" element={<LoadChatRoomsView />}/>
-            <Route path="/searchchatroom" element={<LoadChatRoomsBySearch/>}/>
-            <Route path="/connectchatroom" element={<ConnectChatRoom/>}/>
             <Route path="/login" element={<Login/>}></Route>
             <Route path="/join" element={<Join/>}></Route>
-            <Route path="/docx/docxlist" element={<DocxList/>}></Route>
-            <Route path="/docx/addreport" element={<DocxAdd/>}></Route>
+            <Route path="/docxlist" element={<DocxList/>}></Route>
+            <Route path="/addreport" element={<DocxAdd/>}></Route>
             <Route path="/noticelist" element={<NoticeList/>}/>
             <Route path="/noticeadd" element={<NoticeAdd/>}/>
+            <Route path="/noticedetail/:notid" element={<NoticeDetail/>}/>
+            
         </Routes>
         </>
     )
