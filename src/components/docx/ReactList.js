@@ -1,6 +1,6 @@
 import axios from 'axios';
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap-icons/font/bootstrap-icons.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -117,6 +117,7 @@ const ReportList = () => {
                             </tr>
                         </thead>
                         <tbody className='record_list'>
+                            test
                             {lists.map((list) => (
                                 <tr key={list.formnum}>
                                     <input type="hidden" value={list.formnum} />

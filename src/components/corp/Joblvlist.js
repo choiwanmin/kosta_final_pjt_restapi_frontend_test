@@ -3,20 +3,20 @@ import "./joblv.css";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-export default function Joblvlist(){
+export default function Joblvlist() {
     const navigate = useNavigate();
     const [jlist, setJlist] = useState([]);
     const token = sessionStorage.getItem('token');
     const type = sessionStorage.getItem('type');
-    
-    const [dto, setDto] = useState({joblvid:'', joblvnm:''});
+
+    const [dto, setDto] = useState({ joblvid: '', joblvnm: '' });
     const { joblvid, joblvnm } = dto;
 
     const onChange = (e) => {
-        const {name, value} = e.target;
+        const { name, value } = e.target;
         setDto({
             ...dto,
-            [name]:value
+            [name]: value
         });
     };
     useEffect(() => {
@@ -62,6 +62,47 @@ export default function Joblvlist(){
                 }
             })
     }
+
+
+    const [joblvsearchfdata, setJoblvsearchfdata] = useState({
+        type: '1', // Default value for type, assuming '1' corresponds to '부서이름'
+        val: ''     // Default value for input field
+    });
+
+    const JoblvSearchChange = (e) => {
+        const { name, value } = e.target;
+        setJoblvsearchfdata({
+            ...joblvsearchfdata,
+            [name]: value
+        });
+    };
+
+    const JoblvSearchSubmit = (e) => {
+        e.preventDefault();
+        console.log(joblvsearchfdata);
+        const { val, type } = joblvsearchfdata;
+
+        // console.log(deptsearchfdata.get('val'));
+        // console.log(deptsearchfdata.get('type'));
+        // Handle form submission logic here, e.g., send search query to server
+        axios.post(`${process.env.REACT_APP_SERVER}/corp/getjoblvby?val=${val}&type=${type}`, {
+            headers: { auth_token: token },
+            // params: { val, type }
+        })
+            .then(function (res) {
+                // console.log(res.data.flag);
+                // console.log(res.data.dlist);
+                console.log(res.data.flag);
+                if (res.status === 200 && res.data.flag) {
+                    setJlist(res.data.jlist);
+                } else if (!res.data.flag) {
+                    alert('잘못된 접근입니다.');
+                    // alert('error')
+                }
+            })
+        console.log(joblvsearchfdata); // Example: Output form data to console
+    };
+
     return (
         <div class="main_body">
             <div class="joblvsearch-body">
@@ -81,6 +122,39 @@ export default function Joblvlist(){
 					</tr>
 				</table>
 			</form> */}
+                <form onSubmit={JoblvSearchSubmit} className="joblvlist_line">
+                    <table className="m20 table_w100">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <select
+                                        className="select_box"
+                                        name="type"
+                                        value={joblvsearchfdata.type}
+                                        onChange={JoblvSearchChange}
+                                    >
+                                        <option value="1">직급번호</option>
+                                        <option value="2">직급이름</option>
+                                    </select>
+                                </td>
+                                <td className="joblvlist_search_wrapper">
+                                    <input
+                                        className="joblvlist_input"
+                                        type="text"
+                                        name="val"
+                                        value={joblvsearchfdata.val}
+                                        onChange={JoblvSearchChange}
+                                    />&nbsp;
+                                    <input
+                                        type="submit"
+                                        className="btn blue_btn list_search"
+                                        value="검색"
+                                    />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
             </div>
 
             <div class="joblvlist_table w_bg">
@@ -174,22 +248,22 @@ export default function Joblvlist(){
                                     <input type="text" className="form-control" id="mgrid" value={mgrid} onChange={(e) => setMgrid(e.target.value)} />
                                 </div>
                             </form> */}
-                                <form id="joblvf">
-                                    <table>
-                                        <tr>
-                                            <td class="form_td">직급번호</td>
-                                            <td class="form_td">
-                                                <input type="text" name="joblvid" value={joblvid} onChange={onChange} />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="form_td">직급이름</td>
-                                            <td class="form_td">
-                                                <input type="text" name="joblvnm" value={joblvnm} onChange={onChange} />
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </form>
+                            <form id="joblvf">
+                                <table>
+                                    <tr>
+                                        <td class="form_td">직급번호</td>
+                                        <td class="form_td">
+                                            <input type="text" name="joblvid" value={joblvid} onChange={onChange} />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="form_td">직급이름</td>
+                                        <td class="form_td">
+                                            <input type="text" name="joblvnm" value={joblvnm} onChange={onChange} />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn blue_btn" onClick={joblvaddbtn}>직급 추가</button>

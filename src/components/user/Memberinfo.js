@@ -220,7 +220,7 @@ export default function MemberInfo() {
                                             </select>
                                         </td>
                                     )}
-                                    <input type="hidden" name="mgrid" id="mgrid" value={selectedDept ? selectedDept.mgrid.userid.usernm : ''} />
+                                    <input type="hidden" name="mgrid" id="mgrid" value={selectedDept ? selectedDept.mgrid?.userid?.usernm : ''} />
                                     {/* <input type="hidden" id="mgr" value={selectedDept} /> */}
                                     <th>직급</th>
                                     {!isEditing ? (
@@ -466,7 +466,7 @@ export default function MemberInfo() {
                     </form>
 
                     <div className="memberinfo_admin_menu">
-                        {!isEditing && ((mdto?.memberid == null && sessionStorage.getItem('loginId') === userid) || sessionStorage.getItem('type') === 'admin') ? (
+                        {/* {!isEditing && ((mdto?.memberid == null && sessionStorage.getItem('loginId') === userid) || sessionStorage.getItem('type') === 'admin') ? (
                             <>
                                 <button type="button" className="btn blue_btn" id="usereditpgbtnid" onClick={editpgbtn}>
                                     내정보수정페이지이동버튼
@@ -484,7 +484,28 @@ export default function MemberInfo() {
                                     되돌아가기
                                 </button>
                             </>
-                        )}
+                        )} */}
+                        {((mdto?.memberid == null && sessionStorage.getItem('loginId') === userid) || sessionStorage.getItem('type') === 'admin') && (
+                        !isEditing ? (
+                            <>
+                                <button type="button" className="btn blue_btn" id="usereditpgbtnid" onClick={editpgbtn}>
+                                    내정보수정페이지이동버튼
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <button type="submit" className="btn blue_btn" id="usereditbtnid" onClick={editbtn}>
+                                    내정보수정버튼
+                                </button>
+                                <button type="button" className="btn blue_btn" onClick={resetbtn}>
+                                    취소
+                                </button>
+                                <button type="button" className="btn blue_btn" onClick={backbtn}>
+                                    되돌아가기
+                                </button>
+                            </>
+                        )
+                    )}
                     </div>
                     {/* <input type="hidden" name="id" value={user.id} /><br /> */}
                 </div>
