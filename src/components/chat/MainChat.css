@@ -121,6 +121,18 @@ a {
 	overflow-y: auto;
 	/* display: flex; */
 }
+
+.connect_chat_modal-content{
+	background-color: #fff;
+	border: none;
+    border-radius: 0;
+    outline: 0;
+    height: 100%;
+	width: 550px;
+	border-radius: 0;
+    outline: 0;
+    height: 410px;
+}
 /* *******************************
 message-area
 ******************************** */

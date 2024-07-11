@@ -17,6 +17,7 @@ export default function ChatModal({ onSelect, isInvite }) {
     const nameSearch = (e) => {
         setName(e.target.value);
     }
+
     const search = () => {
         axios.get(`${process.env.REACT_APP_SERVER}/member/getdeptby`, {
             params: {
@@ -67,7 +68,7 @@ export default function ChatModal({ onSelect, isInvite }) {
                                         </select>
                                     </td>
                                     <td className="list_search_wrapper">
-                                        <input className="list_input" type="text" onChange={nameSearch} />
+                                        <input id="inputname" className="list_input" type="text" onChange={nameSearch} />
                                         <button type="button" className="btn blue_btn list_search" onClick={search}>검색</button>
                                     </td>
                                 </tr>
