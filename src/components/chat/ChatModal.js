@@ -85,7 +85,7 @@ export default function ChatModal({ onSelect }) {
                                         </tr>
                                     </thead>
                                     <tbody className="modal_body">
-                                        {userArr.map((item, i) => (
+                                        {userArr && userArr.map((item, i) => (
                                             <tr key={i} className="list_line">
                                                 <td className="list_ch list_flex">
                                                     <input type="checkbox"
@@ -97,8 +97,11 @@ export default function ChatModal({ onSelect }) {
                                                     <p class="f600 list_name">{item.userid.usernm}</p>
                                                     <p class="f600 list_id">{item.userid.id}</p>
                                                     <div class="list_pos">
-                                                        <span class="list_dept">{item.deptid.deptnm}</span>
-                                                        <span class="list_lv">{item.joblvid.joblvnm}</span>
+                                                        {/* <span class="list_dept">{item.deptid.deptnm}</span>
+                                                        <span class="list_lv">{item.joblvid.joblvnm}</span> */}
+                                                        {/*  */}
+                                                        <span className="list_dept">{item.deptid ? item.deptid.deptnm : ''}</span>
+                                                        <span className="list_lv">{item.joblvid ? item.joblvid.joblvnm : ''}</span>
                                                     </div>
                                                 </td>
                                                 <td className="form_td list_flex">{item.email}</td>
