@@ -120,7 +120,7 @@ export default function MemberInfo() {
 
     const editbtn = () => {
         let memberfdata = new FormData(document.getElementById('memberf'));
-        // memberfdata.set('deptid',deptid);
+        memberfdata.set('dept', deptid);
         // console.log(memberfdata.get(''));
         if (memberfdata.get('memberid') === '') {
             memberfdata.set('memberid', 0);
@@ -227,10 +227,18 @@ export default function MemberInfo() {
                                                 ))}
                                             </select> */}
 
-                                            <select id="deptslist" name="dept" onChange={deptSelect}>
+                                            {/* <select id="deptslist" name="deptid" onChange={deptSelect}>
                                                 <option>부서 선택</option>
                                                 {dlist.map((dept, i) => (
                                                     <option value={dept.deptid}>{dept.deptnm}</option>
+                                                ))}
+                                            </select> */}
+                                            <select id="deptslist" name="deptid">
+                                                <option value={''}>부서 선택</option>
+                                                {dlist.map((d) => (
+                                                    <option key={d.deptid} value={d.deptid} selected={d.deptnm === mdto?.deptid?.deptnm}>
+                                                        {d.deptnm}
+                                                    </option>
                                                 ))}
                                             </select>
                                         </td>
@@ -247,8 +255,9 @@ export default function MemberInfo() {
                                         <>
                                             <td>
                                                 <select id="joblvslist" name="joblvid">
+                                                    <option value={''}>직급 선택</option>
                                                     {jlist.map((j) => (
-                                                        <option key={j.deptid} value={j.joblvidx} selected={j.joblvid.joblvnm === j.joblvnm}>
+                                                        <option key={j.joblvidx} value={j.joblvidx} selected={j.joblvnm === mdto?.joblvid?.joblvnm}>
                                                             {j.joblvnm}
                                                         </option>
                                                     ))}
