@@ -62,7 +62,7 @@ export default function Userinfo() {
             headers: { auth_token: token }
         })
             .then(res => {
-                if (res.status === 200) {
+                if (res.status === 200 && res.data.flag) {
                     // Update UI based on response
                     let txt1 = '';
                     let txt2 = '';
@@ -81,8 +81,11 @@ export default function Userinfo() {
                     // document.getElementById('aprovbtnid1').value = txt2;
                     alert(`${userId}의 승인 상태가 변경되었습니다.`);
                     navigate(0);
+                    console.log(res.data.flag);
                 } else {
+                    console.log(res.data.flag);
                     alert('비정상 응답');
+                    navigate(0);
                 }
             })
             .catch(err => {
