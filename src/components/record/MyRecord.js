@@ -54,7 +54,7 @@ export default function MyRecord(){
      dispatch(getMem(member));
      axios.get(`${process.env.REACT_APP_SERVER}/auth/record/my`,{headers:{auth_token:token}})
      .then((res)=>{
-        if(res.status === 200){
+        if(res.status === 200 && res.data.list != null){
             console.log(res.data)
             setList(res.data.list);
             dispatch(importNum(res.data.num));
@@ -121,7 +121,7 @@ export default function MyRecord(){
             }
         })
         .then((res)=>{
-            if(res.status === 200){
+            if(res.status === 200 && res.data.list != null){
                 setList(res.data.list);
             }
         })
