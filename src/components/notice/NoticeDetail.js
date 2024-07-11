@@ -52,11 +52,11 @@ export default function NoticeDetail(){
                         </div>
                         <div class="mb-3">
                             <label for="enddt" class="form-label"><strong>기한:</strong></label>
-                            <input type="text" id="enddt" class="form-control" value={noticedetail.enddt} readonly/>
+                            <input type="text" id="enddt" class="form-control" value={noticedetail.enddt} readonly />
                         </div>
                         <div class="mb-3">
                             <label for="enddt" class="form-label"><strong>내용:</strong></label>
-                            <input type="text" id="enddt" class="form-control" value={noticedetail.content} readonly/>
+                            <textarea id="enddt" class="form-control" value={noticedetail.content} readonly />
                         </div>
                     </form>
                 </div>

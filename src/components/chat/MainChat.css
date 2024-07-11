@@ -116,12 +116,10 @@ a {
 }
 
 .chat-content3{
-	position: relative;
     flex: 1 1 auto;
     padding: 1rem;
 	overflow-y: auto;
-	flex-direction: column-reverse;
-	display: flex;
+	/* display: flex; */
 }
 /* *******************************
 message-area
@@ -783,17 +781,17 @@ button:focus {
 		font-size: 12px;
 	}
 	.msg-body ul li.sender p {
-		font-size: 13px;
+		/* font-size: 13px;
 		padding: 8px;
 		border-bottom-left-radius: 6px;
 		border-top-right-radius: 6px;
-		border-bottom-right-radius: 6px;
+		border-bottom-right-radius: 6px; */
 	}
 	.msg-body ul li.repaly p {
-		font-size: 13px;
+		/* font-size: 13px;
 		padding: 8px;
 		border-top-left-radius: 6px;
 		border-top-right-radius: 6px;
-		border-bottom-left-radius: 6px;
+		border-bottom-left-radius: 6px; */
 	}
 }

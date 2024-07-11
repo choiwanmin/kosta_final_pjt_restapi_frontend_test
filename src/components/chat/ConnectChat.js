@@ -6,11 +6,10 @@ import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
 import { useRef } from 'react';
 import sendMessage from './SendMessage';
-import { Link } from "react-router-dom";
-import ChatModal from "./ChatModal";
+import '../common/modal.css';
 
 
-export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
+export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,setIsInvite }) {
     const [messages, setMessages] = useState([]);
     const [chatRoom, setChatRoom] = useState(null);
     const [inputs, setInputs] = useState({});
@@ -23,28 +22,43 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
     const [memberchatList, setMemberchatList] = useState({});
     const [jobchatList, setJobchatList] = useState({});
     const [page, setPage] = useState(1);
+    const [checkMessage, setCheckMessage] = useState(true);
     const userList = useSelector(state => state.modalArr);
     const chatContentRef = useRef(null);
-
+    
 
     const handleScroll = () => {
         const chatContent = chatContentRef.current;
-        const scrollTop = chatContent.scrollTop;
-        const scrollHeight = chatContent.scrollHeight;
-        const clientHeight = chatContent.clientHeight;
-        if (scrollTop === clientHeight - scrollHeight) {
-            chatContent.scrollTop = scrollTop + 1;
+        if (!chatContent) return;
+        const scrollTop = Math.round(chatContent.scrollTop);
+        if (scrollTop === 0) {
+            const previousScrollHeight = chatContent.scrollHeight;
             setPage((prevPage) => prevPage + 1);
+            setTimeout(() => {
+                const newScrollHeight = chatContent.scrollHeight;
+                chatContent.scrollTop = newScrollHeight - previousScrollHeight;
+            }, 150); 
         }
     };
 
     useEffect(() => {
         const chatContent = chatContentRef.current;
-        chatContent.addEventListener('scroll', handleScroll);
+        if (chatContent) {
+            chatContent.scrollTop = chatContent.scrollHeight;
+        }
+    }, [messages]);
+
+    useEffect(() => {
+        const chatContent = chatContentRef.current;
+        if (chatContent) {
+            chatContent.addEventListener('scroll', handleScroll);
+        }
         return () => {
-            chatContent.removeEventListener('scroll', handleScroll);
+            if (chatContent) {
+                chatContent.removeEventListener('scroll', handleScroll);
+            }
         };
-    }, []);
+    }, [checkMessage]);
 
     const onChange = (e) => {
         const { name, value } = e.target;
@@ -65,10 +79,14 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
         axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/message/room3`, {}, { headers: { auth_token: token }, params: { roomid: roomid, page: page } })
             .then(function (res) {
                 if (res.status === 200) {
-                    if (overwrite) {
-                        setMessages(res.data.list);
+                    if (res.data.list.length === 0) {
+                        setCheckMessage(false);
                     } else {
-                        setMessages(prevMessages => [...res.data.list, ...prevMessages]);
+                        if (overwrite) {
+                            setMessages(res.data.list);
+                        } else {
+                            setMessages(prevMessages => [...res.data.list, ...prevMessages]);
+                        }
                     }
                 } else {
                     alert('메세지 로딩 실패');
@@ -255,6 +273,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
             stompClientRef.current.disconnect(() => {
                 console.log('연결끊겼음');
                 setIsConnected(false);
+                setMessages([]);
             });
             stompClientRef.current = null;
         }
@@ -273,15 +292,11 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
             })
     }
 
-
     if (!isConnected) {
         return (
-            <Link to="/loadchatroom">채팅방 목록 접속</Link>
-
+        <div>나간방</div>
         );
     }
-
-
     return (
         <>
             <div className="chatbox">
@@ -310,25 +325,24 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                                                                 <div className="modal-dialog">
                                                                     <div className="modal-content">
                                                                         <div className="modal-header">
-                                                                            <h5 className="modal-title" id={`exampleModalLabel${index}`}>Modal title</h5>
+                                                                            <h5 className="modal-title" id={`exampleModalLabel${index}`}>사용자 정보</h5>
                                                                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                         </div>
                                                                         <div className="modal-body">
                                                                             {memberchatList && (
                                                                                 <div>
                                                                                     {/* <img src="/img/chat/memberchatList.memberimgnm"></img> */}
-                                                                                    <p>사진: {memberchatList.memberimgnm}</p>
-                                                                                    <p>이름: {name}</p>
-                                                                                    <p>이메일: {memberchatList.email}</p>
+                                                                                    <div >사진: {memberchatList.memberimgnm}</div>
+                                                                                    <div >이름: {name}</div>
+                                                                                    <div >이메일: {memberchatList.email}</div>
                                                                                     {/* <p>부서: {memberchatList.deptid.deptnm}</p> */}
-                                                                                    <p>부서번호: {memberchatList.cpnum}</p>
-                                                                                    <p>직업: {jobchatList.joblvnm}</p>
+                                                                                    <div >부서번호: {memberchatList.cpnum}</div>
+                                                                                    <div >직무: {jobchatList.joblvnm}</div>
                                                                                 </div>
                                                                             )}
                                                                         </div>
                                                                         <div className="modal-footer">
-                                                                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                                            <button type="button" className="btn btn-primary">Save changes</button>
+                                                                            <button type="button" className="btn blue_btn" data-bs-dismiss="modal">닫기</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -347,7 +361,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                                             <a className="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i className="fa fa-ellipsis-v" aria-hidden="true"></i></a>
                                             <ul className="dropdown-menu">
                                                 <li>
-                                                    <a className="dropdown-item" alt="add" data-bs-toggle="modal" data-bs-target="#exampleModal">초대</a>
+                                                    <a className="dropdown-item" alt="add" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => setIsInvite(false)}>초대</a>
                                                 </li>
 
                                                 <li>
@@ -366,7 +380,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                         {/* 채팅방 메세지 출력 칸 */}
                         <div className="chat-content3" ref={chatContentRef}>
                             <div className="msg-body">
-                                <ul id="chat-content">
+                                <ul >
                                     {messages?.map((message, index) => (
                                         <li key={index} className={message.sender === userid ? 'sender' : 'reply'}>
                                             <div className="chat_img_wrapper">
@@ -374,7 +388,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                                             <span className="senderName">{message.username}</span>
                                             <p>{showFileMessage(message)}</p>
                                             <span className="time">
-                                                {new Date(message.sendDate).toLocaleString('en-US', { timeZone: 'Asia/Seoul' })}
+                                                {new Date(message.sendDate).toLocaleString('en-US', { timeZone: 'Asia/Seoul' }).substring(10,16) + new Date(message.sendDate).toLocaleString('en-US', { timeZone: 'Asia/Seoul' }).substring(19,22)}
                                             </span>
                                         </li>
                                     ))}

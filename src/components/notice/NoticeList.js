@@ -11,8 +11,9 @@ export default function NoticeList() {
     const [title, setTitle] = useState('');
     const [writer, setWriter] = useState('');
     const [searchType, setSearchType] = useState('title');
+    const [totalItemsCount, setTotalItemsCount] = useState(0);
     const token = sessionStorage.getItem('token');
-    const deptname = sessionStorage.getItem('deptnm');
+
 
     const showdetails = (notid) => {
         window.location.href = `/noticedetail/${notid}`;
@@ -42,10 +43,11 @@ export default function NoticeList() {
     }, [page, title, writer, searchType]);
 
     const getNoticelist = () => {
-        axios.get(`${process.env.REACT_APP_SERVER}/auth/notice/pagelist`, { headers: { auth_token: token }, params: { page: page, size: 5 } })
+        axios.get(`${process.env.REACT_APP_SERVER}/auth/notice/pagelist`, { headers: { auth_token: token }, params: { page: page, size: 10 } })
             .then(function (res) {
                 if (res.status === 200) {
                     setNlist(res.data.list);
+                    setTotalItemsCount(res.data.list.length);
                 } else {
                     alert('공지 리스트 로딩 실패');
                 }
@@ -65,10 +67,11 @@ export default function NoticeList() {
     }
 
     const getNoticelistByTitle = () => {
-        axios.post(`${process.env.REACT_APP_SERVER}/auth/notice/titlelist`, {}, { headers: { auth_token: token }, params: { title: title, page: page, size: 5 } })
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/notice/titlelist`, {}, { headers: { auth_token: token }, params: { title: title, page: page, size: 10 } })
             .then(function (res) {
                 if (res.status === 200) {
                     setNlist(res.data.tlist);
+                    setTotalItemsCount(res.data.tlist.length);
                 } else {
                     alert('제목으로 검색 실패');
                 }
@@ -76,57 +79,22 @@ export default function NoticeList() {
     }
 
     const getNoticelistByWriter = () => {
-        axios.post(`${process.env.REACT_APP_SERVER}/auth/notice/writerlist`, {}, { headers: { auth_token: token }, params: { writer: writer, page: page, size: 5 } })
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/notice/writerlist`, {}, { headers: { auth_token: token }, params: { writer: writer, page: page, size: 10 } })
             .then(function (res) {
                 if (res.status === 200) {
                     setNlist(res.data.wlist);
+                    setTotalItemsCount(res.data.wlist.length);
                 } else {
                     alert('이름으로 검색 실패');
                 }
             })
     }
 
-    const generalNotices = nlist.filter(notice => notice.formtype === '전체');
-    const deptNotices = nlist.filter(notice => notice.formtype === deptname);
-
     return (
         <div className="main_body">
             <div className="record_table w_bg">
-                <h2 className="noticetitle">전체 공지</h2>
-                <div className="record_table_wrapper">
-                    <div className="left_table">
-                        <table className="record_rtable">
-                            <thead>
-                                <tr>
-                                    <th>분류</th>
-                                    <th>글제목</th>
-                                    <th>내용</th>
-                                    <th>작성자</th>
-                                    <th>작성일</th>
-                                    <th>문서삭제</th>
-                                </tr>
-                            </thead>
-                            <tbody className="record_list">
-                                {generalNotices.map(notice => (
-                                    <tr key={notice.id}>
-                                        <td>{notice.formtype}</td>
-                                        <td onClick={() => showdetails(notice.id)}>{notice.title}</td>
-                                        <td>{notice.content}</td>
-                                        <td>{notice.writername}</td>
-                                        <td>{notice.startdt}</td>
-                                        <td>
-                                            {notice.writer.id === sessionStorage.getItem('loginId') && (
-                                                <button className="btn btn-danger btn-sm" onClick={() => deleteDocument(notice.id)}>삭제</button>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <h2 className="noticetitle">공지 사항</h2>
                 <div className="record_table w_bg">
-                    <h2 className="noticetitle2">{deptname}부서 공지</h2>
                     <div className="record_table_wrapper">
                         <div className="left_table">
                             <table className="record_rtable">
@@ -141,7 +109,7 @@ export default function NoticeList() {
                                     </tr>
                                 </thead>
                                 <tbody className="record_list">
-                                    {deptNotices.map(notice => (
+                                    {nlist.map(notice => (
                                         <tr key={notice.id}>
                                             <td>{notice.formtype}</td>
                                             <td onClick={() => showdetails(notice.id)}>{notice.title}</td>
@@ -150,7 +118,7 @@ export default function NoticeList() {
                                             <td>{notice.startdt}</td>
                                             <td>
                                                 {notice.writer.id === sessionStorage.getItem('loginId') && (
-                                                    <button className="btn btn-danger btn-sm" onClick={() => deleteDocument(notice.id)}>삭제</button>
+                                                    <button className="btn btn-danger btn-sm" onClick={() => deleteDocument(notice.id)}>  <i className="fa-solid fa-eraser"></i></button>
                                                 )}
                                             </td>
                                         </tr>
@@ -173,8 +141,8 @@ export default function NoticeList() {
                         <Pagination
                             containerClassName={"pagination"}
                             activePage={page}
-                            itemsCountPerPage={10}
-                            totalItemsCount={200}
+                            totalItemsCount={totalItemsCount}
+                            itemsCountPerPage={5}
                             pageRangeDisplayed={5}
                             prevPageText={"‹"}
                             nextPageText={"›"}
