@@ -4,6 +4,7 @@ import axios from 'axios';
 import ConnectChatRoom from './ConnectChat';
 import ChatModal from './ChatModal';
 import { useSelector } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 
 
 export default function LoadChatRoomsView() {
@@ -15,6 +16,7 @@ export default function LoadChatRoomsView() {
     const loginId = sessionStorage.getItem('loginId');
     const [namelist, setNamelist] = useState([]);
     const [isInvite, setIsInvite] = useState(false);
+    const navigate = useNavigate();
 
     const handleSelect = (mode) => {
         if (mode === 'invite') {
@@ -47,6 +49,9 @@ export default function LoadChatRoomsView() {
             .then(function (res) {
                 if (res.status === 200) {
                     alert('사용자 초대 성공');
+                   loadChatRooms();
+                   navigate('/messenger', { replace: true });
+                   window.location.reload();
                 } else {
                     alert('사용자 초대 실패');
                 }
@@ -69,7 +74,7 @@ export default function LoadChatRoomsView() {
             .then(function (res) {
                 if (res.status === 200) {
                     setList(res.data.list);
-
+                    console.dir(res.data.list);
                 } else {
                     alert('채팅방 불러오기 실패');
                 }
@@ -88,7 +93,6 @@ export default function LoadChatRoomsView() {
             .then(function (res) {
                 if (res.status === 200) {
                     setList(res.data.list);
-                    console.dir(res.data.list);
                 } else {
                     alert('채팅방 불러오기 실패');
                 }
@@ -176,13 +180,18 @@ export default function LoadChatRoomsView() {
                                                                 chatRoom.roomType === 'GROUP' ? (
                                                                     <a key={index} href="#" className="d-flex align-items-center" onClick={() => roomConnect(chatRoom.chatroomid)}>
                                                                         <div className="flex-shrink-0">
-                                                                            <img className="img-fluid-center" src="/member/memberimg?memberimgnm=${imgName}" alt="user img" />
+                                                                        <img className="img-fluid-center"
+                                                                                src={`${process.env.REACT_APP_SERVER}/member/memberimg/` + chatRoom.img}
+                                                                                alt="Profile Img"
+                                                                                style={{ width: '45px', height: '45px' }} />
                                                                         </div>
+                                                                       
                                                                         <div className="flex-grow-1 ms-3">
                                                                             <h3>
                                                                                 {chatRoom?.chatRoomNames[0]?.editableName.replace(/_/g, ' ').trim()}
                                                                             </h3>
                                                                             <p>{chatRoom.recentMsg}</p>
+                                                                            <p>{chatRoom.participants}</p>
                                                                         </div>
                                                                     </a>
                                                                 ) : null
