@@ -8,6 +8,7 @@ import axios from "axios";
 
 export default function RecordAdmin(){
     let token = sessionStorage.getItem("token");
+    const [depts, setDepts] = useState([]);
 
     // chart var
     const [deptWorkdata, setDeptwork] = useState(["부서"],[]);
@@ -100,6 +101,7 @@ export default function RecordAdmin(){
          axios.get(`${process.env.REACT_APP_SERVER}/deptlist`,{})
          .then((res)=>{
             if(res.status === 200){
+               setDepts(res.data.deptlist);
                console.log(res.data  )
             }
          })
