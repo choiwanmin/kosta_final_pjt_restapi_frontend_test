@@ -14,24 +14,10 @@ export default function LoadChatRoomsView() {
     const token = sessionStorage.getItem('token');
     const loginId = sessionStorage.getItem('loginId');
     const [namelist, setNamelist] = useState([]);
-    
-    
-    const inviteChatroom = () => {
-        const params = new URLSearchParams();
-        userList.forEach(id => params.append('userid[]', id));
-        params.append('chatroomid', roomid);
-        params.append('page', 1);
-        axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/chatrooms/invite`, {}, { headers: { auth_token: token }, params: params })
-            .then(function (res) {
-                if (res.status === 200) {
-                    alert('사용자 초대 성공');
-                } else {
-                    alert('사용자 초대 실패');
-                }
-            })
-    }
+    const [isInvite, setIsInvite] = useState(false);
+
     const handleSelect = (mode) => {
-        if(mode === 'invite'){
+        if (mode === 'invite') {
             inviteChatroom();
         }
         if (mode === 'create') {
@@ -52,6 +38,21 @@ export default function LoadChatRoomsView() {
             })
     }
 
+    const inviteChatroom = () => {
+        const params = new URLSearchParams();
+        userList.forEach(id => params.append('userid[]', id));
+        params.append('chatroomid', roomid);
+        params.append('page', 1);
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/chatrooms/invite`, {}, { headers: { auth_token: token }, params: params })
+            .then(function (res) {
+                if (res.status === 200) {
+                    alert('사용자 초대 성공');
+                } else {
+                    alert('사용자 초대 실패');
+                }
+            })
+    }
+
     useEffect(() => {
         if (userList.length > 0) {
             getmembername();
@@ -68,6 +69,7 @@ export default function LoadChatRoomsView() {
             .then(function (res) {
                 if (res.status === 200) {
                     setList(res.data.list);
+
                 } else {
                     alert('채팅방 불러오기 실패');
                 }
@@ -82,11 +84,11 @@ export default function LoadChatRoomsView() {
     };
 
     const loadChatRoomsBySearch = (searchData) => {
-        axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/chatrooms/loadrooms/search`, {}, {headers: { auth_token: token }, params: { userName: searchData } })
+        axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/chatrooms/loadrooms/search`, {}, { headers: { auth_token: token }, params: { userName: searchData } })
             .then(function (res) {
                 if (res.status === 200) {
                     setList(res.data.list);
-
+                    console.dir(res.data.list);
                 } else {
                     alert('채팅방 불러오기 실패');
                 }
@@ -130,10 +132,9 @@ export default function LoadChatRoomsView() {
                                             <div className="msg-search">
                                                 <input type="text" className="form-control" id="findGroupMember" placeholder="참여자이름으로 검색" aria-label="search" onKeyDown={searchName} />
                                                 <a className="add" href="#">
-                                                    <img className="img-fluid" src="https://mehedihtml.com/chatbox/assets/img/add.svg" alt="add" data-bs-toggle="modal" data-bs-target="#exampleModal" />
+                                                    <img className="img-fluid" src="https://mehedihtml.com/chatbox/assets/img/add.svg" alt="add" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => setIsInvite(true)} />
                                                 </a>
                                             </div>
-                                            <ChatModal onSelect={handleSelect} />
                                             {/* 1:1 단체방 탭 */}
                                             <ul className="nav nav-tabs" id="myTab" role="tablist">
                                                 <li className="nav-item" role="presentation">
@@ -153,7 +154,10 @@ export default function LoadChatRoomsView() {
                                                                 chatRoom.roomType === 'PERSONAL' || chatRoom.roomType === 'PRIVATE' ? (
                                                                     <a key={index} href="#" className="d-flex align-items-center" onClick={() => roomConnect(chatRoom.chatroomid)}>
                                                                         <div className="flex-shrink-0">
-                                                                            <img className="img-fluid-center" alt="user img" />
+                                                                            <img className="img-fluid-center"
+                                                                                src={`${process.env.REACT_APP_SERVER}/member/memberimg/` + chatRoom.img}
+                                                                                alt="Profile Img"
+                                                                                style={{ width: '45px', height: '45px' }} />
                                                                         </div>
                                                                         <div className="flex-grow-1 ms-3">
                                                                             <h3>
@@ -191,7 +195,8 @@ export default function LoadChatRoomsView() {
                                     </div>
                                 </div>
                             </div>
-                            {selectedRoom && <ConnectChatRoom roomid={selectedRoom} userid={loginId} reloadRoom={reloadChatroom} />}
+                            {selectedRoom && <ConnectChatRoom roomid={selectedRoom} userid={loginId} reloadRoom={reloadChatroom} isInvite={isInvite} setIsInvite={setIsInvite} />}
+                            <ChatModal onSelect={handleSelect} isInvite={isInvite} />
                         </div>
                     </div>
                 </div>

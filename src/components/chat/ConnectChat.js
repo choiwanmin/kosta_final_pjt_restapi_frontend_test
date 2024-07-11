@@ -6,11 +6,10 @@ import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
 import { useRef } from 'react';
 import sendMessage from './SendMessage';
-import { Link } from "react-router-dom";
-import ChatModal from "./ChatModal";
+import '../common/modal.css';
+import { useNavigate } from "react-router-dom";
 
-
-export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
+export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite, setIsInvite }) {
     const [messages, setMessages] = useState([]);
     const [chatRoom, setChatRoom] = useState(null);
     const [inputs, setInputs] = useState({});
@@ -23,28 +22,77 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
     const [memberchatList, setMemberchatList] = useState({});
     const [jobchatList, setJobchatList] = useState({});
     const [page, setPage] = useState(1);
+    const [checkMessage, setCheckMessage] = useState(true);
     const userList = useSelector(state => state.modalArr);
     const chatContentRef = useRef(null);
+    const navigate = useNavigate();
+    const[imgname, setImgname] = useState('');
+
 
 
     const handleScroll = () => {
         const chatContent = chatContentRef.current;
-        const scrollTop = chatContent.scrollTop;
-        const scrollHeight = chatContent.scrollHeight;
-        const clientHeight = chatContent.clientHeight;
-        if (scrollTop === clientHeight - scrollHeight) {
-            chatContent.scrollTop = scrollTop + 1;
+        if (!chatContent) return;
+        const scrollTop = Math.round(chatContent.scrollTop);
+        if (scrollTop === 0) {
+            const previousScrollHeight = chatContent.scrollHeight;
             setPage((prevPage) => prevPage + 1);
+            setTimeout(() => {
+                const newScrollHeight = chatContent.scrollHeight;
+                chatContent.scrollTop = newScrollHeight - previousScrollHeight;
+            }, 150);
         }
     };
 
     useEffect(() => {
+        if (chatRoom && chatRoom.name) {
+            const name = chatRoom.name.split('_');
+            const memId = name.filter(name => name !== chatRoom.chatRoomNames[0].host);
+            setMemberId(memId);
+        }
+    }, [chatRoom]);
+
+    useEffect(() => {
+        loadMessages();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [page]);
+
+
+    useEffect(() => {
+        if (chatRoom && chatRoom.chatRoomNames && chatRoom.chatRoomNames.length > 0) {
+            setInputs({
+                editableName: chatRoom.chatRoomNames[0].editableName.replace(/_/g, ' ').trim()
+            });
+        }
+    }, [chatRoom]);
+
+    useEffect(() => {
+        if (roomid) {
+            disconnect();
+            connect(roomid);
+            centerChatRoom(roomid, userid);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [roomid]);
+
+    useEffect(() => {
         const chatContent = chatContentRef.current;
-        chatContent.addEventListener('scroll', handleScroll);
+        if (chatContent) {
+            chatContent.scrollTop = chatContent.scrollHeight;
+        }
+    }, [messages]);
+
+    useEffect(() => {
+        const chatContent = chatContentRef.current;
+        if (chatContent) {
+            chatContent.addEventListener('scroll', handleScroll);
+        }
         return () => {
-            chatContent.removeEventListener('scroll', handleScroll);
+            if (chatContent) {
+                chatContent.removeEventListener('scroll', handleScroll);
+            }
         };
-    }, []);
+    }, [checkMessage]);
 
     const onChange = (e) => {
         const { name, value } = e.target;
@@ -57,18 +105,26 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
     const handleMemberClick = (clickedMemberId) => {
         memberchatinfo(clickedMemberId);
     }
+
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
     };
 
     const loadMessages = (overwrite = false) => {
+        if (!isConnected) {
+            return;
+        }
         axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/message/room3`, {}, { headers: { auth_token: token }, params: { roomid: roomid, page: page } })
             .then(function (res) {
                 if (res.status === 200) {
-                    if (overwrite) {
-                        setMessages(res.data.list);
+                    if (res.data.list.length === 0) {
+                        setCheckMessage(false);
                     } else {
-                        setMessages(prevMessages => [...res.data.list, ...prevMessages]);
+                        if (overwrite) {
+                            setMessages(res.data.list);
+                        } else {
+                            setMessages(prevMessages => [...res.data.list, ...prevMessages]);
+                        }
                     }
                 } else {
                     alert('메세지 로딩 실패');
@@ -96,38 +152,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
         }
     }
 
-    useEffect(() => {
-        if (chatRoom && chatRoom.name) {
-            const name = chatRoom.name.split('_');
-            const memId = name.filter(name => name !== chatRoom.chatRoomNames[0].host);
-            setMemberId(memId);
-        }
-    }, [chatRoom]);
-
-    useEffect(() => {
-        loadMessages();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [page]);
-
-
-    useEffect(() => {
-        if (chatRoom && chatRoom.chatRoomNames && chatRoom.chatRoomNames.length > 0) {
-            setInputs({
-                editableName: chatRoom.chatRoomNames[0].editableName.replace(/_/g, ' ').trim()
-            });
-        }
-    }, [chatRoom]);
-
-    useEffect(() => {
-        if (roomid) {
-            connect(roomid);
-            centerChatRoom(roomid, userid);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [roomid]);
-
     const connect = (roomid) => {
-        setIsConnected(true);
         if (!roomid) {
             return;
         }
@@ -148,6 +173,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
             stompClient.subscribe('/recent/update', function () {
 
             });
+            setIsConnected(true);
             loadMessages(roomid);
         });
     };
@@ -180,11 +206,15 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                 };
                 stompClientRef.current.send(`/send/chat/message/` + roomid + '/' + page, {}, JSON.stringify(message));
                 loadMessages(roomid);
-            })
+            }
+        )
             .catch(error => {
                 console.error('Error uploading file:', error);
                 alert('파일 업로드에 실패했습니다.');
             });
+
+
+            setFile('');
     };
 
     const showFileMessage = (message) => {
@@ -219,6 +249,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                 if (res.status === 200) {
                     setChatRoom(res.data.chatroom);
                     setMembername(res.data.chatroom.memberNames)
+                    setImgname(`${process.env.REACT_APP_SERVER}/member/memberimg/` + res.data.chatroom.img);
                 } else {
                     alert('채팅방 로딩 실패');
                 }
@@ -242,8 +273,9 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
             .then(function (res) {
                 if (res.status === 200) {
                     alert('채팅방 나가기 성공');
-                    reloadRoom();
                     disconnect();
+                    navigate('/messenger', { replace: true });
+                    window.location.reload();
                 } else {
                     alert('채팅방 나가기 실패');
                 }
@@ -255,6 +287,8 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
             stompClientRef.current.disconnect(() => {
                 console.log('연결끊겼음');
                 setIsConnected(false);
+                setMessages([]);
+                // reloadRoom();
             });
             stompClientRef.current = null;
         }
@@ -266,21 +300,11 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                 if (res.status === 200) {
                     setMemberchatList(res.data.member);
                     setJobchatList(res.data.jobL);
-
                 } else {
                     alert('사용자 정보 조회 실패');
                 }
             })
     }
-
-
-    if (!isConnected) {
-        return (
-            <Link to="/loadchatroom">채팅방 목록 접속</Link>
-
-        );
-    }
-
 
     return (
         <>
@@ -294,12 +318,15 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                                     <div className="d-flex align-items-center">
                                         <a class="d-flex align-items-center">
                                             <div class="flex-shrink-0">
-                                                <img class="img-fluid-center" src="" alt="user img" />
+                                                <img className="img-fluid-center"
+                                                    src={imgname}
+                                                    alt="Profile Img"
+                                                    style={{ width: '45px', height: '45px' }} />
                                                 <span class="active"></span>
                                             </div>
                                             <div class="flex-grow-1 ms-3">
                                                 <input class="roomNameStyle" type="text" name="editableName" onChange={onChange} value={inputs.editableName} />
-                                                <img class="img-chateditImg" src="" onClick={editRoomName} />
+                                                <i class="fa-solid fa-pen-to-square" onClick={editRoomName}></i>
                                                 <div>
                                                     {membername.map((name, index) => (
                                                         <span key={index}>
@@ -308,27 +335,50 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                                                             </p>
                                                             <div className="modal fade" id={`exampleModal${index}`} tabIndex="-1" aria-labelledby={`exampleModalLabel${index}`} aria-hidden="true">
                                                                 <div className="modal-dialog">
-                                                                    <div className="modal-content">
+                                                                    <div className="connect_chat_modal-content">
                                                                         <div className="modal-header">
-                                                                            <h5 className="modal-title" id={`exampleModalLabel${index}`}>Modal title</h5>
+                                                                            <h5 className="modal-title" id={`exampleModalLabel${index}`}>사용자 정보</h5>
                                                                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                         </div>
                                                                         <div className="modal-body">
                                                                             {memberchatList && (
-                                                                                <div>
-                                                                                    {/* <img src="/img/chat/memberchatList.memberimgnm"></img> */}
-                                                                                    <p>사진: {memberchatList.memberimgnm}</p>
-                                                                                    <p>이름: {name}</p>
-                                                                                    <p>이메일: {memberchatList.email}</p>
-                                                                                    {/* <p>부서: {memberchatList.deptid.deptnm}</p> */}
-                                                                                    <p>부서번호: {memberchatList.cpnum}</p>
-                                                                                    <p>직업: {jobchatList.joblvnm}</p>
-                                                                                </div>
+                                                                                <table className="info-table">
+                                                                                    <tbody>
+                                                                                        <tr>
+                                                                                            <td rowSpan="6">
+                                                                                                <img 
+                                                                                                    src={`${process.env.REACT_APP_SERVER}/member/memberimg/` + memberchatList.memberimgnm}
+                                                                                                    alt="Profile Img"
+                                                                                                    style={{ width: '80%', height: '80%' }} />
+
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <th>이름</th>
+                                                                                            <td>{name}</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <th>E-mail:</th>
+                                                                                            <td>{memberchatList.email}</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <th>번호:</th>
+                                                                                            <td>{memberchatList.cpnum}</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <th>직무:</th>
+                                                                                            <td>{jobchatList.joblvnm}</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <th>부서:</th>
+                                                                                            <td>{/* <td> {memberchatList.deptid.deptnm}</td> */}</td>
+                                                                                        </tr>
+                                                                                    </tbody>
+                                                                                </table>
                                                                             )}
                                                                         </div>
                                                                         <div className="modal-footer">
-                                                                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                                            <button type="button" className="btn btn-primary">Save changes</button>
+                                                                            <button type="button" className="btn blue_btn" data-bs-dismiss="modal">닫기</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -347,7 +397,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                                             <a className="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i className="fa fa-ellipsis-v" aria-hidden="true"></i></a>
                                             <ul className="dropdown-menu">
                                                 <li>
-                                                    <a className="dropdown-item" alt="add" data-bs-toggle="modal" data-bs-target="#exampleModal">초대</a>
+                                                    <a className="dropdown-item" alt="add" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => setIsInvite(false)}>초대</a>
                                                 </li>
 
                                                 <li>
@@ -366,7 +416,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                         {/* 채팅방 메세지 출력 칸 */}
                         <div className="chat-content3" ref={chatContentRef}>
                             <div className="msg-body">
-                                <ul id="chat-content">
+                                <ul >
                                     {messages?.map((message, index) => (
                                         <li key={index} className={message.sender === userid ? 'sender' : 'reply'}>
                                             <div className="chat_img_wrapper">
@@ -374,7 +424,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom }) {
                                             <span className="senderName">{message.username}</span>
                                             <p>{showFileMessage(message)}</p>
                                             <span className="time">
-                                                {new Date(message.sendDate).toLocaleString('en-US', { timeZone: 'Asia/Seoul' })}
+                                                {new Date(message.sendDate).toLocaleString('en-US', { timeZone: 'Asia/Seoul' }).substring(10, 16) + new Date(message.sendDate).toLocaleString('en-US', { timeZone: 'Asia/Seoul' }).substring(19, 22)}
                                             </span>
                                         </li>
                                     ))}

@@ -52,17 +52,17 @@ export default function NoticeDetail(){
                         </div>
                         <div class="mb-3">
                             <label for="enddt" class="form-label"><strong>기한:</strong></label>
-                            <input type="text" id="enddt" class="form-control" value={noticedetail.enddt} readonly/>
+                            <input type="text" id="enddt" class="form-control" value={noticedetail.enddt} readonly />
                         </div>
                         <div class="mb-3">
                             <label for="enddt" class="form-label"><strong>내용:</strong></label>
-                            <input type="text" id="enddt" class="form-control" value={noticedetail.content} readonly/>
+                            <textarea id="enddt" class="form-control" value={noticedetail.content} readonly />
                         </div>
                     </form>
                 </div>
                 <div class="row mt-3">
                     <div class="col-12 text-center">
-                        <Link to="/noticelist" class="btn btn-secondary">공지 리스트로 돌아가기</Link>
+                        <Link to="/notice/list" class="btn btn-secondary">공지 리스트로 돌아가기</Link>
                     </div>
                 </div>
             </div>

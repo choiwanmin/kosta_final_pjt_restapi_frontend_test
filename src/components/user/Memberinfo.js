@@ -11,7 +11,7 @@ export default function MemberInfo() {
     const [isEditing, setIsEditing] = useState(false);
     const [dlist, setDlist] = useState({});
     const [jlist, setJlist] = useState({});
-    const [selectedDept, setSelectedDept] = useState('');
+    // const [selectedDept, setSelectedDept] = useState('');
 
     // const { userid, memberid, birthdt, email, cpnum, address, memberimgnm, hiredt, leavedt, deptid, joblvid, mgrid, eweinfo, memberimgf } = mdto;
     const token = sessionStorage.getItem('token');
@@ -74,10 +74,16 @@ export default function MemberInfo() {
         }
     };
 
-    const handleDeptSelect = (event) => {
-        const selectedOption = event.target.value;
-        setSelectedDept(selectedOption);
-    };
+    // const handleDeptSelect = (event) => {
+    //     const selectedOption = event.target.value;
+    //     setSelectedDept(selectedOption);
+    // };
+
+    const [deptid, setDeptid] = useState(0);
+
+    const deptSelect = (e) => {
+        setDeptid(e.target.value)
+    }
 
     //
     //
@@ -114,6 +120,7 @@ export default function MemberInfo() {
 
     const editbtn = () => {
         let memberfdata = new FormData(document.getElementById('memberf'));
+        memberfdata.set('dept', deptid);
         // console.log(memberfdata.get(''));
         if (memberfdata.get('memberid') === '') {
             memberfdata.set('memberid', 0);
@@ -124,6 +131,7 @@ export default function MemberInfo() {
         axios.post(`${process.env.REACT_APP_SERVER}/member/memberadd`, memberfdata,
             { headers: { auth_token: token, "Content-Type": "multipart/form-data" } })
             .then(function (res) {//res.status:상태값, res.data:백에서 보낸 데이터
+                // console.log(res.data.flag);
                 if (res.status === 200) {
                     console.log(res.data.flag);
                     if (res.data.flag) {
@@ -212,8 +220,23 @@ export default function MemberInfo() {
                                     ) : (
                                         <td>
                                             {/* <select id="deptslist" onChange={handleDeptSelect} value={selectedDept}>
-                                                {dlist.map(d => (
-                                                    <option key={d.deptid} value={d.deptid} data-dept={d.mgrid.userid.usernm}>
+                                                {Array.isArray(dlist) && dlist.length > 0 && dlist.map(d => (
+                                                    <option key={d.deptid} value={d}>
+                                                        {d.deptnm}
+                                                    </option>
+                                                ))}
+                                            </select> */}
+
+                                            {/* <select id="deptslist" name="deptid" onChange={deptSelect}>
+                                                <option>부서 선택</option>
+                                                {dlist.map((dept, i) => (
+                                                    <option value={dept.deptid}>{dept.deptnm}</option>
+                                                ))}
+                                            </select> */}
+                                            <select id="deptslist" name="deptid">
+                                                <option value={''}>부서 선택</option>
+                                                {dlist.map((d) => (
+                                                    <option key={d.deptid} value={d.deptid} selected={d.deptnm === mdto?.deptid?.deptnm}>
                                                         {d.deptnm}
                                                     </option>
                                                 ))}
@@ -227,8 +250,7 @@ export default function MemberInfo() {
                                             </select>
                                         </td>
                                     )}
-                                    <input type="hidden" name="mgrid" id="mgrid" value={selectedDept ? selectedDept.mgrid?.userid?.usernm : ''} />
-                                    {/* <input type="hidden" id="mgr" value={selectedDept} /> */}
+                                    {/* <input type="hidden" name="mgrid" id="mgrid" value={selectedDept ? selectedDept.mgrid?.userid?.usernm ?? '' : ''} /> */}
                                     <th>직급</th>
                                     {!isEditing ? (
                                         <>
@@ -240,8 +262,9 @@ export default function MemberInfo() {
                                         <>
                                             <td>
                                                 <select id="joblvslist" name="joblvid">
+                                                    <option value={''}>직급 선택</option>
                                                     {jlist.map((j) => (
-                                                        <option key={j.deptid} value={j.joblvidx} selected={j.joblvid.joblvnm === j.joblvnm}>
+                                                        <option key={j.joblvidx} value={j.joblvidx} selected={j.joblvnm === mdto?.joblvid?.joblvnm}>
                                                             {j.joblvnm}
                                                         </option>
                                                     ))}

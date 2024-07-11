@@ -24,16 +24,56 @@ export default function Userlist() {
             })
     }, [token, type, navigate])
 
+    const [usersearchfdata, setUsersearchfdata] = useState({
+        type: '1', // Default value for type, assuming '1' corresponds to '부서이름'
+        val: ''     // Default value for input field
+    });
+
+    const UserSearchChange = (e) => {
+        const { name, value } = e.target;
+        setUsersearchfdata({
+            ...usersearchfdata,
+            [name]: value
+        });
+    };
+
+    const UserSearchSubmit = (e) => {
+        e.preventDefault();
+        console.log(usersearchfdata);
+        const { val, type } = usersearchfdata;
+
+        // console.log(deptsearchfdata.get('val'));
+        // console.log(deptsearchfdata.get('type'));
+        // Handle form submission logic here, e.g., send search query to server
+        axios.post(`${process.env.REACT_APP_SERVER}/admin/user/getuserby?val=${val}&type=${type}`, {}, {
+            headers: { auth_token: token },
+            // params: { val, type }
+        })
+            .then(function (res) {
+                // console.log(res.data.flag);
+                // console.log(res.data.list);
+                console.log(res.data.flag);
+                if (res.status === 200 && res.data.flag) {
+                    setList(res.data.ulist);
+                } else if (!res.data.flag) {
+                    alert('잘못된 접근입니다.');
+                    // alert('error')
+                }
+            })
+        console.log(usersearchfdata); // Example: Output form data to console
+    };
+
     return (
         <div class="main_body">
             <div class="usersearch-body">
                 {/* <form class="userlist_line" th:action="@{/admin/user/getdeptby}" method="post"> */}
-                <form class="userlist_line">
+                {/* <form class="userlist_line"> */}
+                <form onSubmit={UserSearchSubmit} className="userlist_line">
                     <table class="m20 table_w100">
                         <thead>
                             <tr>
                                 <td>
-                                    <select class="userselect_box" name="type">
+                                    <select class="userselect_box" name="type" value={usersearchfdata.type} onChange={UserSearchChange}>
                                         <option value="1">직원계정</option>
                                         <option value="2">부서이름</option>
                                         <option value="3">직원이름</option>
@@ -42,7 +82,8 @@ export default function Userlist() {
                                     </select>
                                 </td>
                                 <td class="userlist_search_wrapper">
-                                    <input class="userlist_input" type="text" name="val" />&nbsp;
+                                    <input class="userlist_input" type="text" name="val" value={usersearchfdata.val}
+                                        onChange={UserSearchChange} />&nbsp;
                                     <input type="submit" class="btn blue_btn list_search" value="검색" />
                                 </td>
                             </tr>

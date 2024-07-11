@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import "./Pageing.css";
 
@@ -18,6 +18,10 @@ export default function NoticeAdd() {
         content: ({})
     });
 
+    useEffect(()=>{
+        setDeptType("전체");
+    },[])
+
     const onChange = (e) => {
         setFormData({
             ...formData,
@@ -27,6 +31,13 @@ export default function NoticeAdd() {
 
 
     const addnotice = () => {
+        const currentDate = new Date();
+        const selectedDate = new Date(formData.enddt);
+
+        if (selectedDate < currentDate) {
+            alert('마감 기한 설정을 확인해주세요.');
+            return;
+        }
         let fdata = new FormData(document.getElementById('addn'));
         axios.post(`${process.env.REACT_APP_SERVER}/auth/notice/add`, fdata, {
             headers: {
@@ -37,7 +48,7 @@ export default function NoticeAdd() {
             .then(function (res) {
                 if (res.status === 200) {
                     alert('공지사항이 성공적으로 등록되었습니다.');
-                    window.location.href = "/noticelist";
+                    window.location.href = "/notice/list";
                 } else {
                     alert('공지사항 등록에 실패하였습니다.');
                 }
