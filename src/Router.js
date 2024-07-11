@@ -70,12 +70,12 @@ export default function Router() {
             <Route path="/dept/record" element={<Dept/>}></Route>
             <Route path="/admin/record" element={<RecordAdmin/>}></Route>
             <Route path="/mainchat" element={<MainChat/>}/>
-            <Route path="/loadchatroom" element={<LoadChatRoomsView />}/>
+            <Route path="/messenger" element={<LoadChatRoomsView />}/>
             <Route path="/login" element={<Login/>}></Route>
             <Route path="/join" element={<Join/>}></Route>
             <Route path="/docxlist" element={<DocxList/>}></Route>
             <Route path="/addreport" element={<DocxAdd/>}></Route>
-            <Route path="/noticelist" element={<NoticeList/>}/>
+            <Route path="/notice/list" element={<NoticeList/>}/>
             <Route path="/noticeadd" element={<NoticeAdd/>}/>
             <Route path="/noticedetail/:notid" element={<NoticeDetail/>}/>
             
