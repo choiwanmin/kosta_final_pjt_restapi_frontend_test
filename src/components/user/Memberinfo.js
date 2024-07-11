@@ -211,9 +211,16 @@ export default function MemberInfo() {
                                         <td>{mdto?.deptid?.deptnm}</td>
                                     ) : (
                                         <td>
-                                            <select id="deptslist" onChange={handleDeptSelect} value={selectedDept}>
+                                            {/* <select id="deptslist" onChange={handleDeptSelect} value={selectedDept}>
                                                 {dlist.map(d => (
                                                     <option key={d.deptid} value={d.deptid} data-dept={d.mgrid.userid.usernm}>
+                                                        {d.deptnm}
+                                                    </option>
+                                                ))}
+                                            </select> */}
+                                            <select id="deptslist" onChange={handleDeptSelect} value={selectedDept}>
+                                                {Array.isArray(dlist) && dlist.length > 0 && dlist.map(d => (
+                                                    <option key={d.deptid} value={d.deptid} data-dept={d.mgrid?.userid?.usernm}>
                                                         {d.deptnm}
                                                     </option>
                                                 ))}
@@ -486,26 +493,26 @@ export default function MemberInfo() {
                             </>
                         )} */}
                         {((mdto?.memberid == null && sessionStorage.getItem('loginId') === userid) || sessionStorage.getItem('type') === 'admin') && (
-                        !isEditing ? (
-                            <>
-                                <button type="button" className="btn blue_memberbtn" id="usereditpgbtnid" onClick={editpgbtn}>
-                                    내정보수정페이지이동버튼
-                                </button>
-                            </>
-                        ) : (
-                            <>
-                                <button type="submit" className="btn blue_memberbtn" id="usereditbtnid" onClick={editbtn}>
-                                    내정보수정버튼
-                                </button>
-                                <button type="button" className="btn blue_memberbtn" onClick={resetbtn}>
-                                    취소
-                                </button>
-                                <button type="button" className="btn blue_memberbtn" onClick={backbtn}>
-                                    되돌아가기
-                                </button>
-                            </>
-                        )
-                    )}
+                            !isEditing ? (
+                                <>
+                                    <button type="button" className="btn blue_memberbtn" id="usereditpgbtnid" onClick={editpgbtn}>
+                                        내정보수정페이지이동버튼
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <button type="submit" className="btn blue_memberbtn" id="usereditbtnid" onClick={editbtn}>
+                                        내정보수정버튼
+                                    </button>
+                                    <button type="button" className="btn blue_memberbtn" onClick={resetbtn}>
+                                        취소
+                                    </button>
+                                    <button type="button" className="btn blue_memberbtn" onClick={backbtn}>
+                                        되돌아가기
+                                    </button>
+                                </>
+                            )
+                        )}
                     </div>
                     {/* <input type="hidden" name="id" value={user.id} /><br /> */}
                 </div>
