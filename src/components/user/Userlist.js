@@ -33,7 +33,7 @@ export default function Userlist() {
                         <thead>
                             <tr>
                                 <td>
-                                    <select class="select_box" name="type">
+                                    <select class="userselect_box" name="type">
                                         <option value="1">직원계정</option>
                                         <option value="2">부서이름</option>
                                         <option value="3">직원이름</option>

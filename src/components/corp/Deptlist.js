@@ -189,7 +189,7 @@ export default function Deptlist() {
                             <tr>
                                 <td>
                                     <select
-                                        className="select_box"
+                                        className="deptselect_box"
                                         name="type"
                                         value={deptsearchfdata.type}
                                         onChange={DeptSearchChange}
