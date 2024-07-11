@@ -26,6 +26,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite, 
     const userList = useSelector(state => state.modalArr);
     const chatContentRef = useRef(null);
     const navigate = useNavigate();
+    const[imgname, setImgname] = useState('');
 
 
 
@@ -244,6 +245,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite, 
                 if (res.status === 200) {
                     setChatRoom(res.data.chatroom);
                     setMembername(res.data.chatroom.memberNames)
+                    setImgname(`${process.env.REACT_APP_SERVER}/member/memberimg/` + res.data.chatroom.img);
                 } else {
                     alert('채팅방 로딩 실패');
                 }
@@ -312,7 +314,10 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite, 
                                     <div className="d-flex align-items-center">
                                         <a class="d-flex align-items-center">
                                             <div class="flex-shrink-0">
-                                                <img class="img-fluid-center" src="" alt="user img" />
+                                                <img className="img-fluid-center"
+                                                    src={imgname}
+                                                    alt="Profile Img"
+                                                    style={{ width: '45px', height: '45px' }} />
                                                 <span class="active"></span>
                                             </div>
                                             <div class="flex-grow-1 ms-3">
@@ -337,10 +342,10 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite, 
                                                                                     <tbody>
                                                                                         <tr>
                                                                                             <td rowSpan="6">
-                                                                                                <img
+                                                                                                <img 
                                                                                                     src={`${process.env.REACT_APP_SERVER}/member/memberimg/` + memberchatList.memberimgnm}
                                                                                                     alt="Profile Img"
-                                                                                                    style={{ width: '103px', height: '132px' }} />
+                                                                                                    style={{ width: '80%', height: '80%' }} />
 
                                                                                             </td>
                                                                                         </tr>

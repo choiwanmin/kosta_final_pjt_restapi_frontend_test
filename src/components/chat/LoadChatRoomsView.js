@@ -69,6 +69,7 @@ export default function LoadChatRoomsView() {
             .then(function (res) {
                 if (res.status === 200) {
                     setList(res.data.list);
+
                 } else {
                     alert('채팅방 불러오기 실패');
                 }
@@ -153,7 +154,10 @@ export default function LoadChatRoomsView() {
                                                                 chatRoom.roomType === 'PERSONAL' || chatRoom.roomType === 'PRIVATE' ? (
                                                                     <a key={index} href="#" className="d-flex align-items-center" onClick={() => roomConnect(chatRoom.chatroomid)}>
                                                                         <div className="flex-shrink-0">
-                                                                            <img className="img-fluid-center" alt="user img" />
+                                                                            <img className="img-fluid-center"
+                                                                                src={`${process.env.REACT_APP_SERVER}/member/memberimg/` + chatRoom.img}
+                                                                                alt="Profile Img"
+                                                                                style={{ width: '45px', height: '45px' }} />
                                                                         </div>
                                                                         <div className="flex-grow-1 ms-3">
                                                                             <h3>
@@ -191,7 +195,7 @@ export default function LoadChatRoomsView() {
                                     </div>
                                 </div>
                             </div>
-                            {selectedRoom && <ConnectChatRoom roomid={selectedRoom} userid={loginId} reloadRoom={reloadChatroom} isInvite={isInvite}  setIsInvite={setIsInvite}/>}
+                            {selectedRoom && <ConnectChatRoom roomid={selectedRoom} userid={loginId} reloadRoom={reloadChatroom} isInvite={isInvite} setIsInvite={setIsInvite} />}
                             <ChatModal onSelect={handleSelect} isInvite={isInvite} />
                         </div>
                     </div>
