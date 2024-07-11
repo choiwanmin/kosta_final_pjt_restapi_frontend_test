@@ -102,7 +102,7 @@ export default function NoticeList() {
                                     <tr>
                                         <th>분류</th>
                                         <th>글제목</th>
-                                        <th>내용</th>
+                                       
                                         <th>작성자</th>
                                         <th>작성일</th>
                                         <th>문서삭제</th>
@@ -113,7 +113,7 @@ export default function NoticeList() {
                                         <tr key={notice.id}>
                                             <td>{notice.formtype}</td>
                                             <td onClick={() => showdetails(notice.id)}>{notice.title}</td>
-                                            <td>{notice.content}</td>
+
                                             <td>{notice.writername}</td>
                                             <td>{notice.startdt}</td>
                                             <td>

@@ -7,9 +7,9 @@ import { Stomp } from '@stomp/stompjs';
 import { useRef } from 'react';
 import sendMessage from './SendMessage';
 import '../common/modal.css';
+import { useNavigate } from "react-router-dom";
 
-
-export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,setIsInvite }) {
+export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite, setIsInvite }) {
     const [messages, setMessages] = useState([]);
     const [chatRoom, setChatRoom] = useState(null);
     const [inputs, setInputs] = useState({});
@@ -25,7 +25,9 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
     const [checkMessage, setCheckMessage] = useState(true);
     const userList = useSelector(state => state.modalArr);
     const chatContentRef = useRef(null);
-    
+    const [previewImage, setPreviewImage] = useState(`${process.env.REACT_APP_SERVER}/member/memberimg/` + memberchatList.memberimgnm);
+    const navigate = useNavigate();
+
 
     const handleScroll = () => {
         const chatContent = chatContentRef.current;
@@ -37,9 +39,40 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
             setTimeout(() => {
                 const newScrollHeight = chatContent.scrollHeight;
                 chatContent.scrollTop = newScrollHeight - previousScrollHeight;
-            }, 150); 
+            }, 150);
         }
     };
+
+    useEffect(() => {
+        if (chatRoom && chatRoom.name) {
+            const name = chatRoom.name.split('_');
+            const memId = name.filter(name => name !== chatRoom.chatRoomNames[0].host);
+            setMemberId(memId);
+        }
+    }, [chatRoom]);
+
+    useEffect(() => {
+        loadMessages();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [page]);
+
+
+    useEffect(() => {
+        if (chatRoom && chatRoom.chatRoomNames && chatRoom.chatRoomNames.length > 0) {
+            setInputs({
+                editableName: chatRoom.chatRoomNames[0].editableName.replace(/_/g, ' ').trim()
+            });
+        }
+    }, [chatRoom]);
+
+    useEffect(() => {
+        if (roomid) {
+            disconnect();
+            connect(roomid);
+            centerChatRoom(roomid, userid);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [roomid]);
 
     useEffect(() => {
         const chatContent = chatContentRef.current;
@@ -76,6 +109,9 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
     };
 
     const loadMessages = (overwrite = false) => {
+        if (!isConnected) {
+            return;
+        }
         axios.post(`${process.env.REACT_APP_SERVER}/auth/chat/message/room3`, {}, { headers: { auth_token: token }, params: { roomid: roomid, page: page } })
             .then(function (res) {
                 if (res.status === 200) {
@@ -114,38 +150,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
         }
     }
 
-    useEffect(() => {
-        if (chatRoom && chatRoom.name) {
-            const name = chatRoom.name.split('_');
-            const memId = name.filter(name => name !== chatRoom.chatRoomNames[0].host);
-            setMemberId(memId);
-        }
-    }, [chatRoom]);
-
-    useEffect(() => {
-        loadMessages();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [page]);
-
-
-    useEffect(() => {
-        if (chatRoom && chatRoom.chatRoomNames && chatRoom.chatRoomNames.length > 0) {
-            setInputs({
-                editableName: chatRoom.chatRoomNames[0].editableName.replace(/_/g, ' ').trim()
-            });
-        }
-    }, [chatRoom]);
-
-    useEffect(() => {
-        if (roomid) {
-            connect(roomid);
-            centerChatRoom(roomid, userid);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [roomid]);
-
     const connect = (roomid) => {
-        setIsConnected(true);
         if (!roomid) {
             return;
         }
@@ -166,6 +171,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
             stompClient.subscribe('/recent/update', function () {
 
             });
+            setIsConnected(true);
             loadMessages(roomid);
         });
     };
@@ -260,8 +266,9 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
             .then(function (res) {
                 if (res.status === 200) {
                     alert('채팅방 나가기 성공');
-                    reloadRoom();
                     disconnect();
+                    navigate('/loadchatroom', { replace: true });
+                    window.location.reload();
                 } else {
                     alert('채팅방 나가기 실패');
                 }
@@ -274,6 +281,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
                 console.log('연결끊겼음');
                 setIsConnected(false);
                 setMessages([]);
+                // reloadRoom();
             });
             stompClientRef.current = null;
         }
@@ -292,11 +300,6 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
             })
     }
 
-    if (!isConnected) {
-        return (
-        <div>나간방</div>
-        );
-    }
     return (
         <>
             <div className="chatbox">
@@ -314,7 +317,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
                                             </div>
                                             <div class="flex-grow-1 ms-3">
                                                 <input class="roomNameStyle" type="text" name="editableName" onChange={onChange} value={inputs.editableName} />
-                                                <img class="img-chateditImg" src="" onClick={editRoomName} />
+                                                <i class="fa-solid fa-pen-to-square" onClick={editRoomName}></i>
                                                 <div>
                                                     {membername.map((name, index) => (
                                                         <span key={index}>
@@ -331,8 +334,11 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
                                                                         <div className="modal-body">
                                                                             {memberchatList && (
                                                                                 <div>
-                                                                                    {/* <img src="/img/chat/memberchatList.memberimgnm"></img> */}
-                                                                                    <div >사진: {memberchatList.memberimgnm}</div>
+                                                                                    <img
+                                                                                        src={previewImage}
+                                                                                        alt="Profile Img"
+                                                                                        style={{ width: '103px', height: '132px' }} />
+                                                                                    {/* <div >사진: {memberchatList.memberimgnm}</div> */}
                                                                                     <div >이름: {name}</div>
                                                                                     <div >이메일: {memberchatList.email}</div>
                                                                                     {/* <p>부서: {memberchatList.deptid.deptnm}</p> */}
@@ -388,7 +394,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
                                             <span className="senderName">{message.username}</span>
                                             <p>{showFileMessage(message)}</p>
                                             <span className="time">
-                                                {new Date(message.sendDate).toLocaleString('en-US', { timeZone: 'Asia/Seoul' }).substring(10,16) + new Date(message.sendDate).toLocaleString('en-US', { timeZone: 'Asia/Seoul' }).substring(19,22)}
+                                                {new Date(message.sendDate).toLocaleString('en-US', { timeZone: 'Asia/Seoul' }).substring(10, 16) + new Date(message.sendDate).toLocaleString('en-US', { timeZone: 'Asia/Seoul' }).substring(19, 22)}
                                             </span>
                                         </li>
                                     ))}
