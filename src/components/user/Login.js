@@ -29,13 +29,13 @@ export default function Login() {
                         sessionStorage.setItem("loginId", res.data.id);
                         sessionStorage.setItem("type", res.data.type);
                         sessionStorage.setItem("usernm", res.data.usernm);
+                        sessionStorage.setItem("memberid", res.data.memberid);
+                        sessionStorage.setItem("memberimgnm", res.data.memberimgnm);
+                        sessionStorage.setItem("mgr_deptid", res.data.mgr_deptid);
                         sessionStorage.setItem("deptnm", res.data.deptnm);
                         navigate('/index');
-                        sessionStorage.setItem("mgr_deptid", res.data.mgr_deptid);
-                        sessionStorage.setItem("memberimgnm", res.data.memberimgnm);
                         dispatch(setUserInfo(res.data.id));
                         window.location.reload();
-                        sessionStorage.setItem("deptnm", res.data.deptnm);
                         navigate('/');
                     } else {
                         alert('로그인 실패: 아이디 또는 비밀번호가 일치하지 않습니다.');
