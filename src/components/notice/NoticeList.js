@@ -60,7 +60,6 @@ export default function NoticeList() {
                 if (res.status === 200) {
                     alert('공지 삭제 완료');
                     getNoticelist();
-                    setTotalItemsCount(res.data.list.length);
                 } else {
                     alert('공지 삭제 실패');
                 }
@@ -119,7 +118,7 @@ export default function NoticeList() {
                                             <td>{notice.startdt}</td>
                                             <td>
                                                 {notice.writer.id === sessionStorage.getItem('loginId') && (
-                                                    <button className="btn btn-danger btn-sm" onClick={() => deleteDocument(notice.id)}>삭제</button>
+                                                    <button className="btn btn-danger btn-sm" onClick={() => deleteDocument(notice.id)}>  <i className="fa-solid fa-eraser"></i></button>
                                                 )}
                                             </td>
                                         </tr>

@@ -6,6 +6,7 @@ import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
 import { useRef } from 'react';
 import sendMessage from './SendMessage';
+import '../common/modal.css';
 
 
 export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,setIsInvite }) {
@@ -28,8 +29,8 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
 
     const handleScroll = () => {
         const chatContent = chatContentRef.current;
+        if (!chatContent) return;
         const scrollTop = Math.round(chatContent.scrollTop);
-        console.log(scrollTop);
         if (scrollTop === 0) {
             const previousScrollHeight = chatContent.scrollHeight;
             setPage((prevPage) => prevPage + 1);
@@ -42,14 +43,20 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
 
     useEffect(() => {
         const chatContent = chatContentRef.current;
-        chatContent.scrollTop = chatContent.scrollHeight;
+        if (chatContent) {
+            chatContent.scrollTop = chatContent.scrollHeight;
+        }
     }, [messages]);
 
     useEffect(() => {
         const chatContent = chatContentRef.current;
-        chatContent.addEventListener('scroll', handleScroll);
+        if (chatContent) {
+            chatContent.addEventListener('scroll', handleScroll);
+        }
         return () => {
-            chatContent.removeEventListener('scroll', handleScroll);
+            if (chatContent) {
+                chatContent.removeEventListener('scroll', handleScroll);
+            }
         };
     }, [checkMessage]);
 
@@ -266,6 +273,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
             stompClientRef.current.disconnect(() => {
                 console.log('연결끊겼음');
                 setIsConnected(false);
+                setMessages([]);
             });
             stompClientRef.current = null;
         }
@@ -284,14 +292,11 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
             })
     }
 
-
     if (!isConnected) {
         return (
         <div>나간방</div>
         );
     }
-
-
     return (
         <>
             <div className="chatbox">
@@ -320,25 +325,24 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite,s
                                                                 <div className="modal-dialog">
                                                                     <div className="modal-content">
                                                                         <div className="modal-header">
-                                                                            <h5 className="modal-title" id={`exampleModalLabel${index}`}>Modal title</h5>
+                                                                            <h5 className="modal-title" id={`exampleModalLabel${index}`}>사용자 정보</h5>
                                                                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                         </div>
                                                                         <div className="modal-body">
                                                                             {memberchatList && (
                                                                                 <div>
                                                                                     {/* <img src="/img/chat/memberchatList.memberimgnm"></img> */}
-                                                                                    <p>사진: {memberchatList.memberimgnm}</p>
-                                                                                    <p>이름: {name}</p>
-                                                                                    <p>이메일: {memberchatList.email}</p>
+                                                                                    <div >사진: {memberchatList.memberimgnm}</div>
+                                                                                    <div >이름: {name}</div>
+                                                                                    <div >이메일: {memberchatList.email}</div>
                                                                                     {/* <p>부서: {memberchatList.deptid.deptnm}</p> */}
-                                                                                    <p>부서번호: {memberchatList.cpnum}</p>
-                                                                                    <p>직업: {jobchatList.joblvnm}</p>
+                                                                                    <div >부서번호: {memberchatList.cpnum}</div>
+                                                                                    <div >직무: {jobchatList.joblvnm}</div>
                                                                                 </div>
                                                                             )}
                                                                         </div>
                                                                         <div className="modal-footer">
-                                                                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                                            <button type="button" className="btn btn-primary">Save changes</button>
+                                                                            <button type="button" className="btn blue_btn" data-bs-dismiss="modal">닫기</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>

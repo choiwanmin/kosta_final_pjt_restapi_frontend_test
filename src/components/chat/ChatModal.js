@@ -1,11 +1,9 @@
 import React, { useState } from "react";
-import "../common/Leftnav.css";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser, removeUser } from "../../store";
 
 export default function ChatModal({ onSelect, isInvite }) {
-    console.log(isInvite);
     let dispatch = useDispatch();
     const [name, setName] = useState("");
     const [type, setType] = useState(1);
