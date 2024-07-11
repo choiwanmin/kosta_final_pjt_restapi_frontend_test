@@ -25,8 +25,8 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite, 
     const [checkMessage, setCheckMessage] = useState(true);
     const userList = useSelector(state => state.modalArr);
     const chatContentRef = useRef(null);
-    const [previewImage, setPreviewImage] = useState(`${process.env.REACT_APP_SERVER}/member/memberimg/` + memberchatList.memberimgnm);
     const navigate = useNavigate();
+
 
 
     const handleScroll = () => {
@@ -104,6 +104,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite, 
     const handleMemberClick = (clickedMemberId) => {
         memberchatinfo(clickedMemberId);
     }
+
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
     };
@@ -293,7 +294,6 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite, 
                 if (res.status === 200) {
                     setMemberchatList(res.data.member);
                     setJobchatList(res.data.jobL);
-
                 } else {
                     alert('사용자 정보 조회 실패');
                 }
@@ -326,25 +326,46 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite, 
                                                             </p>
                                                             <div className="modal fade" id={`exampleModal${index}`} tabIndex="-1" aria-labelledby={`exampleModalLabel${index}`} aria-hidden="true">
                                                                 <div className="modal-dialog">
-                                                                    <div className="modal-content">
+                                                                    <div className="connect_chat_modal-content">
                                                                         <div className="modal-header">
                                                                             <h5 className="modal-title" id={`exampleModalLabel${index}`}>사용자 정보</h5>
                                                                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                         </div>
                                                                         <div className="modal-body">
                                                                             {memberchatList && (
-                                                                                <div>
-                                                                                    <img
-                                                                                        src={previewImage}
-                                                                                        alt="Profile Img"
-                                                                                        style={{ width: '103px', height: '132px' }} />
-                                                                                    {/* <div >사진: {memberchatList.memberimgnm}</div> */}
-                                                                                    <div >이름: {name}</div>
-                                                                                    <div >이메일: {memberchatList.email}</div>
-                                                                                    {/* <p>부서: {memberchatList.deptid.deptnm}</p> */}
-                                                                                    <div >부서번호: {memberchatList.cpnum}</div>
-                                                                                    <div >직무: {jobchatList.joblvnm}</div>
-                                                                                </div>
+                                                                                <table className="info-table">
+                                                                                    <tbody>
+                                                                                        <tr>
+                                                                                            <td rowSpan="6">
+                                                                                                <img
+                                                                                                    src={`${process.env.REACT_APP_SERVER}/member/memberimg/` + memberchatList.memberimgnm}
+                                                                                                    alt="Profile Img"
+                                                                                                    style={{ width: '103px', height: '132px' }} />
+
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <th>이름</th>
+                                                                                            <td>{name}</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <th>E-mail:</th>
+                                                                                            <td>{memberchatList.email}</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <th>번호:</th>
+                                                                                            <td>{memberchatList.cpnum}</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <th>직무:</th>
+                                                                                            <td>{jobchatList.joblvnm}</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <th>부서:</th>
+                                                                                            <td>{/* <td> {memberchatList.deptid.deptnm}</td> */}</td>
+                                                                                        </tr>
+                                                                                    </tbody>
+                                                                                </table>
                                                                             )}
                                                                         </div>
                                                                         <div className="modal-footer">
