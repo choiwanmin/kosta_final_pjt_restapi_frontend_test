@@ -374,7 +374,7 @@ export default function MemberInfo() {
                                                     </select>
                                                 </td>
                                                 <td>
-                                                    <button className="btn blue_btn" onClick={() => handleRemoveField(index)}>삭제</button>
+                                                    <button className="btn blue_memberbtn" onClick={() => handleRemoveField(index)}>삭제</button>
                                                 </td>
                                             </>
                                         )}
@@ -383,7 +383,7 @@ export default function MemberInfo() {
                             </tbody>
                         </table>
                         {isEditing && (
-                            <button className="btn blue_btn" onClick={handleAddField}>추가하기</button>
+                            <button className="btn blue_memberbtn" onClick={handleAddField}>추가하기</button>
                         )}
 
                         <h3>경력 정보</h3>
@@ -450,7 +450,7 @@ export default function MemberInfo() {
                                                     </select>
                                                 </td>
                                                 <td>
-                                                    <button className="btn blue_btn" onClick={() => handleRemoveField(index)}>삭제</button>
+                                                    <button className="btn blue_memberbtn" onClick={() => handleRemoveField(index)}>삭제</button>
                                                 </td>
                                             </>
                                         )}
@@ -459,7 +459,7 @@ export default function MemberInfo() {
                             </tbody>
                         </table>
                         {isEditing && (
-                            <button className="btn blue_btn" onClick={handleAddField}>추가하기</button>
+                            <button className="btn blue_memberbtn" onClick={handleAddField}>추가하기</button>
                         )}
                         <input type='hidden' name="userid" value={userid} />
                         <input type='hidden' name="memberid" value={mdto?.memberid} />
@@ -468,19 +468,19 @@ export default function MemberInfo() {
                     <div className="memberinfo_admin_menu">
                         {/* {!isEditing && ((mdto?.memberid == null && sessionStorage.getItem('loginId') === userid) || sessionStorage.getItem('type') === 'admin') ? (
                             <>
-                                <button type="button" className="btn blue_btn" id="usereditpgbtnid" onClick={editpgbtn}>
+                                <button type="button" className="btn blue_memberbtn" id="usereditpgbtnid" onClick={editpgbtn}>
                                     내정보수정페이지이동버튼
                                 </button>
                             </>
                         ) : (
                             <>
-                                <button type="submit" className="btn blue_btn" id="usereditbtnid" onClick={editbtn}>
+                                <button type="submit" className="btn blue_memberbtn" id="usereditbtnid" onClick={editbtn}>
                                     내정보수정버튼
                                 </button>
-                                <button type="button" className="btn blue_btn" onClick={resetbtn}>
+                                <button type="button" className="btn blue_memberbtn" onClick={resetbtn}>
                                     취소
                                 </button>
-                                <button type="button" className="btn blue_btn" onClick={backbtn}>
+                                <button type="button" className="btn blue_memberbtn" onClick={backbtn}>
                                     되돌아가기
                                 </button>
                             </>
@@ -488,19 +488,19 @@ export default function MemberInfo() {
                         {((mdto?.memberid == null && sessionStorage.getItem('loginId') === userid) || sessionStorage.getItem('type') === 'admin') && (
                         !isEditing ? (
                             <>
-                                <button type="button" className="btn blue_btn" id="usereditpgbtnid" onClick={editpgbtn}>
+                                <button type="button" className="btn blue_memberbtn" id="usereditpgbtnid" onClick={editpgbtn}>
                                     내정보수정페이지이동버튼
                                 </button>
                             </>
                         ) : (
                             <>
-                                <button type="submit" className="btn blue_btn" id="usereditbtnid" onClick={editbtn}>
+                                <button type="submit" className="btn blue_memberbtn" id="usereditbtnid" onClick={editbtn}>
                                     내정보수정버튼
                                 </button>
-                                <button type="button" className="btn blue_btn" onClick={resetbtn}>
+                                <button type="button" className="btn blue_memberbtn" onClick={resetbtn}>
                                     취소
                                 </button>
-                                <button type="button" className="btn blue_btn" onClick={backbtn}>
+                                <button type="button" className="btn blue_memberbtn" onClick={backbtn}>
                                     되돌아가기
                                 </button>
                             </>

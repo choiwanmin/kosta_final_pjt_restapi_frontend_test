@@ -128,7 +128,7 @@ export default function Joblvlist() {
                             <tr>
                                 <td>
                                     <select
-                                        className="select_box"
+                                        className="joblvselect_box"
                                         name="type"
                                         value={joblvsearchfdata.type}
                                         onChange={JoblvSearchChange}
