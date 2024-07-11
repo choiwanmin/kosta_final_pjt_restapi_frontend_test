@@ -288,7 +288,6 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite, 
                 console.log('연결끊겼음');
                 setIsConnected(false);
                 setMessages([]);
-                // reloadRoom();
             });
             stompClientRef.current = null;
         }
