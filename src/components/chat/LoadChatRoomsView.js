@@ -88,7 +88,7 @@ export default function LoadChatRoomsView() {
             .then(function (res) {
                 if (res.status === 200) {
                     setList(res.data.list);
-
+                    console.dir(res.data.list);
                 } else {
                     alert('채팅방 불러오기 실패');
                 }

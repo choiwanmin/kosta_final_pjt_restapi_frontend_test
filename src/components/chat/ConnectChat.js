@@ -206,11 +206,15 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite, 
                 };
                 stompClientRef.current.send(`/send/chat/message/` + roomid + '/' + page, {}, JSON.stringify(message));
                 loadMessages(roomid);
-            })
+            }
+        )
             .catch(error => {
                 console.error('Error uploading file:', error);
                 alert('파일 업로드에 실패했습니다.');
             });
+
+
+            setFile('');
     };
 
     const showFileMessage = (message) => {
