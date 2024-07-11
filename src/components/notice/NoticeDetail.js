@@ -62,7 +62,7 @@ export default function NoticeDetail(){
                 </div>
                 <div class="row mt-3">
                     <div class="col-12 text-center">
-                        <Link to="/noticelist" class="btn btn-secondary">공지 리스트로 돌아가기</Link>
+                        <Link to="/notice/list" class="btn btn-secondary">공지 리스트로 돌아가기</Link>
                     </div>
                 </div>
             </div>

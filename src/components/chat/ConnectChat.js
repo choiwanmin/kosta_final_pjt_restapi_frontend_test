@@ -274,7 +274,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite, 
                 if (res.status === 200) {
                     alert('채팅방 나가기 성공');
                     disconnect();
-                    navigate('/loadchatroom', { replace: true });
+                    navigate('/messenger', { replace: true });
                     window.location.reload();
                 } else {
                     alert('채팅방 나가기 실패');
