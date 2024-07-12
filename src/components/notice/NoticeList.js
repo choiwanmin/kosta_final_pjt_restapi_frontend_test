@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
-import { Link } from 'react-router-dom';
 import Pagination from "react-js-pagination";
-import './Pageing.css';
+import { useNavigate } from "react-router-dom";
 
 
 export default function NoticeList() {
@@ -13,41 +12,68 @@ export default function NoticeList() {
     const [searchType, setSearchType] = useState('title');
     const [totalItemsCount, setTotalItemsCount] = useState(0);
     const token = sessionStorage.getItem('token');
+    const deptnm = sessionStorage.getItem('deptnm');
+    const navigate = useNavigate();
+    const [formType, setFormType] = useState("전체");
 
 
     const showdetails = (notid) => {
-        window.location.href = `/noticedetail/${notid}`;
+        navigate(`/noticedetail/${notid}`);
     }
 
-    const handlePageChange = (page) => {
-        setPage(page);
+    const handlePageChange = (pageNumber) => {
+        setPage(pageNumber);
+        console.log(pageNumber);
     };
+
+    const addnoti = () => {
+        navigate('/noticeadd');
+    }
 
     const searchTitle = () => {
         var valuett = document.getElementById('searchValue').value;
         if (searchType === 'title') {
             setTitle(valuett);
+
         } else if (searchType === 'writer') {
             setWriter(valuett);
+
         }
     };
 
     useEffect(() => {
-        if (title && searchType === 'title') {
+        if (searchType === 'title' && title) {
             getNoticelistByTitle();
-        } else if (writer && searchType === 'writer') {
+        } else if (searchType === 'writer' && writer) {
             getNoticelistByWriter();
-        } else {
-            getNoticelist();
         }
-    }, [page, title, writer, searchType]);
+        else {
+            if (formType === deptnm) {
+                getdeptNoticelist();
+            } else {
+                getNoticelist();
+            }
+        }
+    }, [page, title, writer, searchType, formType]);
 
     const getNoticelist = () => {
-        axios.get(`${process.env.REACT_APP_SERVER}/auth/notice/pagelist`, { headers: { auth_token: token }, params: { page: page, size: 10 } })
+        axios.get(`${process.env.REACT_APP_SERVER}/auth/notice/allpagelist`, { headers: { auth_token: token }, params: { formtype: formType, page: page, size: 10 } })
             .then(function (res) {
                 if (res.status === 200) {
                     setNlist(res.data.list);
-                    setTotalItemsCount(res.data.list.length);
+                    setTotalItemsCount(res.data.totalCount);
+                } else {
+                    alert('공지 리스트 로딩 실패');
+                }
+            })
+    }
+
+    const getdeptNoticelist = () => {
+        axios.get(`${process.env.REACT_APP_SERVER}/auth/notice/deptpagelist`, { headers: { auth_token: token }, params: { page: page, size: 10 } })
+            .then(function (res) {
+                if (res.status === 200) {
+                    setNlist(res.data.list);
+                    setTotalItemsCount(res.data.totalCount);
                 } else {
                     alert('공지 리스트 로딩 실패');
                 }
@@ -60,6 +86,7 @@ export default function NoticeList() {
                 if (res.status === 200) {
                     alert('공지 삭제 완료');
                     getNoticelist();
+
                 } else {
                     alert('공지 삭제 실패');
                 }
@@ -71,7 +98,7 @@ export default function NoticeList() {
             .then(function (res) {
                 if (res.status === 200) {
                     setNlist(res.data.tlist);
-                    setTotalItemsCount(res.data.tlist.length);
+                    setTotalItemsCount(res.data.totalCount);
                 } else {
                     alert('제목으로 검색 실패');
                 }
@@ -83,7 +110,7 @@ export default function NoticeList() {
             .then(function (res) {
                 if (res.status === 200) {
                     setNlist(res.data.wlist);
-                    setTotalItemsCount(res.data.wlist.length);
+                    setTotalItemsCount(res.data.totalCount);
                 } else {
                     alert('이름으로 검색 실패');
                 }
@@ -93,7 +120,31 @@ export default function NoticeList() {
     return (
         <div className="main_body">
             <div className="record_table w_bg">
-                <h2 className="noticetitle">공지 사항</h2>
+                <h2 className="noticetitle">{formType} 공지 사항</h2>
+                <div className="notice_tab">
+                    <button
+                        className={`tablinks btn btn-outline-primary ${formType === '전체' ? 'active' : ''}`}
+                        onClick={() => setFormType('전체')}
+                    >
+                        전체
+                    </button>
+                    <button
+                        className={`tablinks btn btn-outline-primary ${formType === deptnm ? 'active' : ''}`}
+                        onClick={() => setFormType(deptnm)}
+                    >
+                        부서공지
+                    </button>
+                    <div className="searchCss">
+
+                        <label htmlFor="searchType"></label>
+                        <select id="searchType" name="searchType" onChange={(e) => setSearchType(e.target.value)}>
+                            <option value="title">제목</option>
+                            <option value="writer">작성자</option>
+                        </select>
+                        <input type="text" id="searchValue" placeholder="검색 내용 입력.." />
+                        <input type="button" value={"검색"} className="btn btn-secondary" onClick={searchTitle} />
+                    </div>
+                </div>
                 <div className="record_table w_bg">
                     <div className="record_table_wrapper">
                         <div className="left_table">
@@ -102,18 +153,16 @@ export default function NoticeList() {
                                     <tr>
                                         <th>분류</th>
                                         <th>글제목</th>
-                                       
                                         <th>작성자</th>
                                         <th>작성일</th>
                                         <th>문서삭제</th>
                                     </tr>
                                 </thead>
                                 <tbody className="record_list">
-                                    {nlist.map(notice => (
+                                    {nlist.filter(notice => formType === '전체' || notice.formtype === formType).map(notice => (
                                         <tr key={notice.id}>
                                             <td>{notice.formtype}</td>
                                             <td onClick={() => showdetails(notice.id)}>{notice.title}</td>
-
                                             <td>{notice.writername}</td>
                                             <td>{notice.startdt}</td>
                                             <td>
@@ -126,28 +175,20 @@ export default function NoticeList() {
                                 </tbody>
                             </table>
                         </div>
-                        <div className="searchCss">
-                            <label htmlFor="searchType"></label>
-                            <select id="searchType" name="searchType" onChange={(e) => setSearchType(e.target.value)}>
-                                <option value="title">제목</option>
-                                <option value="writer">작성자</option>
-                            </select>
-                            <input type="text" id="searchValue" placeholder="검색 내용 입력.." />
-                            <input type="button" value={"검색"} className="btn btn-secondary" onClick={searchTitle} />
-                        </div>
-                        <Link to="/noticeadd" className="noticebutton">
-                            <input type="button" value={"공지작성"} />
-                        </Link>
-                        <Pagination
-                            containerClassName={"pagination"}
-                            activePage={page}
-                            totalItemsCount={totalItemsCount}
-                            itemsCountPerPage={5}
-                            pageRangeDisplayed={5}
-                            prevPageText={"‹"}
-                            nextPageText={"›"}
-                            onChange={handlePageChange}
+                        <div className="notice_add_search">
+                            <div className="notice_add">
+                                <input type="button" value={"공지작성"} onClick={addnoti} />
+                            </div>
+                            <Pagination
+                            activePage={page} // 현재 페이지
+                            itemsCountPerPage={10} // 한 페이지랑 보여줄 아이템 갯수
+                            totalItemsCount={200} // 총 아이템 갯수
+                            pageRangeDisplayed={5} // paginator의 페이지 범위
+                            prevPageText={""}
+                            nextPageText={""}
+                            onChange={handlePageChange} // 페이지 변경을 핸들링하는 함수
                         />
+                        </div>
                     </div>
                 </div>
             </div>

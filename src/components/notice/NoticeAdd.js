@@ -38,6 +38,7 @@ export default function NoticeAdd() {
             alert('마감 기한 설정을 확인해주세요.');
             return;
         }
+
         let fdata = new FormData(document.getElementById('addn'));
         axios.post(`${process.env.REACT_APP_SERVER}/auth/notice/add`, fdata, {
             headers: {
