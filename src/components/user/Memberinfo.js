@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export default function MemberInfo() {
+    const navigate = useNavigate();
     const { userid } = useParams();
     const [mdto, setMdto] = useState({});
     const [edulist, setEdulist] = useState([]);
@@ -24,7 +25,7 @@ export default function MemberInfo() {
                 setEdulist(data.edulist || []);
                 setExpwoklist(data.expwoklist || []);
                 setDlist(data.dlist || []);
-                console.log(data.dlist)
+                // console.log(data.dlist)
                 setJlist(data.jlist || []);
                 setPreviewImage(`${process.env.REACT_APP_SERVER}/member/memberimg/` + data.mdto?.memberimgnm);
             })
@@ -47,6 +48,22 @@ export default function MemberInfo() {
         //     }
         // })
     }, [token, userid]);
+
+    // useEffect(() => {
+    //     console.log('sessionStorage.getItem("type")1:' + sessionStorage.getItem("type"));
+    //     console.dir('mdto:' + mdto);
+    //     if (sessionStorage.getItem("type") !== "admin") {
+    //         sessionStorage.setItem("loginId", mdto.userid?.id);
+    //         sessionStorage.setItem("type", mdto.userid?.type);
+    //         sessionStorage.setItem("usernm", mdto.userid?.usernm);
+    //         sessionStorage.setItem("aprov", mdto.userid?.aprov);
+    //         sessionStorage.setItem("memberid", mdto.memberid);
+    //         sessionStorage.setItem("memberimgnm", mdto.memberimgnm);
+    //         sessionStorage.setItem("mgr_deptid", mdto.deptid?.mgrid);
+    //         sessionStorage.setItem("deptnm", mdto.deptid?.deptnm);
+    //     }
+    //     console.log('sessionStorage.getItem("type")2:' + sessionStorage.getItem("type"));
+    // }, [])
 
     const onChange = (e) => {
         setMdto({
@@ -72,8 +89,8 @@ export default function MemberInfo() {
 
     //
     //
-    const [marName,setMarname] = useState(0)
-    const selectDept = (e)=>{
+    const [marName, setMarname] = useState(0)
+    const selectDept = (e) => {
         setMarname(e.target.options[e.target.selectedIndex].getAttribute('data-name'))
     }
     const editpgbtn = () => {
@@ -86,6 +103,7 @@ export default function MemberInfo() {
     const resetbtn = () => {
         setMdto(originalMdto);
     };
+
 
     const editbtn = () => {
         let memberfdata = new FormData(document.getElementById('memberf'));
@@ -105,6 +123,14 @@ export default function MemberInfo() {
                         alert('수정 완료');
                         // setIsEditing(false);
                         window.location.reload();
+                        console.log(mdto?.memberid);
+                        if(sessionStorage.getItem("type") === "emp" && sessionStorage.getItem("memberid") === "undefined") {
+                            console.log(mdto?.memberid);
+                            sessionStorage.clear();
+                            navigate('/login');
+                            window.location.reload();
+                        }
+
                     } else {
                         alert('수정 실패');
                         setIsEditing(!isEditing);
@@ -113,6 +139,7 @@ export default function MemberInfo() {
                     alert('비정상 응답')
                 }
             })
+
     }
 
     return (
@@ -176,7 +203,7 @@ export default function MemberInfo() {
                                             <select id="deptslist" name="deptid" onChange={selectDept}>
                                                 <option value={''}>부서 선택</option>
                                                 {dlist.map((d) => (
-                                                    <option key={d.deptid} value={d.deptid} data-name={d.mgrid.memberid}>
+                                                    <option key={d.deptid} value={d.deptid} data-name={d.mgrid.memberid} selected={d.deptnm === mdto?.deptid?.deptnm}>
                                                         {d.deptnm}
                                                     </option>
                                                 ))}
