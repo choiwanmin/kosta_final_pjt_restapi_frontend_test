@@ -11,44 +11,41 @@ export default function MemberInfo() {
     const [isEditing, setIsEditing] = useState(false);
     const [dlist, setDlist] = useState({});
     const [jlist, setJlist] = useState({});
-    // const [selectedDept, setSelectedDept] = useState('');
-
-    // const { userid, memberid, birthdt, email, cpnum, address, memberimgnm, hiredt, leavedt, deptid, joblvid, mgrid, eweinfo, memberimgf } = mdto;
     const token = sessionStorage.getItem('token');
+    // const { userid, memberid, birthdt, email, cpnum, address, memberimgnm, hiredt, leavedt, deptid, joblvid, mgrid, eweinfo, memberimgf } = mdto;
+    const [previewImage, setPreviewImage] = useState(`${process.env.REACT_APP_SERVER}/member/memberimg/` + mdto?.memberimgnm);
 
     useEffect(() => {
         axios.get(`${process.env.REACT_APP_SERVER}/member/memberinfo/` + userid, { headers: { auth_token: token } })
-            // .then(response => {
-            //     const data = response.data;
-            //     setMdto(data.mdto);
-            //     setEdulist(data.edulist);
-            //     setExpwoklist(data.expwoklist);
-            //     setDlist(data.dlist);
-            //     setJlist(data.jlist);
-            //     // console.log(sessionStorage.getItem('loginId'));
-            //     // console.log(data.mdto?.memberimgnm);
-            //     // if (mdto?.memberimgnm) {
-            //     //     // setPreviewImage(`${process.env.REACT_APP_SERVER}/member/memberimg?memberimgnm=${data.mdto.memberimgnm}`);
-            //     //     setPreviewImage(`${process.env.REACT_APP_SERVER}/member/memberimg/` + data.mdto.memberimgnm);
-            //     // }
-            //     // setSelectedDept(data.mdto?.deptid?.deptid);
-            // })
-            // .catch(error => {
-            //     console.error('Error fetching member info:', error);
-            //     // Handle error
-            // });
-            .then(function (res) {
-                if (res.status === 200) {
-                    setMdto(res.data.mdto);
-                    setOriginalMdto(res.data.mdto || []);
-                    setEdulist(res.data.edulist || []);
-                    setExpwoklist(res.data.expwoklist || []);
-                    setDlist(res.data.dlist || []);
-                    setJlist(res.data.jlist || []);
-                } else {
-                    alert('error')
-                }
+            .then(response => {
+                const data = response.data;
+                setMdto(data.mdto);
+                setOriginalMdto(data.mdto || []);
+                setEdulist(data.edulist || []);
+                setExpwoklist(data.expwoklist || []);
+                setDlist(data.dlist || []);
+                console.log(data.dlist)
+                setJlist(data.jlist || []);
+                setPreviewImage(`${process.env.REACT_APP_SERVER}/member/memberimg/` + data.mdto?.memberimgnm);
             })
+            .catch(error => {
+                console.error('Error fetching member info:', error);
+                // Handle error
+            });
+
+        // .then(function (res) {
+        //     if (res.status === 200) {
+        //         setMdto(res.data.mdto);
+        //         setOriginalMdto(res.data.mdto || []);
+        //         setEdulist(res.data.edulist || []);
+        //         setExpwoklist(res.data.expwoklist || []);
+        //         setDlist(res.data.dlist || []);
+        //         setJlist(res.data.jlist || []);
+        //         setPreviewImage(`${process.env.REACT_APP_SERVER}/member/memberimg/` + res.data.mdto?.memberimgnm);
+        //     } else {
+        //         alert('error')
+        //     }
+        // })
     }, [token, userid]);
 
     const onChange = (e) => {
@@ -57,10 +54,9 @@ export default function MemberInfo() {
             [e.target.name]: e.target.value
         });
     };
-    //
-    //
-    const [previewImage, setPreviewImage] = useState(`${process.env.REACT_APP_SERVER}/member/memberimg/` + mdto?.memberimgnm);
 
+    //
+    //
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -74,39 +70,60 @@ export default function MemberInfo() {
         }
     };
 
-    // const handleDeptSelect = (event) => {
-    //     const selectedOption = event.target.value;
-    //     setSelectedDept(selectedOption);
+    //
+    //
+
+    // // Function to handle department selection
+    // const handleDeptChange = (event) => {
+    //     const selectedDeptId = event.target.value;
+    //     setSelectedDept(selectedDeptId);
+
+    //     dlist.map((d) => (
+    //         console.log(d.deptid);
+    //     ))
+    //     // for(let i=0; i< dlist.length; i++) {
+    //     //     console.log({dlist(i)});
+    //     // }
+    //     // Find the department object from dlist that matches selectedDeptId
+    //     const selectedDeptObject = dlist.find(d => d.deptid === selectedDeptId);
+    //     console.log(selectedDeptObject);
+
+    //     // Set mgrid value based on selectedDeptObject.mgrid.memberid
+    //     if (selectedDeptObject) {
+    //         const newMgridValue = selectedDeptObject.mgrid?.memberid || '';
+    //         setMgridValue(newMgridValue);
+    //     } else {
+    //         // If no department is selected, clear the mgrid value
+    //         setMgridValue('');
+    //     }
+    // };
+    
+
+    //
+    //
+    // const [inputFields, setInputFields] = useState([{ value: '' }]); // Initial input field state
+
+    // const handleAddField = () => {
+    //     if (inputFields.length < 10) { // Maximum fields check
+    //         setInputFields([...inputFields, { value: '' }]);
+    //     }
     // };
 
-    const [deptid, setDeptid] = useState(0);
-
-    const deptSelect = (e) => {
-        setDeptid(e.target.value)
-    }
-
-    //
-    //
-    const [inputFields, setInputFields] = useState([{ value: '' }]); // Initial input field state
-
-    const handleAddField = () => {
-        if (inputFields.length < 10) { // Maximum fields check
-            setInputFields([...inputFields, { value: '' }]);
-        }
-    };
-
-    const handleRemoveField = (index) => {
-        const newFields = [...inputFields];
-        newFields.splice(index, 1);
-        setInputFields(newFields);
-    };
+    // const handleRemoveField = (index) => {
+    //     const newFields = [...inputFields];
+    //     newFields.splice(index, 1);
+    //     setInputFields(newFields);
+    // };
 
     // const handleChange = (index, event) => {
     //     const newFields = [...inputFields];
     //     newFields[index].value = event.target.value;
     //     setInputFields(newFields);
     // };
-
+    const [marName,setMarname] = useState(0)
+    const selectDept = (e)=>{
+        setMarname(e.target.options[e.target.selectedIndex].getAttribute('data-name'))
+    }
     const editpgbtn = () => {
         setIsEditing(!isEditing);
     };
@@ -120,14 +137,13 @@ export default function MemberInfo() {
 
     const editbtn = () => {
         let memberfdata = new FormData(document.getElementById('memberf'));
-        memberfdata.set('dept', deptid);
         // console.log(memberfdata.get(''));
         if (memberfdata.get('memberid') === '') {
             memberfdata.set('memberid', 0);
         }
-        for (let key of memberfdata.keys()) {
-            console.log(key, ":", memberfdata.get(key));
-        }
+        // for (let key of memberfdata.keys()) {
+        //     console.log(key, ":", memberfdata.get(key));
+        // }
         axios.post(`${process.env.REACT_APP_SERVER}/member/memberadd`, memberfdata,
             { headers: { auth_token: token, "Content-Type": "multipart/form-data" } })
             .then(function (res) {//res.status:상태값, res.data:백에서 보낸 데이터
@@ -162,7 +178,7 @@ export default function MemberInfo() {
                                 <tr>
                                     <td rowSpan="3">
                                         <img
-                                            src={previewImage}
+                                            src={previewImage || `${process.env.REACT_APP_SERVER}/member/memberimg/` + mdto?.memberimgnm}
                                             alt="Profile Img"
                                             style={{ width: '103px', height: '132px' }}
                                         /><br />
@@ -172,20 +188,26 @@ export default function MemberInfo() {
                                                 name="memberimgf"
                                                 id="memberimgfid"
                                                 onChange={handleFileChange}
+                                                onClick={(event) => {
+                                                    event.target.value = null
+                                                }}
+                                                accept="image/*"
                                             />
                                         )}
                                     </td>
                                     <th>입사일</th>
-                                    {/* <td>{mdto.hiredt}</td> */}
-                                    {/* <td th:text="${member?.hiredt}" id="hiredtid" style="display:none"></td> */}
-                                    {/* <td></td> */}
                                     <td>{mdto?.hiredt}</td>
-
+                                    {isEditing && (
+                                        <input type="hidden" name="hiredt" value={mdto?.hiredt} />
+                                    )}
                                     {mdto?.leavedt && (
                                         <>
                                             <th>퇴사일</th>
                                             <td>{mdto?.leavedt}</td>
                                         </>
+                                    )}
+                                    {isEditing && (
+                                        <input type="hidden" name="leavedt" value={mdto?.leavedt} />
                                     )}
                                 </tr>
                                 <tr>
@@ -195,55 +217,22 @@ export default function MemberInfo() {
                                     <td>{mdto?.memberid}</td>
                                 </tr>
                                 <tr>
-                                    {/* <th>부서</th>
-                                {!isEditing ? (
-                                    <>
-                                        <td>
-                                            {mdto?.deptid?.deptid}
-                                        </td>
-                                    </>
-                                ) : (
-                                    <>
-                                        <td>
-                                            <select id="deptslist" name="deptid" onchange="deptselect()">
-                                            <option th:each="d : ${dlist}" th:text="${d.deptnm}" th:value="${d.deptid }"
-                                                th:selected="${member?.deptid?.deptnm}==${d.deptnm}"
-                                                th:data-dept="${d.mgrid.userid.usernm}"></option>
-                                            </select>
-                                        </td>
-                                    </>
-                                )}
-                                <input type="hidden" id="mgr" /> */}
                                     <th>부서</th>
                                     {!isEditing ? (
                                         <td>{mdto?.deptid?.deptnm}</td>
                                     ) : (
                                         <td>
-                                            {/* <select id="deptslist" onChange={handleDeptSelect} value={selectedDept}>
-                                                {Array.isArray(dlist) && dlist.length > 0 && dlist.map(d => (
-                                                    <option key={d.deptid} value={d}>
-                                                        {d.deptnm}
-                                                    </option>
-                                                ))}
-                                            </select> */}
-
-                                            {/* <select id="deptslist" name="deptid" onChange={deptSelect}>
-                                                <option>부서 선택</option>
-                                                {dlist.map((dept, i) => (
-                                                    <option value={dept.deptid}>{dept.deptnm}</option>
-                                                ))}
-                                            </select> */}
-                                            <select id="deptslist" name="deptid">
+                                            <select id="deptslist" name="deptid" onChange={selectDept}>
                                                 <option value={''}>부서 선택</option>
                                                 {dlist.map((d) => (
-                                                    <option key={d.deptid} value={d.deptid} selected={d.deptnm === mdto?.deptid?.deptnm}>
+                                                    <option key={d.deptid} value={d.deptid} data-name={d.mgrid.memberid}>
                                                         {d.deptnm}
                                                     </option>
                                                 ))}
                                             </select>
                                         </td>
                                     )}
-                                    {/* <input type="hidden" name="mgrid" id="mgrid" value={selectedDept ? selectedDept.mgrid?.userid?.usernm ?? '' : ''} /> */}
+                                    <input type="hidden" name="mgrid" id="mgrid" value={marName} />
                                     <th>직급</th>
                                     {!isEditing ? (
                                         <>
@@ -262,10 +251,6 @@ export default function MemberInfo() {
                                                         </option>
                                                     ))}
                                                 </select>
-                                                {/* <select id="joblvslist" name="joblvid">
-                                            <option th:each="j : ${jlist}" th:text="${j.joblvnm}" th:value="${j.joblvidx}"
-                                                th:selected="${member?.joblvid?.joblvnm}==${j.joblvnm}"></option>
-                                            </select> */}
                                             </td>
                                         </>
                                     )}
@@ -331,7 +316,7 @@ export default function MemberInfo() {
                             </tbody>
                         </table>
 
-                        <h3>학력 정보</h3>
+                        {/* <h3>학력 정보</h3>
                         <table className="info-table">
                             <thead>
                                 <tr>
@@ -366,7 +351,6 @@ export default function MemberInfo() {
                                                 <td><input type="date" name="enddt" id="enddtid" value={e?.enddt} /></td>
                                                 <td>
                                                     <select>
-                                                        {/* <option value={} selected={e.state}>졸업</option> */}
                                                         <option>졸업</option>
                                                         <option>졸업유예</option>
                                                         <option>휴학</option>
@@ -388,7 +372,7 @@ export default function MemberInfo() {
                                                 <td><input type="date" name="enddt" id="enddtid" /></td>
                                                 <td>
                                                     <select>
-                                                        {/* <option value={} selected={e.state}>졸업</option> */}
+                                                        <option value={} selected={e.state}>졸업</option>
                                                         <option>졸업</option>
                                                         <option>졸업유예</option>
                                                         <option>휴학</option>
@@ -407,9 +391,9 @@ export default function MemberInfo() {
                         </table>
                         {isEditing && (
                             <button className="btn blue_memberbtn" onClick={handleAddField}>추가하기</button>
-                        )}
+                        )} */}
 
-                        <h3>경력 정보</h3>
+                        {/* <h3>경력 정보</h3>
                         <table className="info-table">
                             <thead>
                                 <tr>
@@ -483,31 +467,12 @@ export default function MemberInfo() {
                         </table>
                         {isEditing && (
                             <button className="btn blue_memberbtn" onClick={handleAddField}>추가하기</button>
-                        )}
+                        )} */}
                         <input type='hidden' name="userid" value={userid} />
                         <input type='hidden' name="memberid" value={mdto?.memberid} />
                     </form>
 
                     <div className="memberinfo_admin_menu">
-                        {/* {!isEditing && ((mdto?.memberid == null && sessionStorage.getItem('loginId') === userid) || sessionStorage.getItem('type') === 'admin') ? (
-                            <>
-                                <button type="button" className="btn blue_memberbtn" id="usereditpgbtnid" onClick={editpgbtn}>
-                                    내정보수정페이지이동버튼
-                                </button>
-                            </>
-                        ) : (
-                            <>
-                                <button type="submit" className="btn blue_memberbtn" id="usereditbtnid" onClick={editbtn}>
-                                    내정보수정버튼
-                                </button>
-                                <button type="button" className="btn blue_memberbtn" onClick={resetbtn}>
-                                    취소
-                                </button>
-                                <button type="button" className="btn blue_memberbtn" onClick={backbtn}>
-                                    되돌아가기
-                                </button>
-                            </>
-                        )} */}
                         {((mdto?.memberid == null && sessionStorage.getItem('loginId') === userid) || sessionStorage.getItem('type') === 'admin') && (
                             !isEditing ? (
                                 <>
@@ -530,7 +495,6 @@ export default function MemberInfo() {
                             )
                         )}
                     </div>
-                    {/* <input type="hidden" name="id" value={user.id} /><br /> */}
                 </div>
             </div>
         </div>
