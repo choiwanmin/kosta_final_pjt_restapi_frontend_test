@@ -30,12 +30,11 @@ export default function AddReport() {
     }, []);
 
     const handleCheckboxChange = (userId) => {
-        const isChecked = selectedMembers.includes(userId); //이미 선택된 유저 체크
-        if (isChecked) {
-            setSelectedMembers(selectedMembers.filter((id) => id !== userId)); //이미 체크 된 유저 체크 해재
-        } else {
-            setSelectedMembers([...selectedMembers, userId]); //선택 추가
-        }
+        setSelectedMembers((prevSelectedMembers) =>
+            prevSelectedMembers.includes(userId)
+            ? prevSelectedMembers.filter((id) => id !== userId)
+            : [...prevSelectedMembers, userId]
+        );
     };
 
     const handleSubmit = (e) => {
@@ -50,7 +49,7 @@ export default function AddReport() {
         formData.append('enddt', enddt);
         formData.append('taskplan', taskplan);
         formData.append('taskprocs', taskprocs);
-        formData.append('senior', selectedMembers); // Ensure 'senior' is correctly appended
+        formData.append('senior', selectedMembers.join(',')); // Ensure 'senior' is correctly appended
         formData.append('status', 1);
         formData.append('formtype', formType);
         axios.post(`${process.env.REACT_APP_SERVER}/auth/docx/addreport` , formData, {
@@ -60,19 +59,12 @@ export default function AddReport() {
         })
         .then(response =>{
             console.log(response)
-            if(response.status === 200){
+            if(response.status === 200 && response.data){
                 if(response.data) {
                     console.log("통과")
                     navigate('/docxlist')
                 }
             }
-            // if(response.data.readirect){
-            //     window.location.href = response.data.readirect; // 등록후 리다이랙트
-
-            // }else{
-            //     navigate('/docxlist');
-            //     alert("작성 한 글을 성공적으로 등록 했습니다.");
-            // }
         })
         .catch(error => {
             console.error("Error submit form : " , error);
@@ -92,7 +84,7 @@ export default function AddReport() {
         formData.append('writer', loginId);
         formData.append('enddt', enddt);
         formData.append('note', note);
-        formData.append('senior', selectedMembers); // Ensure 'senior' is correctly appended
+        formData.append('senior', selectedMembers.join(',')); // Ensure 'senior' is correctly appended
         formData.append('status', 1);
         // formData.append('formtype', formType);
         axios.post(`${process.env.REACT_APP_SERVER}/auth/docx/addvacation`, formData, {
@@ -102,15 +94,9 @@ export default function AddReport() {
         })
             .then(response => {
                 console.log(response)
-                if(response.status === 200){
+                if(response.status === 200 && response.data){
                     if(response.data) return navigate('/docxlist')
                 }
-                // if (response.data.redirect) {
-                //     window.location.href = response.data.redirect;
-                // } else {
-                //     navigate('/docxlist');
-                //     alert('휴가 신청서를 성공적으로 등록했습니다.');
-                // }
             })
             .catch(error => {
                 console.error('Error submit vacation form : ', error);
@@ -128,6 +114,7 @@ export default function AddReport() {
             .then((res) => {
                 if (res.status === 200) {
                     setUserArr(res.data.mlist);
+                    console.log(res.data.mlist)
                 } else {
                     alert("멤버 검색 error");
                 }
@@ -249,8 +236,8 @@ export default function AddReport() {
                     <select
                         style={{ display: "none" }}
                         name="status"
-                        onFocus={(e) => (e.target.initialSelect = e.target.selectedIndex)}
-                        onChange={(e) => (e.target.selectedIndex = e.target.initialSelect)}
+                        // onFocus={(e) => (e.target.initialSelect = e.target.selectedIndex)}
+                        // onChange={(e) => (e.target.selectedIndex = e.target.initialSelect)}
                         readOnly
                     >
                         <option value="1" selected>
@@ -341,8 +328,8 @@ export default function AddReport() {
                     <select
                         style={{ display: "none" }}
                         name="status"
-                        onFocus={(e) => (e.target.initialSelect = e.target.selectedIndex)}
-                        onChange={(e) => (e.target.selectedIndex = e.target.initialSelect)}
+                        // onFocus={(e) => (e.target.initialSelect = e.target.selectedIndex)}
+                        // onChange={(e) => (e.target.selectedIndex = e.target.initialSelect)}
                         readOnly
                     >
                         <option value="1" selected>

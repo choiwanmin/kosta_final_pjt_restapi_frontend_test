@@ -71,21 +71,6 @@ const ReportList = () => {
 
     return (
         <div className="main_body">
-            <button
-                onClick={() => {
-                    const type = token.userInfo?.type;
-                    if (type === 'admin') {
-                        window.location.href = '/index_admin';
-                    } else if (type === 'emp') {
-                        window.location.href = '/index_emp';
-                    } else {
-                        window.location.href = '/';
-                    }
-                }}
-                className="btn btn-secondary btn-sm"
-            >
-                홈버튼
-            </button>
             <br />
             <div className="record_table w_bg">
                 <h2 style={{ textAlign: 'center' }} className="font_b24 m_b2">문서보관함</h2>
@@ -122,7 +107,7 @@ const ReportList = () => {
                                     <input type="hidden" value={list.formnum} />
                                     <td className="title-cell">
                                         {list.formtype === '보고서' && (
-                                            <Link to={`/auth/docx/getdocx?formnum=${list.formnum}&docxkey=${list.docxkey}&formtype=${list.formtype}`}>
+                                            <Link to={'/auth/docx/getdocx/'+ list.formnum +'/'+ list.docxkey+'/'+list.formtype}>
                                                 {list.title}
                                             </Link>
                                         )}

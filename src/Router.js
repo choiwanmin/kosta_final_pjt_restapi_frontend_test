@@ -8,6 +8,7 @@ import Userinfo from "./components/user/Userinfo";
 import Userlist from "./components/user/Userlist";
 import DocxAdd from "./components/docx/AddReport";
 import DocxList from "./components/docx/ReactList";
+import ReportDetail from "./components/docx/ReportDetail";
 import MyRecord from "./components/record/MyRecord";
 import RecordAdmin from "./components/record/RecordAdmin";
 import Dept from "./components/record/Dept"
@@ -75,6 +76,7 @@ export default function Router() {
             <Route path="/join" element={<Join/>}></Route>
             <Route path="/docxlist" element={<DocxList/>}></Route>
             <Route path="/addreport" element={<DocxAdd/>}></Route>
+            <Route path="/auth/docx/getdocx/:formnum/:docxkey/:formtype" element={<ReportDetail/>}></Route>
             <Route path="/notice/list" element={<NoticeList/>}/>
             <Route path="/noticeadd" element={<NoticeAdd/>}/>
             <Route path="/noticedetail/:notid" element={<NoticeDetail/>}/>
