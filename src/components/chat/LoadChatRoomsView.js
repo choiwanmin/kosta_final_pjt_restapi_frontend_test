@@ -3,11 +3,12 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import ConnectChatRoom from './ConnectChat';
 import ChatModal from './ChatModal';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
-
+import { resetUser } from "../../store"
 
 export default function LoadChatRoomsView() {
+    let dispatch = useDispatch();
     const [list, setList] = useState([]);
     const [selectedRoom, setSelectedRoom] = useState(null);
     const [roomid, setRoomid] = useState('');
@@ -49,9 +50,9 @@ export default function LoadChatRoomsView() {
             .then(function (res) {
                 if (res.status === 200) {
                     alert('사용자 초대 성공');
-                   loadChatRooms();
-                   navigate('/messenger', { replace: true });
-                   window.location.reload();
+                    loadChatRooms();
+                    navigate('/messenger', { replace: true });
+                    window.location.reload();
                 } else {
                     alert('사용자 초대 실패');
                 }
@@ -120,6 +121,13 @@ export default function LoadChatRoomsView() {
                 }
             })
     }
+    const setChat = () => {
+        setIsInvite(true);
+        dispatch(resetUser())
+    }
+    // useEffect(() => {
+    //     console.log(userList)
+    // }, [userList])
 
     return (
         <div className="main_body">
@@ -136,7 +144,7 @@ export default function LoadChatRoomsView() {
                                             <div className="msg-search">
                                                 <input type="text" className="form-control" id="findGroupMember" placeholder="참여자이름으로 검색" aria-label="search" onKeyDown={searchName} />
                                                 <a className="add" href="#">
-                                                    <img className="img-fluid" src="https://mehedihtml.com/chatbox/assets/img/add.svg" alt="add" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => setIsInvite(true)} />
+                                                    <img className="img-fluid" src="https://mehedihtml.com/chatbox/assets/img/add.svg" alt="add" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={setChat} />
                                                 </a>
                                             </div>
                                             {/* 1:1 단체방 탭 */}
@@ -159,7 +167,7 @@ export default function LoadChatRoomsView() {
                                                                     <a key={index} href="#" className="d-flex align-items-center" onClick={() => roomConnect(chatRoom.chatroomid)}>
                                                                         <div className="flex-shrink-0">
                                                                             <img className="img-fluid-center"
-                                                                                src={`${process.env.REACT_APP_SERVER}/member/memberimg/` + chatRoom.img}
+                                                                                src={chatRoom.roomType === 'PRIVATE' ? `${process.env.REACT_APP_SERVER}/member/memberimg/` + chatRoom.myimg : `${process.env.REACT_APP_SERVER}/member/memberimg/` + chatRoom.img}
                                                                                 alt="Profile Img"
                                                                                 style={{ width: '45px', height: '45px' }} />
                                                                         </div>
@@ -180,18 +188,18 @@ export default function LoadChatRoomsView() {
                                                                 chatRoom.roomType === 'GROUP' ? (
                                                                     <a key={index} href="#" className="d-flex align-items-center" onClick={() => roomConnect(chatRoom.chatroomid)}>
                                                                         <div className="flex-shrink-0">
-                                                                        <img className="img-fluid-center"
+                                                                            <img className="img-fluid-center"
                                                                                 src={`${process.env.REACT_APP_SERVER}/member/memberimg/` + chatRoom.img}
                                                                                 alt="Profile Img"
                                                                                 style={{ width: '45px', height: '45px' }} />
                                                                         </div>
-                                                                       
+
                                                                         <div className="flex-grow-1 ms-3">
                                                                             <h3>
                                                                                 {chatRoom?.chatRoomNames[0]?.editableName.replace(/_/g, ' ').trim()}
                                                                             </h3>
                                                                             <p>{chatRoom.recentMsg}</p>
-                                                                            <p>{chatRoom.participants}</p>
+
                                                                         </div>
                                                                     </a>
                                                                 ) : null
