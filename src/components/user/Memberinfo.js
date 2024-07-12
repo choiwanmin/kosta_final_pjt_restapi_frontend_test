@@ -24,6 +24,7 @@ export default function MemberInfo() {
                 setEdulist(data.edulist || []);
                 setExpwoklist(data.expwoklist || []);
                 setDlist(data.dlist || []);
+                console.log(data.dlist)
                 setJlist(data.jlist || []);
                 setPreviewImage(`${process.env.REACT_APP_SERVER}/member/memberimg/` + data.mdto?.memberimgnm);
             })
@@ -96,22 +97,7 @@ export default function MemberInfo() {
     //         setMgridValue('');
     //     }
     // };
-    // const [selectedDeptId, setSelectedDeptId] = useState('');
-    // const handleDeptChange = (event) => {
-    //     const selectedId = event.target.value;
-    //     setSelectedDeptId(selectedId);
-    //     console.log('selectedId:' + selectedId);
-
-    //     bbb.map((row) => row.tags)
-    //     const selectedDeptObject = dlist
-    //         .filter(d => d.deptid === selectedId)
-    //         .map(d => d);
-    //     console.log('selectedDeptObject:' + selectedDeptObject);
-    //     console.log('selectedDeptObject?.mgrid?.memberid:' + selectedDeptObject?.mgrid?.memberid);
-    //     const mgridValue = selectedDeptObject?.mgrid?.memberid || '';
-    //     console.log(mgridValue);
-    //     document.getElementById('mgrid').value = mgridValue;
-    // };
+    
 
     //
     //
@@ -134,7 +120,10 @@ export default function MemberInfo() {
     //     newFields[index].value = event.target.value;
     //     setInputFields(newFields);
     // };
-
+    const [marName,setMarname] = useState(0)
+    const selectDept = (e)=>{
+        setMarname(e.target.options[e.target.selectedIndex].getAttribute('data-name'))
+    }
     const editpgbtn = () => {
         setIsEditing(!isEditing);
     };
@@ -149,7 +138,6 @@ export default function MemberInfo() {
     const editbtn = () => {
         let memberfdata = new FormData(document.getElementById('memberf'));
         // console.log(memberfdata.get(''));
-
         if (memberfdata.get('memberid') === '') {
             memberfdata.set('memberid', 0);
         }
@@ -234,17 +222,17 @@ export default function MemberInfo() {
                                         <td>{mdto?.deptid?.deptnm}</td>
                                     ) : (
                                         <td>
-                                            <select id="deptslist" name="deptid">
+                                            <select id="deptslist" name="deptid" onChange={selectDept}>
                                                 <option value={''}>부서 선택</option>
                                                 {dlist.map((d) => (
-                                                    <option key={d.deptid} value={d.deptid} selected={d.deptnm === mdto?.deptid?.deptnm}>
+                                                    <option key={d.deptid} value={d.deptid} data-name={d.mgrid.memberid}>
                                                         {d.deptnm}
                                                     </option>
                                                 ))}
                                             </select>
                                         </td>
                                     )}
-                                    <input type="hidden" name="mgrid" id="mgrid" value={mdto?.deptid?.mgrid?.memberid} />
+                                    <input type="hidden" name="mgrid" id="mgrid" value={marName} />
                                     <th>직급</th>
                                     {!isEditing ? (
                                         <>

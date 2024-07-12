@@ -58,6 +58,7 @@ export default function RecordAdmin(){
             )
          .then((res)=>{
             if(res.status === 200){
+              console.log(res.data)
                 for(let a in res.data){
                     dataArr[0].push(a)
                     // console.log(res.data[a])
