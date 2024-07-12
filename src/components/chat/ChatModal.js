@@ -48,6 +48,14 @@ export default function ChatModal({ onSelect, isInvite }) {
         }
     };
 
+    const resetState = () => {
+        setName("");
+        setType(1);
+        setUserArr([]);
+        setSelectedUsers([]);
+        document.getElementById('inputname').value = '';
+    };
+
     return (
         <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div className="modal-dialog modal-dialog-centered mem_modal">
@@ -112,12 +120,12 @@ export default function ChatModal({ onSelect, isInvite }) {
                             </div>
                             <div className="modal-footer">
                                 {isInvite && (
-                                    <button type="button" className="btn blue_btn" data-bs-dismiss="modal" onClick={() => onSelect('create')}>생성</button>
+                                    <button type="button" className="btn blue_btn" data-bs-dismiss="modal" onClick={() => {onSelect('create'); resetState()}}>생성</button>
                                 )}
                                 {!isInvite && (
-                                    <button type="button" className="btn blue_btn" data-bs-dismiss="modal" onClick={() => onSelect('invite')}>초대</button>
+                                    <button type="button" className="btn blue_btn" data-bs-dismiss="modal" onClick={() => {onSelect('invite'); resetState();}}>초대</button>
                                 )}
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={resetState}>Close</button>
                             </div>
                         </form>
                     </div>

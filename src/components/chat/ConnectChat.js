@@ -285,7 +285,7 @@ export default function ConnectChatRoom({ roomid, userid, reloadRoom, isInvite, 
     const disconnect = () => {
         if (stompClientRef.current) {
             stompClientRef.current.disconnect(() => {
-                console.log('연결끊겼음');
+                console.log('채팅방 연결 종료');
                 setIsConnected(false);
                 setMessages([]);
             });
