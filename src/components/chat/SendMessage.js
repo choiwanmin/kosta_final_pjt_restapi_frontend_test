@@ -1,5 +1,5 @@
 
-const sendMessage = (roomid, userid, stompClientRef, page) => {
+const sendMessage = (roomid, userid, stompClientRef) => {
     var date = new Date();
     var timezoneOffset = date.getTimezoneOffset() * 60000;
     var seoulOffset = (9 * 3600000);
