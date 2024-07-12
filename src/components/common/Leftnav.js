@@ -3,13 +3,16 @@ import "./Leftnav.css";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function Leftnav() {
+    const navigate = useNavigate();
     const type = sessionStorage.getItem("type");
     const dept = sessionStorage.getItem("mgr_deptid");
     const memberid = sessionStorage.getItem("memberid");
     const loginId = sessionStorage.getItem("loginId");
+    const aprov = sessionStorage.getItem("aprov");
 
     const logout = () => {
         sessionStorage.clear();
+        navigate('/login');
         window.location.reload();
     }
 
@@ -18,7 +21,7 @@ export default function Leftnav() {
             <div class="menu_wrapper">
                 <ul class="nav_ul">
                     <li class="nav_li">
-                        {type === "emp" ? <Emp dept={dept} memberid={memberid} /> : <Admin />}
+                        {type === "emp" ? <Emp dept={dept} memberid={memberid} aprov={aprov} /> : <Admin />}
                     </li>
                 </ul>
             </div>
@@ -43,6 +46,12 @@ export default function Leftnav() {
 
 function Emp(props) {
     const loginId = sessionStorage.getItem("loginId");
+    // const [flag, setFlag] = useState(false);
+    // console.log('props.aprov:' + props.aprov);
+    // if (props.aprov === "1" && props.memberid != "undefined") {
+    //     // setFlag(true);
+    // }
+    // console.log("aprov: " + flag)
     return (
         <>
             <p className="nav_main_title">HRM system</p>
@@ -64,8 +73,7 @@ function Emp(props) {
                     </Link>
                 </li>
                 {
-                    props.memberid === "undefined" ?
-                        null :
+                    props.aprov === "1" && props.memberid !== "undefined" && (
                         <li className="li_link">
                             <Link to="/myrecord" className="nav_link">
                                 <div className="icon_wrapper">
@@ -74,6 +82,7 @@ function Emp(props) {
                                 <span className="nav_link_text">출퇴근 관리</span>
                             </Link>
                         </li>
+                    )
                 }
 
                 {
@@ -91,10 +100,9 @@ function Emp(props) {
                 <li class="nav_li" style={{ paddingTop: "10px" }}>
                     <div>
                         <p className="nav_main_title">connect system</p>
-                        {
-                            props.memberid === "undefined" ?
-                                null :
-                                <ul>
+                        <ul>
+                            {
+                                props.aprov === "1" && props.memberid !== "undefined" && (
                                     <li className="li_link">
                                         <Link to="/notice/list" className="nav_link">
                                             <div className="icon_wrapper">
@@ -103,6 +111,10 @@ function Emp(props) {
                                             <span className="nav_link_text">공지게시판</span>
                                         </Link>
                                     </li>
+                                )
+                            }
+                            {
+                                props.aprov === "1" && props.memberid !== "undefined" && (
                                     <li className="li_link">
                                         <Link to="/messenger" className="nav_link">
                                             <div className="icon_wrapper">
@@ -111,6 +123,10 @@ function Emp(props) {
                                             <span className="nav_link_text">메신저</span>
                                         </Link>
                                     </li>
+                                )
+                            }
+                            {
+                                 props.aprov === "1" && props.memberid !== "undefined" && (
                                     <li className="li_link">
                                         <Link to="/docxlist" className="nav_link">
                                             <div className="icon_wrapper">
@@ -119,8 +135,9 @@ function Emp(props) {
                                             <span className="nav_link_text">문서함</span>
                                         </Link>
                                     </li>
-                                </ul>
-                        }
+                                    )
+                            }
+                        </ul>
                     </div>
                 </li>
             </ul>
