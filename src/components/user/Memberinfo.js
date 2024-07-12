@@ -72,54 +72,6 @@ export default function MemberInfo() {
 
     //
     //
-
-    // // Function to handle department selection
-    // const handleDeptChange = (event) => {
-    //     const selectedDeptId = event.target.value;
-    //     setSelectedDept(selectedDeptId);
-
-    //     dlist.map((d) => (
-    //         console.log(d.deptid);
-    //     ))
-    //     // for(let i=0; i< dlist.length; i++) {
-    //     //     console.log({dlist(i)});
-    //     // }
-    //     // Find the department object from dlist that matches selectedDeptId
-    //     const selectedDeptObject = dlist.find(d => d.deptid === selectedDeptId);
-    //     console.log(selectedDeptObject);
-
-    //     // Set mgrid value based on selectedDeptObject.mgrid.memberid
-    //     if (selectedDeptObject) {
-    //         const newMgridValue = selectedDeptObject.mgrid?.memberid || '';
-    //         setMgridValue(newMgridValue);
-    //     } else {
-    //         // If no department is selected, clear the mgrid value
-    //         setMgridValue('');
-    //     }
-    // };
-    
-
-    //
-    //
-    // const [inputFields, setInputFields] = useState([{ value: '' }]); // Initial input field state
-
-    // const handleAddField = () => {
-    //     if (inputFields.length < 10) { // Maximum fields check
-    //         setInputFields([...inputFields, { value: '' }]);
-    //     }
-    // };
-
-    // const handleRemoveField = (index) => {
-    //     const newFields = [...inputFields];
-    //     newFields.splice(index, 1);
-    //     setInputFields(newFields);
-    // };
-
-    // const handleChange = (index, event) => {
-    //     const newFields = [...inputFields];
-    //     newFields[index].value = event.target.value;
-    //     setInputFields(newFields);
-    // };
     const [marName,setMarname] = useState(0)
     const selectDept = (e)=>{
         setMarname(e.target.options[e.target.selectedIndex].getAttribute('data-name'))
@@ -147,7 +99,6 @@ export default function MemberInfo() {
         axios.post(`${process.env.REACT_APP_SERVER}/member/memberadd`, memberfdata,
             { headers: { auth_token: token, "Content-Type": "multipart/form-data" } })
             .then(function (res) {//res.status:상태값, res.data:백에서 보낸 데이터
-                // console.log(res.data.flag);
                 if (res.status === 200) {
                     console.log(res.data.flag);
                     if (res.data.flag) {
