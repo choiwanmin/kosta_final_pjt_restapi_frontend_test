@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser, removeUser } from "../../store";
@@ -33,6 +33,7 @@ export default function ChatModal({ onSelect, isInvite }) {
                     alert('error');
                 }
             })
+        console.log(userList)
     }
 
     const handleCheckboxChange = (userId) => {
@@ -55,6 +56,9 @@ export default function ChatModal({ onSelect, isInvite }) {
         setSelectedUsers([]);
         document.getElementById('inputname').value = '';
     };
+    useEffect(()=>{
+        console.log(userArr)
+    },[userArr])
 
     return (
         <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

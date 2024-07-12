@@ -87,11 +87,25 @@ let modalArr = createSlice({
     removeUser(state, action) {
       return state.filter(userId => userId !== action.payload);
     },
+    resetUser(){
+      return [];
+    }
   }
 });
 
-export let { addUser, removeUser } = modalArr.actions;
+export let { addUser, removeUser,resetUser} = modalArr.actions;
 
+
+let listArray = createSlice({
+  name: "listArray",
+  initialState: [],
+  reducers:{
+    resetList(){
+      return [];
+    }
+  }
+});
+export let { resetList} = listArray.actions;
 
 export default configureStore({
   reducer: {
@@ -101,6 +115,7 @@ export default configureStore({
     recordOut:recordOut.reducer,
     dayoff:dayoff.reducer,
     // modalFlag:modalFlag.reducer
-    modalArr:modalArr.reducer
+    modalArr:modalArr.reducer,
+    listArray:listArray.reducer
    }
 }) 
