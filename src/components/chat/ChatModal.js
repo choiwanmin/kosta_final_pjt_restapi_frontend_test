@@ -56,9 +56,9 @@ export default function ChatModal({ onSelect, isInvite }) {
         setSelectedUsers([]);
         document.getElementById('inputname').value = '';
     };
-    useEffect(()=>{
-        console.log(userArr)
-    },[userArr])
+    // useEffect(()=>{
+    //     console.log(userArr)
+    // },[userArr])
 
     return (
         <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
