@@ -126,7 +126,7 @@ function Emp(props) {
                                 )
                             }
                             {
-                                 props.aprov === "1" && props.memberid !== "undefined" && (
+                                props.aprov === "1" && props.memberid !== "undefined" && (
                                     <li className="li_link">
                                         <Link to="/docxlist" className="nav_link">
                                             <div className="icon_wrapper">
